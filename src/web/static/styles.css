@@ -231,11 +231,11 @@ textarea::placeholder { color: #6b7280; }
 
 .counters { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr));
   background: var(--panel); border: 1px solid var(--seam); border-radius: var(--r); overflow: hidden; }
-.counters li { position: relative; padding: 12px 12px 14px; border-right: 1px solid var(--seam); min-height: 132px; display: flex; flex-direction: column; transition: background .25s; }
+.counters li { position: relative; padding: 12px 12px 14px; border-right: 1px solid var(--seam); min-height: 148px; display: flex; flex-direction: column; transition: background .25s; }
 .counters li:last-child { border-right: 0; }
 .counters .a { font-weight: 700; color: var(--ink); font-size: .95rem; line-height: 1.2; }
 .counters .f { font-size: .75rem; color: var(--dim); margin-top: 2px; }
-.counters .st { margin-top: auto; font-size: .78rem; font-weight: 600; color: var(--dim); }
+.counters .st { margin-top: auto; font-size: .78rem; font-weight: 600; color: var(--dim); padding-right: 58px; }
 .counters li[data-state="running"] { background: var(--amber-wash); }
 .counters li[data-state="running"] .st { color: var(--amber); }
 .counters li[data-state="running"]::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--amber); }
@@ -243,7 +243,7 @@ textarea::placeholder { color: #6b7280; }
 .counters li[data-state="blocked"] { background: var(--crimson-wash); }
 .counters li[data-state="blocked"] .st { color: var(--crimson); }
 .counters li[data-state="skipped"] .a, .counters li[data-state="skipped"] .f { opacity: .45; }
-.postmark { position: absolute; right: 6px; bottom: 26px; width: 58px; height: 58px; color: var(--crimson); opacity: .9; pointer-events: none; }
+.postmark { position: absolute; right: 6px; bottom: 6px; width: 54px; height: 54px; color: var(--crimson); opacity: .9; pointer-events: none; }
 .counters li[data-state="blocked"] .postmark { color: var(--crimson); }
 .postmark text { font-family: var(--sans); fill: currentColor; }
 @media (prefers-reduced-motion: no-preference) {

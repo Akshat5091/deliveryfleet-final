@@ -136,6 +136,8 @@ def _structured(tool_response: Any) -> Any:
 
 
 def after_tool(tool: BaseTool, args: dict[str, Any], tool_context: ToolContext, tool_response: Any) -> dict | None:
+    if tool.name == "set_model_response":  # ADK's own structured-output step, not an MCP tool
+        return None
     ctx = _ctx(tool_context)
     started = tool_context.state.get("tool_started")
     ms = round((time.perf_counter() - started) * 1000, 1) if started else None

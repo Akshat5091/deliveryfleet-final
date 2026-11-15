@@ -270,14 +270,14 @@ async function onBookDone({ run }) {
     if (exc.action !== "ESCALATE") {
       await wait(600);
       await animateRider($("#bmap"), pathPoints(from, to, zonesIn(exc.new_corridor || route.corridor)), 6500);
-      renderTimeline(steps, 5);
+      renderTimeline(steps, 6);
       $("#t-title").textContent = "Delivered";
       $("#t-sub").textContent = `Recovered after the disruption. Fare ₹${book.fare}.`;
     }
   } else {
     renderTimeline(steps, 3);
     await animateRider($("#bmap"), pts, 7000);
-    renderTimeline(steps, 5);
+    renderTimeline(steps, 6);
     $("#t-title").textContent = r.outcome === "ESCALATED" ? "Delivered, late" : "Delivered";
     $("#t-sub").textContent = `${r.customer_message} Fare ₹${book.fare}.`;
   }
@@ -442,6 +442,11 @@ function describe(ev) {
   }
 }
 
+function logVisible(li, filter) {
+  if (filter === "all") return !li.dataset.read;
+  return li.dataset.kind === filter;
+}
+
 function appendLog(ev) {
   const li = document.createElement("li");
   li.dataset.kind = ev.kind;
@@ -449,7 +454,9 @@ function appendLog(ev) {
   const detail = ev.payload && Object.keys(ev.payload).length ? `<details><summary>details</summary><pre>${esc(JSON.stringify(ev.payload, null, 1))}</pre></details>` : "";
   li.innerHTML = `<span class="t">+${t.toFixed(1)}s</span><span class="who">${esc(ev.agent || "system")}<small>${esc(ev.framework)}</small></span>
     <span class="what"><span class="k ${esc(ev.kind)}">${KIND[ev.kind] || esc(ev.kind)}</span>${describe(ev)}${detail}</span>`;
-  li.hidden = live.filter !== "all" && live.filter !== ev.kind;
+  // Blackboard reads are many and repetitive: they appear only under the Blackboard filter.
+  li.dataset.read = ev.kind === "blackboard" && ev.status === "READ" ? "1" : "";
+  li.hidden = !logVisible(li, live.filter);
   const log = $("#log");
   const stick = log.scrollTop + log.clientHeight >= log.scrollHeight - 40;
   log.append(li);
@@ -540,7 +547,7 @@ function initControl() {
     const kind = e.target.dataset?.kind; if (!kind) return;
     live.filter = kind;
     $$("#filters button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.kind === kind)));
-    $$("#log li[data-kind]").forEach((li) => (li.hidden = kind !== "all" && li.dataset.kind !== kind));
+    $$("#log li[data-kind]").forEach((li) => (li.hidden = !logVisible(li, kind)));
   });
   renderCounters();
   drawCity($("#map"), {});
