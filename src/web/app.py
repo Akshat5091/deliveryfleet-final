@@ -70,7 +70,9 @@ def build_spec(req: RunRequest) -> RunSpec:
         case = next((c for c in DEMO_CASES if c["id"] == req.case_id), None)
         if case is None:
             raise HTTPException(404, f"unknown case {req.case_id}")
-        order_id, persona, scenario = case["order_id"], case["persona"], case["scenario"]
+        order_id, persona = case["order_id"], case["persona"]
+        # An explicitly chosen event overrides the scenario's built-in one.
+        scenario = req.scenario if "scenario" in req.model_fields_set else case["scenario"]
         message = case.get("message")
     if not message:
         if not order_id or order_id not in orders() or persona == "custom":
@@ -81,8 +83,7 @@ def build_spec(req: RunRequest) -> RunSpec:
                    order=hint, hour_of_day=req.hour_of_day, source="web")
 
 
-@app.post("/api/runs")
-async def start_run(req: RunRequest):
+def launch(spec: RunSpec, architecture: str) -> dict:
     if not llm_available():
         raise HTTPException(503, "GEMINI_API_KEY is not configured on the server")
     for rid, task in list(_active.items()):
@@ -90,10 +91,42 @@ async def start_run(req: RunRequest):
             _active.pop(rid)
     if len(_active) >= MAX_ACTIVE_RUNS:
         raise HTTPException(429, "Two runs are already in progress. Please wait a few seconds.")
-    spec = build_spec(req)
-    run = get_orchestrator(req.architecture)
-    _active[spec.run_id] = asyncio.create_task(run(spec))
+    _active[spec.run_id] = asyncio.create_task(get_orchestrator(architecture)(spec))
     return {"run_id": spec.run_id, "message": spec.message}
+
+
+@app.post("/api/runs")
+async def start_run(req: RunRequest):
+    return launch(build_spec(req), req.architecture)
+
+
+URGENCY = {  # customer-facing choice -> (priority, deadline minutes from pickup)
+    "standard": ("NORMAL", 90),
+    "express": ("HIGH", 60),
+    "critical": ("CRITICAL", 45),
+}
+
+
+class BookingRequest(BaseModel):
+    pickup: str = Field(pattern=r"^Zone [A-D] - .{2,60}$")
+    dropoff: str = Field(pattern=r"^Zone [A-D] - .{2,60}$")
+    weight_kg: float = Field(gt=0, le=300)
+    urgency: Literal["standard", "express", "critical"] = "standard"
+    note: str = Field(default="", max_length=600)
+    scenario: Literal["normal", "corridor_closed", "breakdown", "rain_spike"] = "normal"
+    hour_of_day: int = Field(default=14, ge=6, le=23)
+
+
+@app.post("/api/bookings")
+async def book(req: BookingRequest):
+    """Customer app: the form becomes an ordinary customer message, so the agents do the real work."""
+    priority, deadline = URGENCY[req.urgency]
+    booking_id = f"BK-{int(time.time() * 1000) % 100000:05d}"
+    message = (f"Booking {booking_id}: please pick up a {req.weight_kg:g} kg parcel from {req.pickup} and deliver it "
+               f"to {req.dropoff} within {deadline} minutes ({priority} priority). {req.note}".strip())
+    spec = RunSpec(message=message, persona="customer", scenario=req.scenario, hour_of_day=req.hour_of_day,
+                   source="booking")
+    return {**launch(spec, "hierarchical"), "booking_id": booking_id, "deadline_mins": deadline, "priority": priority}
 
 
 @app.get("/api/runs/{run_id}/stream")
@@ -167,7 +200,9 @@ async def meta():
     except (httpx.HTTPError, ValueError):
         pass
     model_card = json.loads(MODEL_CARD_PATH.read_text()) if MODEL_CARD_PATH.exists() else None
+    locations = sorted({o[k] for o in orders().values() for k in ("pickup", "dropoff")})
     return {
+        "locations": locations,
         "orders": list(orders().values()), "personas": PERSONAS, "demo_cases": DEMO_CASES,
         "scenarios": SCENARIOS, "drivers": all_drivers(), "rag": corpus_stats(),
         "agent_card": agent_card, "model_card": model_card,

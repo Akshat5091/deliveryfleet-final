@@ -3,168 +3,229 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DeliveryFleet MAS · Dispatch Desk</title>
+<title>DeliveryFleet · Book and dispatch</title>
+<meta name="description" content="DeliveryFleet multi-agent dispatch system: book a parcel delivery and watch CrewAI and Google ADK agents assign, route and recover it.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23991b1b' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23991b1b'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-<header class="masthead">
-  <div class="brand">
-    <span class="brand-mark" aria-hidden="true"></span>
-    <div>
-      <h1>DeliveryFleet MAS</h1>
-      <p>Multi-agent dispatch desk · CSE3101 Agentic AI · Group 8</p>
-    </div>
-  </div>
-  <ul class="status" id="status" aria-label="Service status">
-    <li data-svc="mcp_server">MCP tools</li>
-    <li data-svc="a2a_route_service">ADK route service (A2A)</li>
-    <li data-svc="llm_key">Gemini</li>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.4" fill="currentColor"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4m0 0h10l-2 4 2 4H6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.3L12 16l-4.9 2.6 1.1-5.3-4-3.7 5.4-.6z" fill="currentColor"/></symbol>
+</svg>
+
+<header class="topbar">
+  <a class="brand" href="#book" data-go="book">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="16" cy="16" r="8.5" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="16" cy="16" r="3.4" fill="currentColor"/></svg>
+    <span><b>DeliveryFleet</b><small>Group 8 · CSE3101</small></span>
+  </a>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" data-tab="book" aria-selected="true">Book a delivery</button>
+    <button role="tab" data-tab="control" aria-selected="false">Control room</button>
+    <button role="tab" data-tab="runs" aria-selected="false">Runs</button>
+    <button role="tab" data-tab="evaluation" aria-selected="false">Evaluation</button>
+    <button role="tab" data-tab="data" aria-selected="false">Fleet &amp; data</button>
+    <button role="tab" data-tab="how" aria-selected="false">How it works</button>
+  </nav>
+  <ul class="lamps" id="status" aria-label="Service status">
+    <li data-svc="mcp_server" title="FastMCP tool server">MCP</li>
+    <li data-svc="a2a_route_service" title="Google ADK route agent, A2A service">A2A</li>
+    <li data-svc="llm_key" title="Gemini API key configured">Gemini</li>
   </ul>
 </header>
 
-<nav class="tabs" role="tablist">
-  <button role="tab" aria-selected="true" data-tab="dispatch">Dispatch</button>
-  <button role="tab" aria-selected="false" data-tab="how">How it works</button>
-  <button role="tab" aria-selected="false" data-tab="runs">Runs</button>
-  <button role="tab" aria-selected="false" data-tab="evaluation">Evaluation</button>
-  <button role="tab" aria-selected="false" data-tab="data">Fleet &amp; data</button>
-</nav>
-
 <main>
-<!-- ============ DISPATCH ============ -->
-<section id="tab-dispatch" class="tab-panel" role="tabpanel">
-  <div class="dispatch-grid">
-    <aside class="control">
-      <h2>Demo cases</h2>
-      <ol class="cases" id="cases"></ol>
+<!-- ================= BOOK (customer app) ================= -->
+<section id="tab-book" class="panel" role="tabpanel">
+  <div class="book">
+    <div class="stage">
+      <svg id="bmap" class="citymap" viewBox="0 0 640 460" role="img" aria-label="City map with the delivery route"></svg>
+      <div class="map-legend" id="bmap-legend" hidden></div>
+    </div>
 
-      <details class="custom" id="custom">
-        <summary>Custom run</summary>
-        <form id="run-form">
-          <label>Order
-            <select name="order_id" id="f-order"></select>
-          </label>
-          <label>Customer persona
-            <select name="persona" id="f-persona"></select>
-          </label>
-          <label>Message <span class="hint">edit freely; it goes through the input guard</span>
-            <textarea name="message" id="f-message" rows="5" maxlength="1200"></textarea>
-          </label>
-          <div class="row">
-            <label>Architecture
-              <select name="architecture">
-                <option value="hierarchical">Hierarchical (deployed)</option>
-                <option value="sequential">Sequential · P2P</option>
-                <option value="parallel">Parallel · broadcast</option>
-              </select>
-            </label>
-            <label>Prompt style
-              <select name="prompt_style"><option>ReAct</option><option>Direct</option></select>
-            </label>
-          </div>
-          <div class="row">
-            <label>Mid-route event
+    <aside class="sheet" aria-live="polite">
+      <!-- booking form -->
+      <form id="book-form" class="sheet-view" data-view="form">
+        <h1>Send a parcel</h1>
+        <p class="sub">Across Zones A to D, picked up within minutes.</p>
+
+        <div class="route-fields">
+          <label class="field with-icon"><svg><use href="#i-pin"/></svg>
+            <span>Pickup</span><select name="pickup" id="b-pickup" required></select></label>
+          <label class="field with-icon"><svg><use href="#i-flag"/></svg>
+            <span>Drop</span><select name="dropoff" id="b-dropoff" required></select></label>
+        </div>
+
+        <label class="field"><span>Parcel weight</span>
+          <div class="weight"><input type="range" name="weight_kg" id="b-weight" min="1" max="120" value="12"><output id="b-weight-out">12 kg</output></div>
+        </label>
+
+        <fieldset class="choices">
+          <legend>How fast?</legend>
+          <label><input type="radio" name="urgency" value="standard" checked><span><b>Standard</b><small>within 90 min</small></span></label>
+          <label><input type="radio" name="urgency" value="express"><span><b>Express</b><small>within 60 min</small></span></label>
+          <label><input type="radio" name="urgency" value="critical"><span><b>Critical</b><small>within 45 min</small></span></label>
+        </fieldset>
+
+        <label class="field"><span>Note for the rider <i>(optional)</i></span>
+          <textarea name="note" rows="2" maxlength="600" placeholder="Fragile, ring the bell twice, 4th floor reception..."></textarea></label>
+
+        <details class="demo-ctrl">
+          <summary>Demo controls</summary>
+          <div class="row2">
+            <label class="field"><span>Something goes wrong mid-route</span>
               <select name="scenario">
-                <option value="normal">None</option>
-                <option value="corridor_closed">Road closed</option>
-                <option value="breakdown">Vehicle breakdown</option>
-                <option value="rain_spike">Rain spike (Zone D)</option>
-              </select>
-            </label>
-            <label>Clock
-              <select name="hour_of_day" id="f-hour"></select>
-            </label>
+                <option value="normal">Nothing, normal trip</option>
+                <option value="corridor_closed">Road closed ahead</option>
+                <option value="breakdown">Vehicle breaks down</option>
+                <option value="rain_spike">Cloudburst in Zone D</option>
+              </select></label>
+            <label class="field"><span>Time of day</span><select name="hour_of_day" id="b-hour"></select></label>
           </div>
-          <button type="submit" class="primary">Dispatch</button>
-        </form>
-      </details>
+        </details>
+
+        <div class="quote" id="b-quote"></div>
+        <button class="btn primary big" type="submit" id="b-submit">Book delivery <svg><use href="#i-arrow"/></svg></button>
+        <p class="error" id="b-error" role="alert" hidden></p>
+      </form>
+
+      <!-- matching / tracking -->
+      <div class="sheet-view" data-view="track" hidden>
+        <div class="track-head">
+          <p class="mono dim" id="t-booking"></p>
+          <h1 id="t-title">Finding your rider</h1>
+          <p class="sub" id="t-sub">Checking delivery rules and nearby riders</p>
+        </div>
+
+        <ol class="finding" id="t-finding">
+          <li data-step="guard">Request received</li>
+          <li data-step="rules">Checking zone and driver-hour rules</li>
+          <li data-step="match">Matching the best rider</li>
+          <li data-step="route">Planning the fastest legal route</li>
+        </ol>
+
+        <div class="rider" id="t-rider" hidden></div>
+        <div class="notice" id="t-notice" hidden></div>
+        <ol class="timeline" id="t-timeline" hidden></ol>
+
+        <div class="sheet-actions">
+          <button class="btn ghost" type="button" id="t-inside">See how the agents handled this <svg><use href="#i-arrow"/></svg></button>
+          <button class="btn ghost" type="button" id="t-new">New booking</button>
+        </div>
+      </div>
     </aside>
+  </div>
+</section>
 
-    <div class="live" id="live">
-      <div class="live-head">
-        <div>
-          <p class="eyebrow" id="run-id">No run yet</p>
-          <h2 id="run-title">Pick a demo case to start</h2>
-          <p class="input-text" id="run-input"></p>
-        </div>
-        <div class="clock" id="run-clock" aria-live="polite">0.0 s</div>
-      </div>
+<!-- ================= CONTROL ROOM ================= -->
+<section id="tab-control" class="panel" role="tabpanel" hidden>
+  <form class="toolbar" id="scenario-form">
+    <label class="field grow"><span>Scenario</span><select id="c-scenario" name="case_id"></select></label>
+    <label class="field"><span>Architecture</span>
+      <select name="architecture">
+        <option value="hierarchical">Hierarchical, blackboard (deployed)</option>
+        <option value="sequential">Sequential, peer-to-peer</option>
+        <option value="parallel">Parallel, broadcast</option>
+      </select></label>
+    <label class="field"><span>Prompt style</span>
+      <select name="prompt_style"><option value="ReAct">ReAct</option><option value="Direct">Direct</option></select></label>
+    <label class="field"><span>Mid-route event</span>
+      <select id="c-event"><option value="">Scenario default</option><option value="normal">None</option><option value="corridor_closed">Road closed</option>
+        <option value="breakdown">Vehicle breakdown</option><option value="rain_spike">Rain spike (Zone D)</option></select></label>
+    <button class="btn primary" type="submit" id="c-run">Run scenario</button>
+    <label class="field custom-msg" id="c-custom-row" hidden><span>Customer message</span>
+      <textarea id="c-custom" rows="3" maxlength="1200" placeholder="Need 8 kg moved from Zone C - Retail Hub to Zone A - Resident Plaza in 50 minutes..."></textarea></label>
+  </form>
+  <p class="scenario-note" id="c-note"></p>
 
-      <ol class="pipeline" id="pipeline" aria-label="Agent pipeline"></ol>
+  <div class="runhead">
+    <div>
+      <p class="mono dim" id="run-id">No run yet</p>
+      <h2 id="run-title">Choose a scenario and run it</h2>
+      <p class="input-text" id="run-input"></p>
+    </div>
+    <div class="clock"><svg><use href="#i-clock"/></svg><span id="run-clock">0.0 s</span></div>
+  </div>
 
-      <div class="live-grid">
-        <figure class="map-wrap">
-          <figcaption>Zone network <span class="hint" id="map-note">corridor chosen by the Route Agent</span></figcaption>
-          <svg id="map" viewBox="0 0 420 300" role="img" aria-label="Zone network map"></svg>
-        </figure>
-        <div class="report" id="report">
-          <h3>Final delivery report</h3>
-          <p class="empty">Appears when the Supervisor signs off.</p>
-        </div>
-      </div>
+  <ol class="counters" id="pipeline" aria-label="Agents in this run"></ol>
 
-      <div class="panes">
-        <section class="pane">
-          <header class="pane-head">
-            <h3>Event log</h3>
-            <div class="filters" id="filters" role="group" aria-label="Filter events">
-              <button data-kind="all" aria-pressed="true">All</button>
-              <button data-kind="llm_call" aria-pressed="false">LLM</button>
-              <button data-kind="tool_call" aria-pressed="false">MCP tools</button>
-              <button data-kind="a2a_message" aria-pressed="false">A2A</button>
-              <button data-kind="blackboard" aria-pressed="false">Blackboard</button>
-              <button data-kind="guardrail" aria-pressed="false">Guardrails</button>
-            </div>
-          </header>
-          <ol class="log" id="log"></ol>
-        </section>
-        <section class="pane">
-          <header class="pane-head"><h3>Blackboard</h3><span class="hint">shared state, latest version per section</span></header>
-          <dl class="board" id="board"></dl>
-          <header class="pane-head sub"><h3>Per-agent heat</h3><span class="hint">darker = larger share of this run</span></header>
-          <div id="heat"></div>
-        </section>
-      </div>
+  <div class="duo">
+    <figure class="card mapcard">
+      <figcaption><b>Route</b><span id="map-note">corridor chosen by the Route Agent</span></figcaption>
+      <svg id="map" class="citymap small" viewBox="0 0 640 460" role="img" aria-label="Route on the zone network"></svg>
+    </figure>
+    <div class="card slip" id="report">
+      <div class="slip-head"><b>Consignment slip</b><span>filled when the Supervisor signs off</span></div>
     </div>
   </div>
+
+  <div class="trio">
+    <section class="card log-card">
+      <header class="card-head">
+        <b>Event log</b>
+        <div class="seg" id="filters" role="group" aria-label="Filter events">
+          <button type="button" data-kind="all" aria-pressed="true">All</button>
+          <button type="button" data-kind="llm_call" aria-pressed="false">LLM</button>
+          <button type="button" data-kind="tool_call" aria-pressed="false">MCP</button>
+          <button type="button" data-kind="a2a_message" aria-pressed="false">A2A</button>
+          <button type="button" data-kind="blackboard" aria-pressed="false">Blackboard</button>
+          <button type="button" data-kind="guardrail" aria-pressed="false">Guard</button>
+        </div>
+      </header>
+      <ol class="log" id="log"></ol>
+    </section>
+    <section class="card">
+      <header class="card-head"><b>Blackboard</b><span>shared state · latest version</span></header>
+      <dl class="board" id="board"></dl>
+      <header class="card-head seam"><b>Per-agent heat</b><span>darker = bigger share of this run</span></header>
+      <div id="heat"></div>
+    </section>
+  </div>
 </section>
 
-<!-- ============ HOW IT WORKS ============ -->
-<section id="tab-how" class="tab-panel" role="tabpanel" hidden>
-  <div class="prose">
+<!-- ================= RUNS ================= -->
+<section id="tab-runs" class="panel" role="tabpanel" hidden>
+  <div class="panel-head">
+    <h2>Every run</h2>
+    <p>Each booking, scenario and benchmark run keeps its own ID, trace and blackboard. Open one to replay it in the control room.</p>
+  </div>
+  <div class="filters-row">
+    <label class="field"><span>Show</span>
+      <select id="runs-source"><option value="">All runs</option><option value="booking">Customer bookings</option><option value="web">Control-room scenarios</option><option value="benchmark">Benchmark (72)</option></select></label>
+  </div>
+  <div class="table-wrap"><table class="table runs" id="runs-table"></table></div>
+</section>
+
+<!-- ================= EVALUATION ================= -->
+<section id="tab-evaluation" class="panel" role="tabpanel" hidden><div id="evaluation"></div></section>
+
+<!-- ================= DATA ================= -->
+<section id="tab-data" class="panel" role="tabpanel" hidden><div id="data"></div></section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section id="tab-how" class="panel" role="tabpanel" hidden>
+  <div class="panel-head">
     <h2>One supervisor, four workers, two frameworks</h2>
-    <p class="lede">A customer message goes through a guard, then the Supervisor splits the job between four specialist agents. They never call each other's code: each one reads its part of a shared <strong>blackboard</strong>, uses tools only through the <strong>MCP server</strong>, and the Route Agent lives in a separate Google ADK service reached over <strong>A2A</strong>.</p>
+    <p>A customer message passes a guard, then the Supervisor splits the job between four specialist agents. They never call each other's code: each reads its part of a shared blackboard, reaches tools only through the MCP server, and the Route Agent runs as a separate Google ADK service reached over A2A.</p>
   </div>
   <div id="arch"></div>
-  <h2 class="section-title">Where each requirement lives</h2>
-  <table class="grid-table" id="criteria"></table>
-</section>
-
-<!-- ============ RUNS ============ -->
-<section id="tab-runs" class="tab-panel" role="tabpanel" hidden>
-  <div class="section-head">
-    <h2>All runs</h2>
-    <p class="hint">Every run has its own ID, trace and blackboard record. Click one to replay it on the Dispatch tab.</p>
-  </div>
-  <table class="grid-table runs" id="runs-table"></table>
-</section>
-
-<!-- ============ EVALUATION ============ -->
-<section id="tab-evaluation" class="tab-panel" role="tabpanel" hidden>
-  <div id="evaluation"></div>
-</section>
-
-<!-- ============ DATA ============ -->
-<section id="tab-data" class="tab-panel" role="tabpanel" hidden>
-  <div id="data"></div>
+  <h3 class="h3">Where each requirement lives</h3>
+  <div class="table-wrap"><table class="table" id="criteria"></table></div>
 </section>
 </main>
 
 <footer class="foot">
-  Bhumika Yadav (230732) · Aadit Bassi (230728) · Akshat Nagori (230682) · Sahil Mudgil (230743) · BML Munjal University
+  <span>Bhumika Yadav 230732 · Aadit Bassi 230728 · Akshat Nagori 230682 · Sahil Mudgil 230743</span>
+  <span>BML Munjal University · Synthetic city data for demonstration</span>
 </footer>
 <script src="/static/app.js" type="module"></script>
 </body>
