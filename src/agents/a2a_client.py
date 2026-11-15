@@ -14,8 +14,8 @@ import uuid
 
 import httpx
 from a2a.client import ClientConfig, ClientFactory
-from a2a.helpers.proto_helpers import get_stream_response_text, new_text_message
-from a2a.types import Role, SendMessageRequest
+from a2a.helpers.proto_helpers import get_message_text, get_stream_response_text, new_text_message
+from a2a.types import Role, SendMessageRequest, TaskState
 
 from src.config import A2A_URL
 from src.observability import run_logger
@@ -29,50 +29,73 @@ class A2AError(RuntimeError):
 _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
 
+FINAL_TAG = "/*FINAL_ANSWER*/"
+ATTEMPTS = 2  # the planner occasionally formats its answer wrongly; one fresh attempt fixes it
+
+
 def _parse_plan(text: str) -> RoutePlan:
-    cleaned = _FENCE.sub("", text.strip())
+    """Take the JSON object after the planner's FINAL_ANSWER tag (or the last object in the text)."""
+    body = text.rsplit(FINAL_TAG, 1)[-1] if FINAL_TAG in text else text
+    cleaned = _FENCE.sub("", body.strip())
     start, end = cleaned.find("{"), cleaned.rfind("}")
     if start < 0 or end < 0:
-        raise A2AError(f"route agent returned no JSON: {text[:200]}")
+        raise A2AError(f"route agent returned no JSON: {text[-200:]}")
     data = json.loads(cleaned[start:end + 1])
     if "error" in data:
         raise A2AError(f"route agent refused: {data['error']}")
     return RoutePlan.model_validate(data)
 
 
+async def _send_once(request: SendMessageRequest) -> tuple[str, str | None]:
+    """Stream one A2A exchange. Returns (final answer text, failure message if the task failed)."""
+    artifact, last_status, failure = "", "", None
+    async with httpx.AsyncClient(timeout=180) as http:
+        client = await ClientFactory(ClientConfig(streaming=True, httpx_client=http)).create_from_url(A2A_URL)
+        try:
+            async for response in client.send_message(request):
+                text = get_stream_response_text(response)
+                if response.HasField("artifact_update") and text:
+                    artifact += text
+                elif text:
+                    last_status = text
+                if response.HasField("status_update") and response.status_update.status.state == TaskState.TASK_STATE_FAILED:
+                    failure = text or "task failed"
+                if response.HasField("task") and response.task.status.state == TaskState.TASK_STATE_FAILED:
+                    failure = get_message_text(response.task.status.message) or "task failed"
+        finally:
+            await client.close()
+    return artifact or last_status, failure
+
+
 async def request_route(task: dict, run_id: str, prompt_style: str, sender: str) -> RoutePlan:
     """Send one routing task to the ADK Route Agent over A2A and return its RoutePlan."""
     meta = {"run_id": run_id, "prompt_style": prompt_style, "sender": sender, "trace_parent": run_id}
     payload = {**task, "run_id": run_id, "prompt_style": prompt_style}
-    message = new_text_message(json.dumps(payload), role=Role.ROLE_USER, context_id=f"{run_id}-{uuid.uuid4().hex[:6]}")
-    message.metadata.update(meta)
-    request = SendMessageRequest(message=message)
-    request.metadata.update(meta)
-
-    run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send",
-                         payload={"direction": "request", "from": sender, "to": "route_agent",
-                                  "url": A2A_URL, "message_id": message.message_id, "body": payload})
-    start = time.perf_counter()
-    texts: list[str] = []
-    async with httpx.AsyncClient(timeout=180) as http:
-        client = await ClientFactory(ClientConfig(streaming=False, httpx_client=http)).create_from_url(A2A_URL)
+    last_error: Exception | None = None
+    for attempt in range(1, ATTEMPTS + 1):
+        message = new_text_message(json.dumps(payload), role=Role.ROLE_USER,
+                                   context_id=f"{run_id}-{uuid.uuid4().hex[:6]}")
+        message.metadata.update(meta)
+        request = SendMessageRequest(message=message)
+        request.metadata.update(meta)
+        run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send",
+                             payload={"direction": "request", "from": sender, "to": "route_agent", "attempt": attempt,
+                                      "url": A2A_URL, "message_id": message.message_id, "body": payload})
+        start = time.perf_counter()
+        final, failure = await _send_once(request)
+        ms = round((time.perf_counter() - start) * 1000, 1)
         try:
-            async for response in client.send_message(request):
-                text = get_stream_response_text(response)
-                if text:
-                    texts.append(text)
-        finally:
-            await client.close()
-    ms = round((time.perf_counter() - start) * 1000, 1)
-    final = texts[-1] if texts else ""
-    try:
-        plan = _parse_plan(final)
-    except Exception as exc:
+            if failure:
+                raise A2AError(f"route agent task failed: {failure[:300]}")
+            plan = _parse_plan(final)
+        except Exception as exc:
+            last_error = exc
+            run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
+                                 status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
+                                                          "attempt": attempt, "error": str(exc), "raw": final[-800:]})
+            continue
         run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
-                             status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
-                                                      "error": str(exc), "raw": final[:800]})
-        raise
-    run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
-                         payload={"direction": "response", "from": "route_agent", "to": sender,
-                                  "body": plan.model_dump()})
-    return plan
+                             payload={"direction": "response", "from": "route_agent", "to": sender,
+                                      "attempt": attempt, "body": plan.model_dump()})
+        return plan
+    raise A2AError(f"route agent gave no valid plan after {ATTEMPTS} attempts: {last_error}")

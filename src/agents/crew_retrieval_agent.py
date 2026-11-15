@@ -5,9 +5,9 @@ It searches the policy knowledge base (search_policies MCP tool) and returns
 a ComplianceBrief with quoted citations. The Task guardrail rejects briefs
 that cite nothing or cite a file that is not in the knowledge base.
 """
-from __future__ import annotations
 
 import json
+from typing import Any
 
 from crewai import Agent, Task
 from crewai.tasks.task_output import TaskOutput
@@ -20,7 +20,7 @@ from src.schemas.decisions import ComplianceBrief, DeliveryRequest
 KB_FILES = {p.name for p in KB_DIR.glob("*.txt")}
 
 
-def _grounded(output: TaskOutput) -> tuple[bool, object]:
+def _grounded(output: TaskOutput) -> tuple[bool, Any]:
     brief = output.pydantic
     if brief is None or not brief.citations:
         return False, "Cite at least one rule returned by search_policies."
@@ -38,15 +38,15 @@ async def retrieve_rules(run_id: str, request: DeliveryRequest, hour_of_day: int
                    "knowledge base and quote what it says. " + PROMPT_STYLES[prompt_style]),
         llm=crew_llm(),
         mcps=[mcp_server("search_policies")],
-        max_iter=5,
+        max_iter=4,
         verbose=False,
     )
     task = Task(
         description=(
             f"Order (from the blackboard):\n{json.dumps(request.model_dump(), indent=1)}\n"
             f"Current time: {hour_of_day:02d}:00.\n\n"
-            "Search the policy knowledge base at least twice: once for the pickup and dropoff zones' transit "
-            "rules, once for driver working-hour limits and priority rules. Then report which rules apply now, "
+            "Search the policy knowledge base exactly twice: once for the pickup and dropoff zones' transit "
+            "rules, once for driver working-hour limits and priority rules. Then stop searching and report which rules apply now, "
             "whether an electric vehicle is mandatory, the tightest payload cap on the route (null if none), "
             "and the maximum trip length allowed for a driver near the fatigue threshold."
         ),

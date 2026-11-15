@@ -5,10 +5,10 @@ is posted to the blackboard. Then it decides between rerouting, reassigning,
 both, or escalating to a human. Rerouting is done by asking the ADK Route
 Agent over A2A from inside a CrewAI tool, so this is CrewAI -> A2A -> ADK.
 """
-from __future__ import annotations
 
 import asyncio
 import json
+from typing import Any
 
 from crewai import Agent, Task
 from crewai.tasks.task_output import TaskOutput
@@ -39,7 +39,7 @@ def make_reroute_tool(request: DeliveryRequest, hour_of_day: int, prompt_style: 
 
 
 def make_guardrail(request: DeliveryRequest, hour_of_day: int, original_driver: str):
-    def _legal(output: TaskOutput) -> tuple[bool, object]:
+    def _legal(output: TaskOutput) -> tuple[bool, Any]:
         replan: ExceptionReplan | None = output.pydantic
         if replan is None:
             return False, "Return an ExceptionReplan."

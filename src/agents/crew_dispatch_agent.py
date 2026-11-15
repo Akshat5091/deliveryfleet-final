@@ -6,9 +6,9 @@ get_driver through MCP, and explains the trade-off it made (on-time odds vs
 distance vs fatigue). The Task guardrail re-checks the chosen driver against
 the hard business rules in code; an illegal choice is sent back to the agent.
 """
-from __future__ import annotations
 
 import json
+from typing import Any
 
 from crewai import Agent, Task
 from crewai.tasks.task_output import TaskOutput
@@ -21,7 +21,7 @@ from src.schemas.decisions import ComplianceBrief, DeliveryRequest, DispatchDeci
 
 
 def make_guardrail(request: DeliveryRequest, hour_of_day: int, eta_by_driver: dict[str, float]):
-    def _legal(output: TaskOutput) -> tuple[bool, object]:
+    def _legal(output: TaskOutput) -> tuple[bool, Any]:
         decision: DispatchDecision | None = output.pydantic
         if decision is None:
             return False, "Return a DispatchDecision."

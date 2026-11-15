@@ -2,7 +2,8 @@
 
 The Dispatch side sends a JSON task over A2A. This agent calls two MCP tools
 (plan_route, then forecast_delay for the chosen corridor and vehicle) and
-returns a RoutePlan. All six ADK callback hook points are used:
+returns RoutePlan JSON under the planner's /*FINAL_ANSWER*/ tag,
+validated by the A2A caller. All six ADK callback hook points are used:
 
   before_agent  read run id from A2A metadata, screen the payload, log start
   before_model  shared rate limiter, start the LLM timer
@@ -31,7 +32,6 @@ from src.config import MCP_URL, WORKER_MODEL
 from src.guardrails.input_guard import regex_screen
 from src.guardrails.tool_validator import ToolOutputError, validate
 from src.observability import run_logger, tracing
-from src.schemas.decisions import RoutePlan
 
 AGENT = "route_agent"
 FRAMEWORK = "Google-ADK"
@@ -45,9 +45,10 @@ Steps:
 2. Take the PRIMARY corridor. Call forecast_delay with its distance_km and speed_factor, the
    rainfall of the dropoff zone, hour_of_day, weight_kg, the driver's vehicle_type, both zones,
    and slack_mins = deadline_mins - primary base_eta_mins.
-3. Return the RoutePlan: corridor, distance_km and base_eta_mins from the primary route,
-   delay_mean/p10/p90 from the forecast, eta_mins = base_eta_mins + delay_mean_mins,
-   the alternative corridor and its base ETA if one exists, and a two-sentence rationale
+3. Under /*FINAL_ANSWER*/ write ONLY one JSON object (no code, no markdown) with the keys
+   corridor, distance_km, base_eta_mins (primary route), delay_mean_mins, delay_p10_mins,
+   delay_p90_mins (forecast), eta_mins = base_eta_mins + delay_mean_mins,
+   alternative_corridor and alternative_eta_mins (null if none), and rationale: two sentences
    naming the congestion level and why this corridor beats the alternative.
 Use only numbers returned by the tools. Never invent a corridor."""
 
@@ -171,7 +172,6 @@ def build_route_agent() -> LlmAgent:
         instruction=INSTRUCTION,
         tools=[tools],
         planner=PlanReActPlanner(),
-        output_schema=RoutePlan,
         output_key="route_plan",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.1,
