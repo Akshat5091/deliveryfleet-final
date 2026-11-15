@@ -22,7 +22,7 @@ ZONE_DISTANCES_KM: dict[frozenset[str], float] = {
     frozenset({"Zone B", "Zone D"}): 21.0,
     frozenset({"Zone C", "Zone D"}): 16.5,
 }
-FREE_FLOW_KMH = 55.0
+FREE_FLOW_KMH = 60.0
 LOCAL_SPEED_KMH = 25.0
 HEAVY_RAIN_MM = 10.0
 HEAVY_RAIN_SPEED_CUT_KMH = 15.0
@@ -51,8 +51,8 @@ def zone_of(location: str) -> str:
 
 
 def local_leg_km(location: str) -> float:
-    """Deterministic 1.5-4.5 km leg from a location to its zone hub."""
-    return round(1.5 + (zlib.crc32(location.encode()) % 31) / 10.0, 1)
+    """Deterministic 0.8-2.3 km leg from a location to its zone hub."""
+    return round(0.8 + (zlib.crc32(location.encode()) % 16) / 10.0, 1)
 
 
 @lru_cache(maxsize=1)
