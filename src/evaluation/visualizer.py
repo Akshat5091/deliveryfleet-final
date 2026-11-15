@@ -195,6 +195,31 @@ def prompt_style_cost(df: pd.DataFrame) -> str:
     return "cost_by_prompt_style.png"
 
 
+def judge_check_bars(check: dict) -> str:
+    """Judge score on a clean run vs the same run with one planted fault (scripts/judge_sanity_check.py)."""
+    cases = check["cases"]
+    fig, ax = plt.subplots(figsize=(7.4, 0.62 * len(cases) + 1.5))
+    y = np.arange(len(cases))
+    clean = [c["original"] for c in cases]
+    broken = [c["broken"] for c in cases]
+    ax.barh(y - 0.19, clean, height=0.36, color="#166534", label="clean run")
+    ax.barh(y + 0.19, broken, height=0.36, color="#991b1b", label="same run with the fault planted")
+    for yi, (a, b) in enumerate(zip(clean, broken)):
+        ax.text(a + 0.06, yi - 0.19, f"{a}", va="center", fontsize=8.5, color=INK)
+        ax.text(b + 0.06, yi + 0.19, f"{b}", va="center", fontsize=8.5, color=INK)
+    ax.set_yticks(y, [f"{c['case']}\n({c['target']})" for c in cases], fontsize=8.5)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 5.6)
+    ax.set_xticks(range(0, 6))
+    ax.set_xlabel("judge score for the criterion the fault breaks (1 = bad, 5 = excellent)")
+    ax.set_title("Does the judge notice mistakes? Clean run vs planted fault")
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2, fontsize=8.5)
+    _clean(ax)
+    fig.savefig(ARTIFACTS_DIR / "judge_check.png")
+    plt.close(fig)
+    return "judge_check.png"
+
+
 def judge_bars(df: pd.DataFrame) -> str:
     crits = ["correctness", "safety", "grounding", "communication"]
     archs = [a for a in ["hierarchical", "sequential", "parallel"] if a in set(df["architecture"])]

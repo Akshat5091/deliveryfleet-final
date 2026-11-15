@@ -145,6 +145,26 @@ def collect() -> tuple[pd.DataFrame, pd.DataFrame]:
     return pd.DataFrame(rows), pd.DataFrame(agent_rows)
 
 
+def judge_figures(served: pd.DataFrame) -> list[dict]:
+    """Judge charts only when the scores vary; a chart where every bar is 5 says nothing. The judge check
+    (clean run vs planted fault, from scripts/judge_sanity_check.py) shows whether the judge can tell."""
+    judged = served.dropna(subset=["judge_overall"])
+    figures = []
+    if judged["judge_overall"].nunique() > 1:
+        figures += [
+            {"file": viz.boxplot_by(judged, "judge_overall", "prompt_style", "LLM-judge overall score by prompt style",
+                                    "score (1-5)", "judge_by_prompt_style.png", list(STYLES)),
+             "title": "Quality by prompt style", "caption": "ReAct vs Direct prompts on the same agents and inputs."},
+            {"file": viz.judge_bars(judged),
+             "title": "Judge criteria", "caption": "Mean of each criterion of the 4-score vector."}]
+    check = ARTIFACTS_DIR / "judge_sanity_check.json"
+    if check.exists():
+        figures.append({"file": viz.judge_check_bars(json.loads(check.read_text())),
+                        "title": "Judge check",
+                        "caption": "The judge's score on a clean run and on copies with one planted fault each."})
+    return figures
+
+
 def build_report() -> dict:
     df, agents = collect()
     if df.empty:
@@ -175,12 +195,7 @@ def build_report() -> dict:
         {"file": viz.boxplot_by(served, "cost_usd", "persona", "Cost per run by customer persona",
                                 "USD (Gemini list price)", "cost_by_persona.png", ["polite", "urgent", "abusive"]),
          "title": "Cost by persona", "caption": "Abusive messages are sanitised, not refused, so they cost about the same."},
-        {"file": viz.boxplot_by(served.dropna(subset=["judge_overall"]), "judge_overall", "prompt_style",
-                                "LLM-judge overall score by prompt style", "score (1-5)",
-                                "judge_by_prompt_style.png", list(STYLES)),
-         "title": "Quality by prompt style", "caption": "ReAct vs Direct prompts on the same agents and inputs."},
-        {"file": viz.judge_bars(served.dropna(subset=["judge_overall"])),
-         "title": "Judge criteria", "caption": "Mean of each criterion of the 4-score vector."},
+        *judge_figures(served),
         {"file": viz.per_agent_heatmaps(agents[agents["persona"] != "injection"]),
          "title": "Heatmap inside each agent", "caption": "Where time goes inside every agent, split by persona and architecture."},
         {"file": viz.agent_metric_heatmap(agents[agents["persona"] != "injection"]),
