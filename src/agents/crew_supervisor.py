@@ -56,6 +56,7 @@ async def review(run_id: str, blackboard: dict, deadline_mins: int, prompt_style
             "Check, in this order: is there a compliance brief, a dispatch decision and a route plan? "
             "Did the business_check section say BLOCK? Is the final ETA within the deadline "
             f"({deadline_mins} min)? If an exception section exists, does its plan fix the problem?\n"
+            "- business_check says no legal driver exists: verdict ESCALATE_TO_HUMAN, rerun = none (no worker can fix it).\n"
             "- Something missing or inconsistent that a worker can fix: verdict REJECTED and rerun = that worker.\n"
             "- Legal but late (ETA beyond deadline) or confidence LOW, or exception action ESCALATE: "
             "verdict ESCALATE_TO_HUMAN, rerun = none.\n- Otherwise APPROVED, rerun = none.\n"
