@@ -175,10 +175,11 @@ Plain-English company and city rules. The system cuts them at each numbered
 section into small pieces (chunks) and stores them in ChromaDB so agents can
 search them by meaning.
 
-- `company_delivery_policy.txt`: 3 sections. Working-hour rules (9-hour daily
-  cap, 8.5-hour tiredness warning, 4.5 hours of driving before a break),
-  priority rules (critical medical orders in under 30 minutes) and the rule that
-  customer messages must be handled politely and attacks neutralised.
+- `company_delivery_policy.txt`: 4 sections. Working hours (9-hour daily cap,
+  empty drive included, 8.5-hour tiredness limit), deadlines by priority and how
+  drivers are chosen, what happens after a disruption (replan, or escalate to a
+  human), and how customer messages are handled (polite replies, masking,
+  attacks blocked). Every rule here is one the code checks.
 - `delivery_zone_rules.txt`: 4 sections, one per zone. For example, electric
   vehicles are preferred in Zone A during the day, and Zone B bans freight over
   50 kg from 17:00 to 20:00.

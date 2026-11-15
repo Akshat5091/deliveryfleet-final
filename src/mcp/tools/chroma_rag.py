@@ -7,6 +7,7 @@ for embedding.
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import threading
 from functools import lru_cache
@@ -35,11 +36,23 @@ def chunk_document(text: str) -> list[str]:
     return chunks
 
 
+def _kb_version() -> str:
+    """Hash of the policy files, so an edited policy is re-indexed."""
+    digest = hashlib.sha256()
+    for path in sorted(KB_DIR.glob("*.txt")):
+        digest.update(path.name.encode() + path.read_bytes())
+    return digest.hexdigest()[:16]
+
+
 @lru_cache(maxsize=1)
 def _collection():
     with _lock:
         client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-        col = client.get_or_create_collection(COLLECTION, metadata={"hnsw:space": "cosine"})
+        version = _kb_version()
+        col = client.get_or_create_collection(COLLECTION, metadata={"hnsw:space": "cosine", "kb_version": version})
+        if (col.metadata or {}).get("kb_version") != version:  # policy text changed since the index was built
+            client.delete_collection(COLLECTION)
+            col = client.create_collection(COLLECTION, metadata={"hnsw:space": "cosine", "kb_version": version})
         if col.count() == 0:
             ids, docs, metas = [], [], []
             for path in sorted(KB_DIR.glob("*.txt")):

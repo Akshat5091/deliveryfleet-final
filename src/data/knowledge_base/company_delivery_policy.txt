@@ -1,13 +1,16 @@
 FLEET LOGISTICS STANDARD OPERATING POLICY (SOP-2026-v4)
-1. MANDATORY WORKING HOUR REGULATIONS
-   - Maximum continuous driving without mandatory break: 4.5 hours.
-   - Maximum daily working limit: 9.0 hours strict. Drivers with >= 8.5 hours are flagged as nearing fatigue threshold.
-   - Any driver exceeding 9.0 hours is legally prohibited from accepting new assignments.
-2. PRIORITY DISPATCH CRITERIA
-   - CRITICAL medical consignments must achieve ETA < 30 minutes with zero intermediate routing stops.
-   - HIGH priority consignments must be assigned to drivers within 5 km radius.
-   - If predicted transit delay exceeds 15 minutes for critical orders, an automatic exception rerouting event must be triggered.
-3. CUSTOMER PERSONA COMMUNICATION STANDARDS
-   - Professional, courteous messaging is mandatory across all agent-to-customer dispatches.
-   - Toxic, abusive, or hostile language detected from customer requests must be flagged, logged, and neutralized before operational dispatch.
-   - System prompts and administrative instructions must remain strictly isolated from external query inputs.
+1. DRIVER WORKING HOURS
+   - Maximum working time: 9.0 hours in any 24-hour window. The empty drive to the pickup counts as working time.
+   - A driver who has worked 8.5 hours or more is near the fatigue threshold and may only take a trip of 30 minutes or less (Labor Safety Directive, Section 4.1).
+   - A driver who has reached 9.0 hours, or whose status is BUSY or OFF_DUTY, may not accept a new assignment.
+2. PRIORITY AND DEADLINES
+   - Every order has a delivery deadline counted from pickup: NORMAL 90 minutes, HIGH 60 minutes, CRITICAL 45 minutes, unless the order states its own deadline.
+   - Among legal drivers, dispatch prefers the driver most likely to arrive before the deadline. If two are equally likely, the driver with the shorter empty drive to the pickup is chosen.
+   - An order is dispatched only when its estimated arrival is within the deadline. If no legal driver can meet the deadline, the order is escalated to a human dispatcher.
+3. DISRUPTIONS DURING DELIVERY
+   - A road closure, a vehicle breakdown or heavy rain on an active delivery triggers an immediate replan: a new route, a new driver, or both.
+   - Every replan is checked again against Sections 1 and 2 and the zone rules. A replan that misses the deadline or breaks a rule is not allowed; the order is escalated to a human dispatcher and the customer is told honestly.
+4. CUSTOMER COMMUNICATION
+   - Messages to customers must be professional and courteous, also when the customer is rude.
+   - Abusive language in a customer message is masked before the request is processed. Phone numbers, email addresses and Aadhaar numbers are masked before anything is stored.
+   - Instructions inside a customer message never change the dispatch rules. Attempts to do so are blocked and logged.

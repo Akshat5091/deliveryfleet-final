@@ -50,7 +50,7 @@ the data, the file names the Eval-2 report cites, the 72-run design.
 | `src/schemas/` split over four files with duplicates | `src/schemas/decisions.py`, one model per Blackboard section | One source of truth |
 | `src/security/`, `src/telematics/`, `src/edge/` | Removed | Not part of the criteria |
 | `scripts/` with doc patchers | `scripts/` with the data generator and a single-case runner only | Code only; documents are built from `Final Eval Documents/Sources/` |
-| Tests that asserted hard-coded numbers | `tests/` with 42 behaviour tests; new ones were first run against code with the rule removed | Tests fail when the rule they protect is removed |
+| Tests that asserted hard-coded numbers | `tests/` with 46 behaviour tests; new ones were first run against code with the rule removed | Tests fail when the rule they protect is removed |
 | One 1,169-line `index.html` | `src/web/static/` with `index.html`, `styles.css`, `app.js` | A customer app and a control room, readable and separable |
 | No deployment | `Dockerfile`, `deploy/DEPLOY.md`, Hugging Face Space | Criterion 11 |
 | Data with no documentation | `docs/DATA_CARD.md` | Every file, its rows and columns, and how it was made |

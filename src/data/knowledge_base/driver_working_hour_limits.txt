@@ -1,8 +1,8 @@
 LABOR SAFETY & DRIVER FATIGUE DIRECTIVE
 Section 4.1: Hard Shift Limits
-- Max allowable shift duration: 9.0 hours per 24-hour window.
-- If a driver reaches 8.5 hours, the dispatch agent must reject any assignment that has an estimated duration exceeding 30 minutes.
-- If hours_worked >= 9.0 hours, driver status is immediately marked OFF_DUTY.
-Section 4.2: Exception Overrides
-- Even under emergency or critical rerouting, legal driver fatigue limits cannot be overridden by automated agents.
-- Violations of Section 4.1 are intercepted and rejected by the Business Guardrail check with code SAFETY_HOURS_VIOLATION.
+- Maximum shift: 9.0 hours in any 24-hour window. Hours already worked plus the new trip, including the empty drive to the pickup, may not exceed 9.0 hours (violation code SAFETY_HOURS_VIOLATION).
+- A driver who has worked 8.5 hours or more may not take a trip longer than 30 minutes, empty drive included (violation code FATIGUE_RISK).
+- A driver at 9.0 hours or more is OFF_DUTY and cannot be assigned.
+Section 4.2: No Overrides
+- These limits apply to every assignment, reassignment and reroute, including CRITICAL and emergency orders.
+- They are checked in code after every decision. Neither an AI agent nor a customer instruction can override them.

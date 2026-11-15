@@ -1,14 +1,12 @@
 URBAN ZONE TRANSIT AND ACCESS REGULATIONS (MUNICIPAL DIRECTIVE 2026)
 1. ZONE A (CENTRAL BUSINESS DISTRICT & RESIDENTIAL)
-   - Zero-emission / EV preference enforced between 09:00 and 19:00.
-   - Heavy commercial trucks (> 150 kg payload) restricted from narrow residential avenues.
-   - Maximum speed limit: 30 km/h.
+   - Electric vehicles (electric vans and electric scooters) are preferred between 09:00 and 19:00. A non-electric vehicle in this window is allowed but flagged for dispatcher review.
+   - Trucks carrying more than 150 kg may not enter Zone A at any time (narrow residential avenues).
+   - Local streets inside every zone are planned at 25 km/h.
 2. ZONE B (TECH CORRIDOR & COMMERCIAL MALLS)
-   - Heavy cargo freight exceeding 50.0 kg prohibited between 17:00 and 20:00 (peak congestion window).
-   - Commercial loading bay permit required for vehicles larger than standard vans.
+   - Freight over 50.0 kg may not be picked up in or delivered to Zone B between 17:00 and 20:00 (peak congestion window).
 3. ZONE C (UNIVERSITY & CIVIC HUB)
-   - Low-noise electric delivery vehicles permitted 24/7.
-   - Dual security clearance verification required for institutional deliveries.
+   - No vehicle or time restrictions. Electric delivery vehicles are welcome at all hours.
 4. ZONE D (AIRPORT CARGO & LOGISTICS PARK)
-   - 24-hour truck transit permitted.
-   - Heavy rainfall protocols: automatic 15 km/h speed reduction during precipitation exceeding 10 mm.
+   - Trucks are permitted 24 hours a day.
+   - Heavy rain: when rainfall in Zone D exceeds 10 mm, roads into and out of Zone D are planned at 15 km/h below their normal speed.
