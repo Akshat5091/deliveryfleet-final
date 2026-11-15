@@ -15,7 +15,14 @@ from src.agents import crew_dispatch_agent, crew_exception_agent, crew_retrieval
 from src.agents.a2a_client import request_route
 from src.mcp.client import call_tool
 from src.observability import run_logger, tracing
-from src.orchestration.base import RunSpec, blocked_report, business_check, guard_input, make_disruption
+from src.orchestration.base import (
+    RunSpec,
+    blocked_report,
+    business_check,
+    guard_input,
+    make_disruption,
+    no_legal_driver,
+)
 from src.orchestration.blackboard_manager import PeerInbox
 from src.orchestration.reporting import build_report, finish
 from src.schemas.decisions import ComplianceBrief, DeliveryRequest, DisruptionEvent, FinalDeliveryReport
@@ -55,6 +62,15 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
             candidates = await call_tool("rank_drivers", {
                 "pickup": req.pickup, "dropoff": req.dropoff, "weight_kg": req.weight_kg,
                 "deadline_mins": req.deadline_mins, "hour_of_day": spec.hour_of_day}, ctx)
+            state["candidates"] = candidates
+            nobody = no_legal_driver(candidates)
+            if nobody:
+                state["business_check"] = nobody
+                inbox.send("dispatch_agent", "supervisor", {**msg, "business_check": nobody})
+                review = await crew_supervisor.review(spec.run_id, inbox.receive("supervisor"), req.deadline_mins,
+                                                      spec.prompt_style)
+                state["review"] = review.model_dump()
+                return finish(spec, build_report(spec, ARCHITECTURE, state, started), state, inbox.provenance())
             decision = await crew_dispatch_agent.decide(spec.run_id, req, ComplianceBrief.model_validate(msg["compliance"]),
                                                         candidates, spec.hour_of_day, spec.prompt_style)
             state["candidates"], state["dispatch"] = candidates, decision.model_dump()

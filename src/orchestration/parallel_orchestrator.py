@@ -16,7 +16,14 @@ from src.agents import crew_dispatch_agent, crew_exception_agent, crew_retrieval
 from src.agents.a2a_client import request_route
 from src.mcp.client import call_tool
 from src.observability import run_logger, tracing
-from src.orchestration.base import RunSpec, blocked_report, business_check, guard_input, make_disruption
+from src.orchestration.base import (
+    RunSpec,
+    blocked_report,
+    business_check,
+    guard_input,
+    make_disruption,
+    no_legal_driver,
+)
 from src.orchestration.blackboard_manager import Blackboard
 from src.orchestration.hierarchical_orchestrator import _bb_logger
 from src.orchestration.reporting import build_report, finish
@@ -50,6 +57,8 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
                 candidates = await call_tool("rank_drivers", {
                     "pickup": request.pickup, "dropoff": request.dropoff, "weight_kg": request.weight_kg,
                     "deadline_mins": request.deadline_mins, "hour_of_day": spec.hour_of_day}, ctx)
+                if no_legal_driver(candidates):
+                    return candidates, None
                 return candidates, await crew_dispatch_agent.decide(spec.run_id, request, None, candidates,
                                                                     spec.hour_of_day, spec.prompt_style)
 
@@ -63,12 +72,15 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
             )
             bb.write("compliance", compliance, "retrieval_agent")
             bb.write("candidates", candidates, "supervisor")
-            bb.write("dispatch", decision, "dispatch_agent")
             bb.write("route", plan, "route_agent", "planned for a generic Van")
-            bb.write("business_check", business_check(request, decision.driver_id, plan.eta_mins, spec.hour_of_day),
-                     "business_guardrail")
+            if decision is None:
+                bb.write("business_check", no_legal_driver(candidates), "business_guardrail", "no legal driver")
+            else:
+                bb.write("dispatch", decision, "dispatch_agent")
+                bb.write("business_check", business_check(request, decision.driver_id, plan.eta_mins,
+                                                          spec.hour_of_day), "business_guardrail")
 
-            event = make_disruption(spec.scenario, plan.model_dump())
+            event = make_disruption(spec.scenario, plan.model_dump()) if decision else None
             if event:
                 bb.write("disruption", event, "event_bus", f"{event.kind}: {event.detail}")
                 replan = await crew_exception_agent.recover(spec.run_id, request, decision.model_dump(), plan.model_dump(),

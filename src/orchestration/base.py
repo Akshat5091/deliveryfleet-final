@@ -70,6 +70,16 @@ def business_check(request: DeliveryRequest, driver_id: str, trip_minutes: float
     return {"driver_id": driver_id, "action": r.action, "violations": r.violations, "checks": r.checks}
 
 
+def no_legal_driver(candidates: dict) -> dict | None:
+    """If every driver is BLOCKed, return the business_check record explaining why; else None."""
+    rows = candidates.get("candidates", [])
+    if any(c["rule_action"] != "BLOCK" for c in rows):
+        return None
+    reasons = sorted({v.split(":")[0] for c in rows for v in c["violations"]})
+    return {"driver_id": None, "action": "BLOCK", "checks": [],
+            "violations": [f"No legal driver for this order ({', '.join(reasons) or 'no candidates'})"]}
+
+
 def totals(run_id: str) -> tuple[int, int, float]:
     per_agent = run_logger.agent_totals(run_id)
     calls = sum(a["llm_calls"] for a in per_agent.values())

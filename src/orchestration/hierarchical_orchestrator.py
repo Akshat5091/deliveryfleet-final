@@ -20,7 +20,14 @@ from src.agents import crew_dispatch_agent, crew_exception_agent, crew_retrieval
 from src.agents.a2a_client import request_route
 from src.mcp.client import call_tool
 from src.observability import run_logger, tracing
-from src.orchestration.base import RunSpec, blocked_report, business_check, guard_input, make_disruption
+from src.orchestration.base import (
+    RunSpec,
+    blocked_report,
+    business_check,
+    guard_input,
+    make_disruption,
+    no_legal_driver,
+)
 from src.orchestration.blackboard_manager import Blackboard
 from src.orchestration.reporting import build_report, finish
 from src.schemas.decisions import ComplianceBrief, DeliveryRequest, DisruptionEvent, FinalDeliveryReport
@@ -86,10 +93,14 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
                          "business_guardrail", "hard-rule check")
 
             await gather_context()
-            await dispatch()
-            await route()
+            nobody = no_legal_driver(bb.snapshot()["candidates"])
+            if nobody:
+                bb.write("business_check", nobody, "business_guardrail", "no legal driver: dispatch skipped")
+            else:
+                await dispatch()
+                await route()
 
-            event = make_disruption(spec.scenario, bb.snapshot()["route"])
+            event = None if nobody else make_disruption(spec.scenario, bb.snapshot()["route"])
             if event:
                 bb.write("disruption", event, "event_bus", f"{event.kind}: {event.detail}")
                 view = bb.view_for("exception_agent")
@@ -105,7 +116,7 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
                 review = await crew_supervisor.review(spec.run_id, bb.view_for("supervisor"), request.deadline_mins,
                                                       spec.prompt_style)
                 bb.write("review", review, "supervisor", f"{review.verdict} rerun={review.rerun}")
-                if review.rerun == "none" or attempt == MAX_RERUNS:
+                if review.rerun == "none" or attempt == MAX_RERUNS or nobody:
                     break
                 run_logger.log_event(spec.run_id, "supervisor_rerun", "supervisor", "CrewAI", name=review.rerun,
                                      payload={"issues": review.issues, "attempt": attempt + 1})
