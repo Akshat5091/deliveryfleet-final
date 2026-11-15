@@ -17,7 +17,7 @@ os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "FALSE")
 os.environ.setdefault("CREWAI_TRACING_ENABLED", "false")
 os.environ.setdefault("OTEL_SDK_DISABLED", "false")
 
-DATA_DIR = PROJECT_ROOT / "fleet" / "data"
+DATA_DIR = PROJECT_ROOT / "src" / "data"
 KB_DIR = DATA_DIR / "knowledge_base"
 RUNTIME_DIR = Path(os.getenv("FLEET_RUNTIME_DIR", PROJECT_ROOT / "runtime"))
 ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
