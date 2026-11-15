@@ -142,7 +142,7 @@ textarea::placeholder { color: #6b7280; }
   min-height: 600px; background: var(--panel); border: 1px solid var(--seam); border-radius: 14px; overflow: hidden; }
 .stage { position: relative; background: #fafafa; min-height: 0; }
 .stage .citymap { position: absolute; inset: 0; }
-.map-legend { position: absolute; left: 16px; bottom: 16px; background: #fff; border: 1px solid var(--seam); border-radius: 8px;
+.map-legend { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); white-space: nowrap; background: #fff; border: 1px solid var(--seam); border-radius: 8px;
   padding: 8px 12px; font-size: .8rem; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
 .map-legend i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
 .sheet { border-left: 1px solid var(--seam); overflow-y: auto; min-height: 0; }

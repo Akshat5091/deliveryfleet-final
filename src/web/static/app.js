@@ -73,8 +73,10 @@ function drawCity(svg, { from, to, primary, detour, closed, label = true } = {})
   const pin = (loc, cls, letter) => {
     if (!loc) return "";
     const [x, y] = locPoint(loc); const name = loc.split(" - ").slice(1).join(" - ");
+    // The map is 640 wide; flip a label to the pin's left only when it would run off the right edge.
+    const left = x + 14 + (letter.length + name.length + 3) * 7.4 > 636;
     return `<g class="pt ${cls}"><circle class="ring" cx="${x}" cy="${y}" r="9"/><circle cx="${x}" cy="${y}" r="3.5" fill="${cls === "to" ? "var(--crimson)" : "var(--ink)"}"/>
-      <text x="${x + 14}" y="${y + 4}">${esc(letter)} · ${esc(name)}</text></g>`;
+      <text x="${left ? x + 8 : x + 14}" y="${left ? y - 16 : y + 4}" text-anchor="${left ? "end" : "start"}">${esc(letter)} · ${esc(name)}</text></g>`;
   };
   svg.innerHTML = areas + roads + hubs + route + overlay + det + pin(from, "from", "Pickup") + pin(to, "to", "Drop") +
     `<g id="${svg.id}-rider" hidden><circle class="rider-pulse" r="18"/><circle class="rider-dot" r="8"/></g>`;
@@ -243,7 +245,8 @@ async function onBookDone({ run }) {
   const driver = META.drivers.find((d) => d.driver_id === (disp.driver_id || r.driver_id)) || {};
   const late = route.eta_mins > (req.deadline_mins || b.deadline_mins);
   $("#t-title").textContent = r.outcome === "ESCALATED" ? "Rider found, deadline at risk" : "Rider assigned";
-  $("#t-sub").textContent = r.outcome === "ESCALATED" ? "A dispatcher is reviewing this delivery with you." : "Your parcel is on its way to pickup.";
+  $("#t-sub").textContent = r.outcome === "ESCALATED" ? "A dispatcher is reviewing this delivery with you."
+    : r.customer_message || "Your parcel is on its way to pickup.";
   renderRider(driver, route.eta_mins, late, disp.p_on_time);
   drawCity($("#bmap"), { from, to, primary: zonesIn(route.corridor) });
   legend(false);
@@ -279,7 +282,9 @@ async function onBookDone({ run }) {
     await animateRider($("#bmap"), pts, 7000);
     renderTimeline(steps, 6);
     $("#t-title").textContent = r.outcome === "ESCALATED" ? "Delivered, late" : "Delivered";
-    $("#t-sub").textContent = `${r.customer_message} Fare ₹${book.fare}.`;
+    // The agents' message was written at dispatch ("on the way"); once the ride ends, say what happened.
+    $("#t-sub").textContent = `Dropped at ${to.split(" - ")[1]} by ${driver.name || disp.driver_name} in about `
+      + `${Math.round(route.eta_mins)} min. Fare ₹${book.fare}.`;
   }
 }
 
@@ -289,7 +294,7 @@ function renderRider(d, eta, late, p, reassigned = false) {
     <div class="avatar" aria-hidden="true">${esc(initials)}</div>
     <div><h2>${esc(d.name || "Rider")}${reassigned ? ' <span class="tag warn">new rider</span>' : ""}</h2>
       <p><span>${esc(d.vehicle_type || "")}</span><span class="rating"><svg><use href="#i-star"/></svg>${fmt(d.rating, 2)}</span>
-      ${p != null ? `<span>${Math.round(p * 100)}% on-time likelihood</span>` : ""}</p></div>
+      ${p != null ? `<span>${Math.min(99, Math.round(p * 100))}% on-time likelihood</span>` : ""}</p></div>
     <div class="eta${late ? " late" : ""}" id="t-eta"><b>${eta ? Math.round(eta) : "–"}</b><span>min to drop</span></div>`;
   $("#t-rider").hidden = false;
 }
@@ -335,7 +340,8 @@ function renderCounters() {
 }
 
 function postmark(stage, label, tone) {
-  const t = new Date().toTimeString().slice(0, 8);
+  // Stamp the time the event happened (a replay must show the run's time, not the time it is replayed).
+  const t = (live.ts ? new Date(live.ts * 1000) : new Date()).toTimeString().slice(0, 8);
   const id = `pm-${stage.id}-${Math.random().toString(36).slice(2, 7)}`;
   const rot = (hash(stage.id + t) % 17) - 11;
   return `<svg class="postmark land" viewBox="0 0 60 60" style="--rot:${rot}deg" aria-hidden="true"${tone === "bad" ? ' data-bad="1"' : ""}>
@@ -363,7 +369,7 @@ function setStage(id, state, label) {
 
 function resetLive(title, input, runId) {
   live.src?.close(); clearInterval(live.timer);
-  Object.assign(live, { runId, events: [], board: {}, t0: performance.now() });
+  Object.assign(live, { runId, events: [], board: {}, t0: performance.now(), ts: null });
   renderCounters();
   drawCity($("#map"), {});
   $("#run-id").textContent = runId || "No run yet";
@@ -392,6 +398,7 @@ function supervisorStage() { return live.board.dispatch || live.board.business_c
 function onControlEvent(ev) {
   if (!live.events.length) $("#log").innerHTML = "";
   live.events.push(ev);
+  live.ts = ev.ts;
   const p = ev.payload || {};
   if (ev.kind === "guardrail" && ev.agent === "input_guard") {
     const blocked = ev.status === "BLOCKED";
@@ -489,7 +496,7 @@ function renderSlip(r, bb) {
     ["Driver", r.driver_id ? `${esc(r.driver_id)} · ${esc(r.driver_name)}` : "–"],
     ["ETA / deadline", r.eta_mins ? `<span class="big">${Math.round(r.eta_mins)}</span> / ${esc(r.deadline_mins)} min` : "–", true],
     ["Corridor", esc(r.corridor || "–")],
-    ["On-time likelihood", r.p_on_time != null ? `${Math.round(r.p_on_time * 100)}%` : "–"],
+    ["On-time likelihood", r.p_on_time != null ? `${Math.min(99, Math.round(r.p_on_time * 100))}%` : "–"],
     ["Input guard", esc(r.guard_status)],
     ["Exception plan", esc(r.exception_action || "None")],
     ["Supervisor", esc(r.supervisor_verdict || "–")],
