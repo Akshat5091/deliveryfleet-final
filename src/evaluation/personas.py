@@ -61,7 +61,7 @@ def order_hint(order_id: str) -> dict:
 DEMO_CASES: list[dict] = [
     {"id": "standard", "title": "Standard dispatch", "order_id": "ORD-101", "persona": "polite", "scenario": "normal",
      "shows": "Full happy path: guard -> intake -> RAG || driver DB -> dispatch -> A2A route -> review."},
-    {"id": "exception", "title": "Road closed mid-delivery", "order_id": "ORD-105", "persona": "urgent",
+    {"id": "exception", "title": "Road closed mid-delivery", "order_id": "ORD-103", "persona": "urgent",
      "scenario": "corridor_closed",
      "shows": "Exception Agent wakes on the event, asks the ADK Route Agent for a detour over A2A."},
     {"id": "breakdown", "title": "Vehicle breakdown", "order_id": "ORD-107", "persona": "polite", "scenario": "breakdown",
