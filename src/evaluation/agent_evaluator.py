@@ -85,9 +85,11 @@ def reference_answer(order: dict, hour_of_day: int, closed: list[str] | None = N
     """Tool-computed reference: acceptable drivers and the optimal corridor."""
     ranked = rank_drivers(order["pickup"], order["dropoff"], float(order["weight_kg"]),
                           int(order["deadline_mins"]), hour_of_day)
-    legal = [c for c in ranked["candidates"] if c["rule_action"] != "BLOCK"]
+    clean = [c for c in ranked["candidates"] if c["rule_action"] == "ALLOW"]
+    legal = clean or [c for c in ranked["candidates"] if c["rule_action"] != "BLOCK"]
     best_p = max((c["p_on_time"] for c in legal), default=0.0)
-    acceptable = [c["driver_id"] for c in legal if c["p_on_time"] >= best_p - 0.1]
+    # rank_drivers already orders legal drivers by on-time odds, then distance to the pickup.
+    acceptable = [c["driver_id"] for c in legal if c["p_on_time"] >= best_p - 0.1][:3]
     route = plan_route(order["pickup"], order["dropoff"], closed)
     return {"acceptable_drivers": acceptable, "corridor": route["primary"]["corridor"] if route["status"] == "OK" else None,
             "feasible": best_p >= 0.5}
