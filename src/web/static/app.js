@@ -612,6 +612,11 @@ async function loadEvaluation() {
     <div class="figs">${ev.figures.map((f) => `<figure><img src="/artifacts/${esc(f.file)}" alt="${esc(f.title)}" loading="lazy">
       <figcaption><b>${esc(f.title)}.</b> ${esc(f.caption)}</figcaption></figure>`).join("")}</div>
     <h3 class="h3">By architecture</h3><div class="table-wrap">${table(ev.by_architecture)}</div>`;
+  // Very wide charts (one panel per agent) are unreadable in a third of the row, so give them the full row.
+  $("#evaluation").querySelectorAll(".figs img").forEach((img) => {
+    const widen = () => img.closest("figure").classList.toggle("wide", img.naturalWidth > 3 * img.naturalHeight);
+    img.complete ? widen() : img.addEventListener("load", widen, { once: true });
+  });
 }
 
 function table(rows) {

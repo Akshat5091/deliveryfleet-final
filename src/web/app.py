@@ -59,6 +59,9 @@ async def security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "no-referrer"
     # Hugging Face shows the app inside an iframe on huggingface.co, so framing is allowed only from there.
     response.headers["Content-Security-Policy"] = "frame-ancestors 'self' https://huggingface.co https://*.hf.space"
+    if request.url.path.startswith(("/static/", "/artifacts/")) or request.url.path == "/":
+        # Revalidate on every load (a cheap 304 via the ETag) so a redeploy never serves an old app.js or chart.
+        response.headers["Cache-Control"] = "no-cache"
     return response
 
 
