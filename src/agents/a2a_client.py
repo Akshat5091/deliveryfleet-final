@@ -7,6 +7,7 @@ logged as a2a_message events so the website can show the conversation.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 import time
@@ -30,7 +31,13 @@ _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
 
 FINAL_TAG = "/*FINAL_ANSWER*/"
-ATTEMPTS = 2  # the planner occasionally formats its answer wrongly; one fresh attempt fixes it
+ATTEMPTS = 3
+RATE_LIMIT_WAIT_S = 20  # Gemini per-minute quota: wait 20 s, then 40 s, before asking the service again
+
+
+def _rate_limited(error: Exception) -> bool:
+    text = str(error)
+    return "429" in text or "RESOURCE_EXHAUSTED" in text
 
 
 def _parse_plan(text: str) -> RoutePlan:
@@ -93,6 +100,8 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
             run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
                                  status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
                                                           "attempt": attempt, "error": str(exc), "raw": final[-800:]})
+            if attempt < ATTEMPTS and _rate_limited(exc):
+                await asyncio.sleep(RATE_LIMIT_WAIT_S * attempt)
             continue
         run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
                              payload={"direction": "response", "from": "route_agent", "to": sender,

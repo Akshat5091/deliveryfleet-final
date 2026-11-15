@@ -22,7 +22,7 @@ AGENTS = ["supervisor", "retrieval_agent", "dispatch_agent", "route_agent", "exc
 plt.rcParams.update({
     "font.family": "DejaVu Sans", "font.size": 9.5, "axes.edgecolor": "#9ca3af", "axes.labelcolor": INK,
     "xtick.color": MUTED, "ytick.color": MUTED, "axes.titleweight": "bold", "axes.titlesize": 11,
-    "axes.titlecolor": INK, "axes.titlelocation": "left", "figure.dpi": 150, "savefig.bbox": "tight",
+    "axes.titlecolor": INK, "axes.titlelocation": "left", "figure.dpi": 150, "savefig.dpi": 400, "savefig.bbox": "tight",
 })
 
 
