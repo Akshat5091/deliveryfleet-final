@@ -61,7 +61,9 @@ class RoutePlan(BaseModel):
     delay_p90_mins: float
     eta_mins: float = Field(description="base_eta_mins + delay_mean_mins")
     alternative_corridor: str | None = None
-    alternative_eta_mins: float | None = None
+    alternative_eta_mins: float | None = Field(
+        default=None, description="the alternative corridor's base travel time from plan_route, without a delay "
+                                  "forecast; compare it with base_eta_mins, not with eta_mins")
     rationale: str
 
 

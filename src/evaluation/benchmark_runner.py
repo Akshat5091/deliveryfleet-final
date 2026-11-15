@@ -183,6 +183,12 @@ def build_report() -> dict:
          "title": "Judge criteria", "caption": "Mean of each criterion of the 4-score vector."},
         {"file": viz.per_agent_heatmaps(agents[agents["persona"] != "injection"]),
          "title": "Heatmap inside each agent", "caption": "Where time goes inside every agent, split by persona and architecture."},
+        {"file": viz.agent_metric_heatmap(agents[agents["persona"] != "injection"]),
+         "title": "Work per agent", "caption": "Mean time, LLM calls, tool calls, tokens and cost of each agent per run."},
+        {"file": viz.outcome_bars(df),
+         "title": "Outcomes by architecture", "caption": "Each architecture ran the same 24 inputs; counts of each final outcome."},
+        {"file": viz.prompt_style_cost(served),
+         "title": "Cost of each prompt style", "caption": "ReAct vs Direct on the same inputs: time and tokens per run."},
         {"file": viz.heatmap(
             agents[agents["persona"] != "injection"].pivot_table(index="run_id", columns="agent", values="latency_s",
                                                                  aggfunc="sum").reindex(columns=viz.AGENTS).fillna(0),
