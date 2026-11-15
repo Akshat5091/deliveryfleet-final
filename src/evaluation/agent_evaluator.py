@@ -77,10 +77,9 @@ async def judge_run(run: dict) -> dict:
     bb = run.get("blackboard") or {}
     decisions = {k: bb.get(k) for k in ("request", "compliance", "dispatch", "route", "business_check",
                                          "disruption", "exception", "review") if bb.get(k)}
-    for key in ("compliance",):
-        if key in decisions:
-            decisions[key] = {"citations": decisions[key].get("citations", [])[:4],
-                              "summary": decisions[key].get("summary")}
+    if "compliance" in decisions:
+        decisions["compliance"] = {"citations": decisions["compliance"].get("citations", [])[:4],
+                                   "summary": decisions["compliance"].get("summary")}
     prompt = JUDGE_PROMPT.format(persona=run.get("persona"), message=run.get("input_text", "")[:1200],
                                  report=json.dumps(report, indent=1, default=str),
                                  decisions=json.dumps(decisions, indent=1, default=str)[:6000])

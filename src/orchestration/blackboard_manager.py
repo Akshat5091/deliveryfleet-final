@@ -98,11 +98,6 @@ class Blackboard:
         with self._lock:
             return [p.as_dict() for p in self._log]
 
-    def context_chars(self, agent: str) -> int:
-        """Size of the scoped view, used to compare against P2P context growth."""
-        import json
-        with self._lock:
-            return len(json.dumps({s: self._data[s] for s in READ_SCOPE.get(agent, ()) if s in self._data}, default=str))
 
     def _record(self, op: str, agent: str, section: str, version: int, summary: str) -> None:
         entry = Provenance(len(self._log) + 1, time.time(), self.run_id, op, agent, section, version, summary)

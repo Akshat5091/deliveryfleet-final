@@ -1,8 +1,7 @@
 """Charts for the evaluation (PNG, used by the website, report and slides).
 
-Palette validated with the dataviz validator (light surface, all hard checks
-pass): hierarchical = crimson, sequential = blue, parallel = aqua. Axis labels
-and direct labels carry identity, so colour is never the only cue.
+Colours: hierarchical = crimson, sequential = blue, parallel = aqua. Every series
+is also labelled, so colour is never the only cue.
 """
 from __future__ import annotations
 
@@ -143,9 +142,9 @@ def outcome_bars(df: pd.DataFrame) -> str:
         vals = counts[o].to_numpy(dtype=float)
         ax.barh(archs, vals, left=left, height=0.55, color=OUTCOME_COLOURS[o], edgecolor="white",
                 linewidth=2, label=OUTCOME_LABELS[o])
-        for y, (v, l) in enumerate(zip(vals, left)):
+        for y, (v, start) in enumerate(zip(vals, left)):
             if v:
-                ax.text(l + v / 2, y, f"{v:.0f}", ha="center", va="center", fontsize=8.5, color="white")
+                ax.text(start + v / 2, y, f"{v:.0f}", ha="center", va="center", fontsize=8.5, color="white")
         left += vals
     ax.invert_yaxis()
     ax.set_xlabel("runs")

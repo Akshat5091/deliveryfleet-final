@@ -88,7 +88,7 @@ def limiter_for(model: str) -> RateLimiter:
 
 def daily_quota_spent(exc: BaseException) -> bool:
     """A per-day free-tier quota only resets at midnight Pacific time; retrying cannot help."""
-    return "PerDay" in f"{exc}"
+    return "PerDay" in str(exc)
 
 
 def is_retryable(exc: BaseException) -> bool:
@@ -116,14 +116,13 @@ def install_llm_hooks() -> None:
 
     def _throttle(context) -> None:
         limiter_for(WORKER_MODEL).wait()
-        return None
 
     register_before_llm_call_hook(_throttle)
     _hooks_installed = True
 
 
 def rate_limited(exc: BaseException) -> bool:
-    text = f"{exc}"
+    text = str(exc)
     return "429" in text or "RESOURCE_EXHAUSTED" in text
 
 

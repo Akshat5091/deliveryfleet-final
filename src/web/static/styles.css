@@ -243,14 +243,13 @@ textarea::placeholder { color: #6b7280; }
 .counters li[data-state="blocked"] { background: var(--crimson-wash); }
 .counters li[data-state="blocked"] .st { color: var(--crimson); }
 .counters li[data-state="skipped"] .a, .counters li[data-state="skipped"] .f { opacity: .45; }
-.postmark { position: absolute; right: 6px; bottom: 6px; width: 54px; height: 54px; color: var(--crimson); opacity: .9; pointer-events: none; }
-.counters li[data-state="blocked"] .postmark { color: var(--crimson); }
+.postmark { position: absolute; right: 6px; bottom: 6px; width: 54px; height: 54px; color: var(--crimson); opacity: .9; pointer-events: none;
+  transform: rotate(var(--rot, -8deg)); }
 .postmark text { font-family: var(--sans); fill: currentColor; }
 @media (prefers-reduced-motion: no-preference) {
   .postmark.land { animation: frank .42s var(--ease) both; }
   @keyframes frank { 0% { transform: scale(1.6) rotate(var(--rot)); opacity: 0; } 60% { opacity: 1; } 100% { transform: scale(1) rotate(var(--rot)); opacity: .9; } }
 }
-.postmark { transform: rotate(var(--rot, -8deg)); }
 
 .duo { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr); gap: 16px; margin-bottom: 16px; }
 .mapcard { margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -271,8 +270,6 @@ textarea::placeholder { color: #6b7280; }
 .slip-body .big { font-size: 1.5rem; font-weight: 750; font-stretch: 88%; }
 .slip-msg { padding: 12px 16px; color: var(--ink-2); font-size: .92rem; background: var(--sunk); }
 .slip-why { padding: 10px 16px; color: var(--crimson); font-size: .85rem; }
-.slip .cancel { position: relative; }
-.cancel-mark { position: absolute; right: 14px; top: 6px; width: 92px; height: 92px; transform: rotate(-12deg); }
 
 .tag { display: inline-flex; align-items: center; gap: 5px; font-size: .78rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
 .tag.ok { background: var(--green-wash); color: var(--green); }

@@ -82,7 +82,6 @@ function drawCity(svg, { from, to, primary, detour, closed, label = true } = {})
     `<g id="${svg.id}-rider" hidden><circle class="rider-pulse" r="18"/><circle class="rider-dot" r="8"/></g>`;
 }
 
-// Move the rider marker along a polyline; resolves when it arrives.
 function animateRider(svg, pts, ms, stopAt = 1) {
   const g = $(`#${svg.id}-rider`, svg);
   if (!g || pts.length < 2) return Promise.resolve();
@@ -129,7 +128,7 @@ function stream(runId, onEvent, onDone) {
 }
 
 // =================================================================== BOOK (customer)
-const book = { runId: null, src: null, booking: null };
+const book = { runId: null, src: null, booking: null, fare: 0 };
 
 function quote() {
   const f = new FormData($("#book-form"));
@@ -332,7 +331,7 @@ const STAGES = [
   { id: "exception_agent", a: "Exception", f: "CrewAI · on event", short: "EXCEPTION" },
   { id: "review", a: "Supervisor", f: "CrewAI · review", short: "REVIEW" },
 ];
-const live = { runId: null, src: null, t0: 0, timer: null, filter: "all", events: [], board: {}, started: {} };
+const live = { runId: null, src: null, t0: 0, timer: null, filter: "all", events: [], board: {}, started: {}, ts: null };
 
 function renderCounters() {
   $("#pipeline").innerHTML = STAGES.map((s) => `
@@ -441,7 +440,7 @@ function describe(ev) {
     case "a2a_message": return `${esc(p.from)} to ${esc(p.to)} · ${esc(p.direction)}${ev.duration_ms ? ` · ${fmt(ev.duration_ms, 0)} ms` : ""}`;
     case "blackboard": return `${ev.status === "WRITE" ? "wrote" : "read"} <b>${esc(ev.name)}</b> v${p.version}${p.summary ? ` · ${esc(p.summary)}` : ""}`;
     case "guardrail": return `${esc(ev.name.replaceAll("_", " "))} <span class="tag ${ev.status === "BLOCKED" ? "bad" : ev.status === "SANITIZED" ? "warn" : "ok"}">${esc(ev.status)}</span>`;
-    case "agent_start": return `started`;
+    case "agent_start": return "started";
     case "agent_end": return `finished in ${fmt(ev.duration_ms / 1000, 2)} s`;
     case "supervisor_rerun": return `sent the work back to <b>${esc(ev.name)}</b>`;
     case "error": return `<b>${esc(ev.name)}</b>: ${esc(p.error)}`;

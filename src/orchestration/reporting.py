@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import time
 
+from src.mcp.tools.driver_db import get_driver
 from src.observability import run_logger
 from src.orchestration.base import RunSpec, final_assignment, totals
 from src.schemas.decisions import FinalDeliveryReport
@@ -32,7 +33,6 @@ def build_report(spec: RunSpec, architecture: str, state: dict, started: float,
     driver_id = exc.get("new_driver_id") or dispatch.get("driver_id")
     driver_name = dispatch.get("driver_name")
     if exc.get("new_driver_id") and exc["new_driver_id"] != dispatch.get("driver_id"):
-        from src.mcp.tools.driver_db import get_driver
         driver_name = (get_driver(exc["new_driver_id"]) or {}).get("name")
     # Never report the corridor (or its ETA) that a disruption closed.
     closed = (state.get("disruption") or {}).get("closed_corridor")

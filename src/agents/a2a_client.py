@@ -18,6 +18,7 @@ from a2a.client import ClientConfig, ClientFactory
 from a2a.helpers.proto_helpers import get_message_text, get_stream_response_text, new_text_message
 from a2a.types import Role, SendMessageRequest, TaskState
 
+from src.agents.llm import daily_quota_spent, rate_limited
 from src.config import A2A_URL
 from src.observability import run_logger
 from src.schemas.decisions import RoutePlan
@@ -33,11 +34,6 @@ _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 FINAL_TAG = "/*FINAL_ANSWER*/"
 ATTEMPTS = 3
 RATE_LIMIT_WAIT_S = 20  # Gemini per-minute quota: wait 20 s, then 40 s, before asking the service again
-
-
-def _rate_limited(error: Exception) -> bool:
-    text = str(error)
-    return "429" in text or "RESOURCE_EXHAUSTED" in text
 
 
 def _parse_plan(text: str) -> RoutePlan:
@@ -100,9 +96,9 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
             run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
                                  status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
                                                           "attempt": attempt, "error": str(exc), "raw": final[-800:]})
-            if "PerDay" in str(exc):
+            if daily_quota_spent(exc):
                 break  # the daily quota resets at midnight Pacific; retrying only delays the failure
-            if attempt < ATTEMPTS and _rate_limited(exc):
+            if attempt < ATTEMPTS and rate_limited(exc):
                 await asyncio.sleep(RATE_LIMIT_WAIT_S * attempt)
             continue
         run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,

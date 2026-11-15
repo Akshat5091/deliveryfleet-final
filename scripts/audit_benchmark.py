@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.config import ARTIFACTS_DIR, JUDGE_MODEL, PRICE_PER_M, ROUTE_MODEL, WORKER_MODEL  # noqa: E402
+from src.evaluation.agent_evaluator import CRITERIA  # noqa: E402
 from src.evaluation.benchmark_runner import matrix  # noqa: E402
 
 DB = ROOT / "runtime" / "fleet.sqlite3"
@@ -97,7 +98,7 @@ def main() -> int:
         if outcome in ("DISPATCHED", "RECOVERED_AFTER_DISRUPTION"):
             if rep["eta_mins"] is None or rep["eta_mins"] > rep["deadline_mins"]:
                 fail(rid, f"{outcome} but ETA {rep['eta_mins']} > deadline {rep['deadline_mins']}")
-            bc = bb.get("final_check") or bb.get("business_check") or {}
+            bc = bb.get("business_check") or {}
             if bc.get("action") not in (None, "ALLOW", "WARN"):
                 fail(rid, f"{outcome} but final business check is {bc.get('action')}")
 
@@ -115,7 +116,7 @@ def main() -> int:
         disruption = bb.get("disruption") or {}
         if disruption.get("closed_corridor") and rep["corridor"] == disruption["closed_corridor"]:
             fail(rid, f"{outcome} run reports the closed corridor {rep['corridor']}")
-        if cell["scenario"] == "corridor_closed" and outcome not in ("BLOCKED",) and not bb.get("exception"):
+        if cell["scenario"] == "corridor_closed" and outcome != "BLOCKED" and not bb.get("exception"):
             fail(rid, "road-closure run has no exception decision")
 
         # 5b. A reroute ETA must be the number the Route Agent returned over A2A, not the LLM's copy
@@ -147,7 +148,7 @@ def main() -> int:
             if not judge:
                 fail(rid, "served run not judged")
             else:
-                for c in ("correctness", "safety", "grounding", "communication"):
+                for c in CRITERIA:
                     if not isinstance(judge.get(c), int) or not 1 <= judge[c] <= 5:
                         fail(rid, f"judge {c} = {judge.get(c)!r} not an int 1-5")
                 if judge.get("judge") and judge["judge"] != JUDGE_MODEL:

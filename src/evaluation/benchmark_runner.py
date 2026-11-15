@@ -1,6 +1,6 @@
 """The 72-run experiment: run, judge, measure, plot.
 
-Design (same factors as Eval 2):
+Design:
   3 architectures x 2 prompt styles x 4 personas x 3 orders = 72 runs
   ORD-101 normal, ORD-103 heavy cross-zone, ORD-105 critical + road closure mid-trip.
 

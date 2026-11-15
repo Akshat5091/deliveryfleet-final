@@ -29,7 +29,7 @@ from src.orchestration.base import (
 from src.orchestration.blackboard_manager import Blackboard
 from src.orchestration.hierarchical_orchestrator import _bb_logger
 from src.orchestration.reporting import build_report, finish
-from src.schemas.decisions import DeliveryRequest, DisruptionEvent, FinalDeliveryReport
+from src.schemas.decisions import DisruptionEvent, FinalDeliveryReport
 
 ARCHITECTURE = "parallel"
 

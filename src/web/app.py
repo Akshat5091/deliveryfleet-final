@@ -113,7 +113,7 @@ def launch(spec: RunSpec, architecture: str, ip: str) -> dict:
     if any(owner == ip for _, owner in _active.values()):
         raise HTTPException(429, "You already have a run in progress. Please wait for it to finish.")
     if len(_active) >= MAX_ACTIVE_RUNS:
-        raise HTTPException(429, "Two runs are already in progress. Please wait a few seconds.")
+        raise HTTPException(429, f"{MAX_ACTIVE_RUNS} runs are already in progress. Please wait a few seconds.")
     _active[spec.run_id] = (asyncio.create_task(get_orchestrator(architecture)(spec)), ip)
     return {"run_id": spec.run_id, "message": spec.message}
 
@@ -215,9 +215,10 @@ async def _probe(url: str) -> bool:
 
 @app.get("/api/health")
 async def health():
+    _prune()
     mcp, a2a = await asyncio.gather(_probe(MCP_URL), _probe(f"{A2A_URL}/.well-known/agent-card.json"))
     return {"web": True, "mcp_server": mcp, "a2a_route_service": a2a, "llm_key": llm_available(),
-            "worker_model": WORKER_MODEL, "route_model": ROUTE_MODEL, "judge_model": JUDGE_MODEL, "active_runs": (_prune(), len(_active))[1]}
+            "worker_model": WORKER_MODEL, "route_model": ROUTE_MODEL, "judge_model": JUDGE_MODEL, "active_runs": len(_active)}
 
 
 @app.get("/api/meta")

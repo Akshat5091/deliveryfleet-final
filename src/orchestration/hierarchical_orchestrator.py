@@ -1,6 +1,6 @@
 """Hierarchical architecture (the one we deploy): 1 Supervisor + 4 workers on a Blackboard.
 
-Flow (unchanged from Eval 2):
+Flow:
   Input Guard -> Supervisor intake
   -> in parallel: Retrieval Agent (RAG)  ||  driver pre-fetch from the fleet DB (MCP)
   -> Dispatch Agent (CrewAI) -> A2A -> Route Agent (Google ADK service)
@@ -22,7 +22,6 @@ from src.observability import run_logger, tracing
 from src.orchestration.base import (
     RunSpec,
     blocked_report,
-    business_check,
     guard_input,
     final_check,
     gather_all,

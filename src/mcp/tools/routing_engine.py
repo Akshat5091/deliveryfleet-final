@@ -1,7 +1,6 @@
 """Zone road network and time-weighted Dijkstra routing.
 
-The network keeps the Eval-2 inter-zone distances and the directional traffic
-speed factors from traffic.csv. A delivery location such as
+Inter-zone distances are fixed; directional speed factors come from traffic.csv. A delivery location such as
 "Zone B - Tech Park" hangs off its zone hub with a short local leg.
 """
 from __future__ import annotations
@@ -57,7 +56,7 @@ def local_leg_km(location: str) -> float:
 
 @lru_cache(maxsize=1)
 def traffic_table() -> dict[tuple[str, str], tuple[float, str]]:
-    table: dict[tuple[str, str], tuple[float, str]] = {}
+    table = {}
     with open(TRAFFIC_CSV, encoding="utf-8") as fh:
         for row in csv.DictReader(fh):
             src, dst = (part.strip() for part in row["route"].split("->"))
@@ -132,16 +131,16 @@ def plan_route(pickup: str, dropoff: str, closed_corridors: list[str] | None = N
     def summarise(legs: list[Leg]) -> dict:
         first = local_leg_km(pickup)
         last = local_leg_km(dropoff) if dropoff != pickup else 0.0
-        km = first + last + sum(l.km for l in legs)
-        minutes = (first + last) / LOCAL_SPEED_KMH * 60.0 + sum(l.minutes for l in legs)
-        corridor = " -> ".join([src_zone] + [l.dst for l in legs]) if legs else f"{src_zone} (intra-zone)"
+        km = first + last + sum(leg.km for leg in legs)
+        minutes = (first + last) / LOCAL_SPEED_KMH * 60.0 + sum(leg.minutes for leg in legs)
+        corridor = " -> ".join([src_zone] + [leg.dst for leg in legs]) if legs else f"{src_zone} (intra-zone)"
         return {
             "corridor": corridor,
             "distance_km": round(km, 1),
             "base_eta_mins": round(minutes, 1),
-            "legs": [l.__dict__ for l in legs],
-            "worst_congestion": max((l.congestion for l in legs), key=_congestion_rank, default="LOW"),
-            "speed_factor": round(min((traffic_table().get((l.src, l.dst), (0.9, ""))[0] for l in legs), default=0.92), 2),
+            "legs": [leg.__dict__ for leg in legs],
+            "worst_congestion": max((leg.congestion for leg in legs), key=_congestion_rank, default="LOW"),
+            "speed_factor": round(min((traffic_table().get((leg.src, leg.dst), (0.9, ""))[0] for leg in legs), default=0.92), 2),
         }
 
     primary = _dijkstra(src_zone, dst_zone, closed, rainfall)

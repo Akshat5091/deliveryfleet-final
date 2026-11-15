@@ -56,12 +56,12 @@
       <!-- booking form -->
       <form id="book-form" class="sheet-view" data-view="form">
         <h1>Send a parcel</h1>
-        <p class="sub">Across Zones A to D, picked up within minutes.</p>
+        <p class="sub">Pickup and drop anywhere in Zones A to D.</p>
 
         <div class="route-fields">
-          <label class="field with-icon"><svg><use href="#i-pin"/></svg>
+          <label class="field"><svg><use href="#i-pin"/></svg>
             <span>Pickup</span><select name="pickup" id="b-pickup" required></select></label>
-          <label class="field with-icon"><svg><use href="#i-flag"/></svg>
+          <label class="field"><svg><use href="#i-flag"/></svg>
             <span>Drop</span><select name="dropoff" id="b-dropoff" required></select></label>
         </div>
 
@@ -129,7 +129,7 @@
 <!-- ================= CONTROL ROOM ================= -->
 <section id="tab-control" class="panel" role="tabpanel" hidden>
   <form class="toolbar" id="scenario-form">
-    <label class="field grow"><span>Scenario</span><select id="c-scenario" name="case_id"></select></label>
+    <label class="field"><span>Scenario</span><select id="c-scenario" name="case_id"></select></label>
     <label class="field"><span>Architecture</span>
       <select name="architecture">
         <option value="hierarchical">Hierarchical, blackboard (deployed)</option>
@@ -169,7 +169,7 @@
   </div>
 
   <div class="trio">
-    <section class="card log-card">
+    <section class="card">
       <header class="card-head">
         <b>Event log</b>
         <div class="seg" id="filters" role="group" aria-label="Filter events">
