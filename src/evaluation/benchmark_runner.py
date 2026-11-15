@@ -52,38 +52,51 @@ def matrix() -> list[dict]:
             for a, s, p, o in itertools.product(ARCHITECTURES, STYLES, PERSONAS, ORDERS)]
 
 
-async def execute(fresh: bool = False) -> None:
+async def execute(fresh: bool = False, concurrency: int = 3) -> None:
+    """Run every unfinished cell, `concurrency` at a time. Each run has its own Blackboard,
+    trace and run id, so parallel runs never share state."""
     cells = matrix()
-    for i, cell in enumerate(cells, 1):
+    gate = asyncio.Semaphore(concurrency)
+
+    async def one(i: int, cell: dict) -> None:
         existing = run_logger.get_run(cell["run_id"])
         if existing and existing["status"] not in ("RUNNING", "FAILED") and not fresh:
-            continue
-        spec = RunSpec(message=message_for(cell["order_id"], cell["persona"]), persona=cell["persona"],
-                       prompt_style=cell["style"], scenario=cell["scenario"], order=order_hint(cell["order_id"]),
-                       hour_of_day=HOUR, source="benchmark", run_id=cell["run_id"])
-        t0 = time.perf_counter()
-        report = await get_orchestrator(cell["arch"])(spec)
-        print(f"[{i:02d}/{len(cells)}] {cell['run_id']:<22} {report.outcome:<27} "
-              f"{time.perf_counter() - t0:6.1f}s  {report.total_tokens:>6} tok", flush=True)
+            return
+        async with gate:
+            spec = RunSpec(message=message_for(cell["order_id"], cell["persona"]), persona=cell["persona"],
+                           prompt_style=cell["style"], scenario=cell["scenario"],
+                           order=order_hint(cell["order_id"]), hour_of_day=HOUR, source="benchmark",
+                           run_id=cell["run_id"])
+            t0 = time.perf_counter()
+            report = await get_orchestrator(cell["arch"])(spec)
+            print(f"[{i:02d}/{len(cells)}] {cell['run_id']:<22} {report.outcome:<27} "
+                  f"{time.perf_counter() - t0:6.1f}s  {report.total_tokens:>6} tok", flush=True)
+
+    await asyncio.gather(*(one(i, c) for i, c in enumerate(cells, 1)))
 
 
-async def judge_all() -> None:
-    for cell in matrix():
+async def judge_all(concurrency: int = 4) -> None:
+    gate = asyncio.Semaphore(concurrency)
+
+    async def one(cell: dict) -> None:
         run = run_logger.get_run(cell["run_id"])
         if not run or run.get("judge") or run["status"] == "RUNNING":
-            continue
-        token = tracing.set_context(tracing.RunContext(cell["run_id"] + "-judge", "llm_judge", "google-genai"))
-        try:
-            run_logger.save_judge(cell["run_id"], await judge_run(run))
-        except Exception as exc:
-            print(f"judge failed for {cell['run_id']}: {exc}")
-        finally:
-            tracing.reset_context(token)
+            return
+        async with gate:
+            token = tracing.set_context(tracing.RunContext(cell["run_id"] + "-judge", "llm_judge", "google-genai"))
+            try:
+                run_logger.save_judge(cell["run_id"], await judge_run(run))
+            except Exception as exc:
+                print(f"judge failed for {cell['run_id']}: {exc}", flush=True)
+            finally:
+                tracing.reset_context(token)
+
+    await asyncio.gather(*(one(c) for c in matrix()))
 
 
-async def run_and_judge(fresh: bool) -> None:
+async def run_and_judge(fresh: bool, concurrency: int) -> None:
     """One event loop for both steps: the cached Gemini client must not outlive its loop."""
-    await execute(fresh)
+    await execute(fresh, concurrency)
     await judge_all()
 
 
@@ -186,10 +199,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--report", action="store_true", help="only rebuild charts and summary")
     parser.add_argument("--fresh", action="store_true", help="re-run every cell")
+    parser.add_argument("--concurrency", type=int, default=3, help="runs executed at the same time")
     args = parser.parse_args()
     if not args.report:
         tracing.init("deliveryfleet-benchmark")
-        asyncio.run(run_and_judge(args.fresh))
+        asyncio.run(run_and_judge(args.fresh, args.concurrency))
     s = build_report()
     print(json.dumps(s["headline"], indent=2))
 
