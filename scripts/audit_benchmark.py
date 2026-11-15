@@ -119,6 +119,23 @@ def main() -> int:
         if cell["scenario"] == "corridor_closed" and outcome not in ("BLOCKED",) and not bb.get("exception"):
             fail(rid, "road-closure run has no exception decision")
 
+        # 5b. A reroute ETA must be the number the Route Agent returned over A2A, not the LLM's copy
+        exc = bb.get("exception") or {}
+        if exc.get("action") in ("REROUTE", "REROUTE_AND_REASSIGN"):
+            routed = {}
+            for e in events:
+                if e["kind"] == "tool_call" and e["name"] == "request_reroute_via_a2a" and e["status"] == "OK":
+                    try:
+                        plan = json.loads(json.loads(e["payload"])["result"])
+                        routed[plan["corridor"]] = plan["eta_mins"]
+                    except (KeyError, TypeError, json.JSONDecodeError):
+                        continue
+            got = routed.get(exc.get("new_corridor"))
+            if got is None:
+                fail(rid, f"{exc['action']} without a Route Agent plan for {exc.get('new_corridor')}")
+            elif not close(exc.get("new_eta_mins") or 0, got, 1.0):
+                fail(rid, f"reroute ETA {exc.get('new_eta_mins')} != Route Agent's {got}")
+
         # 6. Judge
         judge = json.loads(run["judge"]) if run["judge"] else None
         if outcome != "BLOCKED":

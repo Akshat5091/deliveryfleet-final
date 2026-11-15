@@ -186,3 +186,49 @@ def test_benchmark_shards_cover_every_cell_exactly_once():
     ids = [c["run_id"] for k in range(4) for c in shard_of(cells, (k, 4))]
     assert len(cells) == 72
     assert sorted(ids) == sorted(c["run_id"] for c in cells)
+
+
+class _Out:
+    def __init__(self, pydantic):
+        self.pydantic = pydantic
+
+
+def _reroute(eta: float):
+    from src.schemas.decisions import ExceptionReplan
+
+    return ExceptionReplan(trigger="CORRIDOR_CLOSED", action="REROUTE", new_corridor="Zone B -> Zone C -> Zone A",
+                           new_eta_mins=eta, minutes_vs_doing_nothing=10.0, customer_update="Rerouted.")
+
+
+ORD_105 = DeliveryRequest(order_id="ORD-105", pickup="Zone B - Medical Supply", dropoff="Zone A - City Hospital",
+                          weight_kg=18, priority="CRITICAL", deadline_mins=50)
+DETOUR = {"corridor": "Zone B -> Zone C -> Zone A", "eta_mins": 53.1}
+
+
+def test_exception_reroute_rejected_without_a_route_agent_call():
+    from src.agents.crew_exception_agent import make_guardrail
+
+    ok, msg = make_guardrail(ORD_105, 14, "D10", [])(_Out(_reroute(40.6)))
+    assert not ok and "request_reroute_via_a2a" in msg
+
+
+def test_exception_reroute_eta_must_be_the_route_agents_number():
+    from src.agents.crew_exception_agent import make_guardrail
+
+    ok, msg = make_guardrail(ORD_105, 14, "D10", [DETOUR])(_Out(_reroute(40.6)))
+    assert not ok and "53.1" in msg
+
+
+def test_exception_reroute_past_the_deadline_is_rejected():
+    from src.agents.crew_exception_agent import make_guardrail
+
+    ok, msg = make_guardrail(ORD_105, 14, "D10", [DETOUR])(_Out(_reroute(53.1)))
+    assert not ok and "ESCALATE" in msg
+
+
+def test_exception_on_time_reroute_from_the_route_agent_is_accepted():
+    from src.agents.crew_exception_agent import make_guardrail
+
+    on_time = {"corridor": "Zone B -> Zone C -> Zone A", "eta_mins": 45.0}
+    ok, _ = make_guardrail(ORD_105, 14, "D10", [on_time])(_Out(_reroute(45.0)))
+    assert ok
