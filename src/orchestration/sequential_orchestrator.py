@@ -20,7 +20,10 @@ from src.orchestration.base import (
     blocked_report,
     business_check,
     guard_input,
+    final_check,
+    gather_all,
     make_disruption,
+    mark_failed,
     no_legal_driver,
 )
 from src.orchestration.blackboard_manager import PeerInbox
@@ -30,11 +33,11 @@ from src.schemas.decisions import ComplianceBrief, DeliveryRequest, DisruptionEv
 ARCHITECTURE = "sequential"
 
 
-async def run(spec: RunSpec) -> FinalDeliveryReport:
+async def _run(spec: RunSpec) -> FinalDeliveryReport:
     started = time.perf_counter()
     run_logger.start_run(spec.run_id, architecture=ARCHITECTURE, persona=spec.persona, prompt_style=spec.prompt_style,
                          scenario=spec.scenario, order_id=(spec.order or {}).get("order_id"), source=spec.source,
-                         input_text=spec.message)
+                         input_text="")
     inbox = PeerInbox(spec.run_id, on_change=lambda e: run_logger.log_event(
         spec.run_id, "p2p_message", e["agent"], "P2P", name=e["section"], payload=e))
     state: dict = {}
@@ -94,6 +97,8 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
                                                             spec.hour_of_day, spec.prompt_style)
                 state["exception"] = replan.model_dump()
                 msg = {**msg, "exception": state["exception"]}
+                state["business_check"] = final_check(state, req, spec.hour_of_day) or state.get("business_check")
+                msg = {**msg, "business_check": state["business_check"]}
             inbox.send("exception_agent", "supervisor", msg)
 
             final_msg = inbox.receive("supervisor")
@@ -107,3 +112,10 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
                                  status="ERROR", payload={"error": str(exc)[:800]})
             report = build_report(spec, ARCHITECTURE, state, started, error=str(exc))
         return finish(spec, report, state, inbox.provenance())
+
+async def run(spec: RunSpec) -> FinalDeliveryReport:
+    try:
+        return await _run(spec)
+    except BaseException as exc:  # cancellation or a failing store: never leave the run RUNNING
+        mark_failed(spec, ARCHITECTURE, {}, [], repr(exc))
+        raise

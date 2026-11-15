@@ -49,7 +49,7 @@ A2A_URL = os.getenv("A2A_URL", f"http://{HOST}:{A2A_PORT}")
 # One model for workers, a separate (by default stronger) one for the judge.
 WORKER_MODEL = os.getenv("WORKER_MODEL", "gemini-3.5-flash-lite")
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-3.6-flash")
-LLM_RPM = int(os.getenv("LLM_RPM", "14"))
+LLM_RPM = int(os.getenv("LLM_RPM", "28"))  # total for the key, shared by two processes
 
 # USD per 1M tokens (input, output incl. thinking) for cost estimates: Gemini API
 # paid-tier standard prices from aistudio.google.com/docs/pricing (read Nov 2026;

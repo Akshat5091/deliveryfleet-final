@@ -4,15 +4,21 @@ from __future__ import annotations
 import time
 
 from src.observability import run_logger
-from src.orchestration.base import RunSpec, totals
+from src.orchestration.base import RunSpec, final_assignment, totals
 from src.schemas.decisions import FinalDeliveryReport
 
 
 def outcome_of(state: dict) -> str:
+    """Outcome decided in code from the blackboard; the LLM review alone can never mark a late or
+    illegal delivery as dispatched."""
     exc, review, check = state.get("exception"), state.get("review") or {}, state.get("business_check") or {}
     if exc and exc.get("action") == "ESCALATE":
         return "ESCALATED"
     if review.get("verdict") not in (None, "APPROVED") or check.get("action") == "BLOCK":
+        return "ESCALATED"
+    _, eta = final_assignment(state)
+    deadline = (state.get("request") or {}).get("deadline_mins")
+    if eta is not None and deadline is not None and float(eta) > float(deadline):
         return "ESCALATED"
     return "RECOVERED_AFTER_DISRUPTION" if exc else "DISPATCHED"
 
@@ -33,7 +39,7 @@ def build_report(spec: RunSpec, architecture: str, state: dict, started: float,
         if error else "Your delivery has been scheduled.")
     return FinalDeliveryReport(
         run_id=spec.run_id, architecture=architecture, persona=spec.persona,
-        guard_status=(state.get("guard") or {}).get("status", "ALLOW"),
+        guard_status=(state.get("guard") or {}).get("status", "ERROR"),
         order_id=request.get("order_id") or (spec.order or {}).get("order_id"), outcome=outcome,
         driver_id=driver_id, driver_name=driver_name,
         corridor=exc.get("new_corridor") or route.get("corridor"),

@@ -83,7 +83,10 @@ def spans_for(run_id: str) -> list[dict]:
 
 
 def start_run(run_id: str, **fields: Any) -> None:
+    """Create (or reset) a run. A re-run of the same id starts from an empty trace."""
     with closing(_connect()) as con:
+        con.execute("DELETE FROM events WHERE run_id = ?", (run_id,))
+        con.execute("DELETE FROM spans WHERE run_id = ?", (run_id,))
         con.execute(
             "INSERT OR REPLACE INTO runs (run_id, started, architecture, persona, prompt_style, scenario,"
             " order_id, status, source, input_text) VALUES (?,?,?,?,?,?,?,?,?,?)",
@@ -123,13 +126,34 @@ def get_run(run_id: str) -> dict | None:
         return _row(row) if row else None
 
 
+LIST_COLUMNS = ("run_id, started, finished, architecture, persona, prompt_style, scenario, order_id, "
+                "status, source, report, judge")
+
+
 def list_runs(source: str | None = None, limit: int = 500) -> list[dict]:
+    """Summary rows only (no blackboard/provenance blobs)."""
     with closing(_connect()) as con:
         if source:
-            rows = con.execute("SELECT * FROM runs WHERE source = ? ORDER BY started DESC LIMIT ?", (source, limit))
+            rows = con.execute(f"SELECT {LIST_COLUMNS} FROM runs WHERE source = ? ORDER BY started DESC LIMIT ?",
+                               (source, limit))
         else:
-            rows = con.execute("SELECT * FROM runs ORDER BY started DESC LIMIT ?", (limit,))
+            rows = con.execute(f"SELECT {LIST_COLUMNS} FROM runs ORDER BY started DESC LIMIT ?", (limit,))
         return [_row(r) for r in rows]
+
+
+def run_status(run_id: str) -> str | None:
+    with closing(_connect()) as con:
+        row = con.execute("SELECT status FROM runs WHERE run_id = ?", (run_id,)).fetchone()
+        return row["status"] if row else None
+
+
+def fail_stale_runs() -> int:
+    """Runs left RUNNING by a crash or restart can never finish; mark them FAILED."""
+    with closing(_connect()) as con:
+        n = con.execute("UPDATE runs SET status = 'FAILED', finished = ? WHERE status = 'RUNNING'",
+                        (time.time(),)).rowcount
+        con.commit()
+        return n
 
 
 def agent_totals(run_id: str) -> dict[str, dict]:

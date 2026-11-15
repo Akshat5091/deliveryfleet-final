@@ -81,6 +81,12 @@ async def judge_all() -> None:
             tracing.reset_context(token)
 
 
+async def run_and_judge(fresh: bool) -> None:
+    """One event loop for both steps: the cached Gemini client must not outlive its loop."""
+    await execute(fresh)
+    await judge_all()
+
+
 def collect() -> tuple[pd.DataFrame, pd.DataFrame]:
     rows, agent_rows = [], []
     refs = {o: reference_answer(orders()[o], HOUR) for o in ORDERS}
@@ -183,8 +189,7 @@ def main() -> None:
     args = parser.parse_args()
     if not args.report:
         tracing.init("deliveryfleet-benchmark")
-        asyncio.run(execute(args.fresh))
-        asyncio.run(judge_all())
+        asyncio.run(run_and_judge(args.fresh))
     s = build_report()
     print(json.dumps(s["headline"], indent=2))
 

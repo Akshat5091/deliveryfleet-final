@@ -29,16 +29,22 @@ from src.orchestration import get_orchestrator
 from src.orchestration.base import SCENARIOS, RunSpec
 
 STATIC = Path(__file__).parent / "static"
-MAX_ACTIVE_RUNS = 2
-_active: dict[str, asyncio.Task] = {}
+MAX_ACTIVE_RUNS = 2          # Gemini rate limits make more than two simultaneous runs pointless
+MAX_STREAMS = 40             # concurrent live-event connections
+MAX_BODY_BYTES = 8_000
+_active: dict[str, tuple[asyncio.Task, str]] = {}   # run_id -> (task, client ip)
+_streams = asyncio.Semaphore(MAX_STREAMS)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     tracing.init("deliveryfleet-web")
+    run_logger.fail_stale_runs()
     yield
-    for task in _active.values():
+    tasks = [t for t, _ in _active.values()]
+    for task in tasks:
         task.cancel()
+    await asyncio.gather(*tasks, return_exceptions=True)
 
 
 app = FastAPI(title="DeliveryFleet MAS", lifespan=lifespan, docs_url="/api/docs")
@@ -46,11 +52,19 @@ app = FastAPI(title="DeliveryFleet MAS", lifespan=lifespan, docs_url="/api/docs"
 
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
+    if request.method == "POST" and int(request.headers.get("content-length") or 0) > MAX_BODY_BYTES:
+        return JSONResponse({"detail": "Request too large."}, status_code=413)
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "no-referrer"
-    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    # Hugging Face shows the app inside an iframe on huggingface.co, so framing is allowed only from there.
+    response.headers["Content-Security-Policy"] = "frame-ancestors 'self' https://huggingface.co https://*.hf.space"
     return response
+
+
+def client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for", "")
+    return forwarded.split(",")[0].strip() or (request.client.host if request.client else "unknown")
 
 
 class RunRequest(BaseModel):
@@ -83,21 +97,27 @@ def build_spec(req: RunRequest) -> RunSpec:
                    order=hint, hour_of_day=req.hour_of_day, source="web")
 
 
-def launch(spec: RunSpec, architecture: str) -> dict:
-    if not llm_available():
-        raise HTTPException(503, "GEMINI_API_KEY is not configured on the server")
-    for rid, task in list(_active.items()):
+def _prune() -> None:
+    for rid, (task, _) in list(_active.items()):
         if task.done():
             _active.pop(rid)
+
+
+def launch(spec: RunSpec, architecture: str, ip: str) -> dict:
+    if not llm_available():
+        raise HTTPException(503, "GEMINI_API_KEY is not configured on the server")
+    _prune()
+    if any(owner == ip for _, owner in _active.values()):
+        raise HTTPException(429, "You already have a run in progress. Please wait for it to finish.")
     if len(_active) >= MAX_ACTIVE_RUNS:
         raise HTTPException(429, "Two runs are already in progress. Please wait a few seconds.")
-    _active[spec.run_id] = asyncio.create_task(get_orchestrator(architecture)(spec))
+    _active[spec.run_id] = (asyncio.create_task(get_orchestrator(architecture)(spec)), ip)
     return {"run_id": spec.run_id, "message": spec.message}
 
 
 @app.post("/api/runs")
-async def start_run(req: RunRequest):
-    return launch(build_spec(req), req.architecture)
+async def start_run(req: RunRequest, request: Request):
+    return launch(build_spec(req), req.architecture, client_ip(request))
 
 
 URGENCY = {  # customer-facing choice -> (priority, deadline minutes from pickup)
@@ -118,7 +138,7 @@ class BookingRequest(BaseModel):
 
 
 @app.post("/api/bookings")
-async def book(req: BookingRequest):
+async def book(req: BookingRequest, request: Request):
     """Customer app: the form becomes an ordinary customer message, so the agents do the real work."""
     priority, deadline = URGENCY[req.urgency]
     booking_id = f"BK-{int(time.time() * 1000) % 100000:05d}"
@@ -126,30 +146,39 @@ async def book(req: BookingRequest):
                f"to {req.dropoff} within {deadline} minutes ({priority} priority). {req.note}".strip())
     spec = RunSpec(message=message, persona="customer", scenario=req.scenario, hour_of_day=req.hour_of_day,
                    source="booking")
-    return {**launch(spec, "hierarchical"), "booking_id": booking_id, "deadline_mins": deadline, "priority": priority}
+    return {**launch(spec, "hierarchical", client_ip(request)), "booking_id": booking_id, "deadline_mins": deadline, "priority": priority}
 
 
 @app.get("/api/runs/{run_id}/stream")
 async def stream(run_id: str, request: Request):
+    """Live events of one run. Sends SSE ids, so a reconnect resumes instead of replaying."""
+    if await asyncio.to_thread(run_logger.run_status, run_id) is None:
+        raise HTTPException(404, "run not found")
+    if _streams.locked():
+        raise HTTPException(503, "Too many live viewers right now.")
+    resume_from = int(request.headers.get("last-event-id") or 0)
+
     async def events():
-        last, idle_since = 0, time.time()
-        while True:
-            if await request.is_disconnected():
-                return
-            batch = run_logger.events_after(run_id, last)
-            for ev in batch:
-                last = ev["id"]
-                yield {"event": "agent_event", "data": json.dumps(ev, default=str)}
-            run = run_logger.get_run(run_id)
-            if run and run["status"] != "RUNNING" and not batch:
-                yield {"event": "done", "data": json.dumps(_run_payload(run_id), default=str)}
-                return
-            if batch:
-                idle_since = time.time()
-            elif time.time() - idle_since > 300:
-                yield {"event": "timeout", "data": "{}"}
-                return
-            await asyncio.sleep(0.4)
+        async with _streams:
+            last, idle_since = resume_from, time.time()
+            while True:
+                if await request.is_disconnected():
+                    return
+                batch = await asyncio.to_thread(run_logger.events_after, run_id, last)
+                for ev in batch:
+                    last = ev["id"]
+                    yield {"event": "agent_event", "id": str(ev["id"]), "data": json.dumps(ev, default=str)}
+                status = await asyncio.to_thread(run_logger.run_status, run_id)
+                if status != "RUNNING" and not batch:
+                    payload = await asyncio.to_thread(_run_payload, run_id)
+                    yield {"event": "done", "data": json.dumps(payload, default=str)}
+                    return
+                if batch:
+                    idle_since = time.time()
+                elif time.time() - idle_since > 300:
+                    yield {"event": "timeout", "data": "{}"}
+                    return
+                await asyncio.sleep(0.5)
     return EventSourceResponse(events())
 
 
@@ -162,17 +191,14 @@ def _run_payload(run_id: str) -> dict:
 
 @app.get("/api/runs/{run_id}")
 async def get_run(run_id: str):
-    payload = _run_payload(run_id)
-    payload["events"] = run_logger.events_after(run_id, 0)
+    payload = await asyncio.to_thread(_run_payload, run_id)
+    payload["events"] = await asyncio.to_thread(run_logger.events_after, run_id, 0)
     return payload
 
 
 @app.get("/api/runs")
 async def list_runs(source: str | None = None):
-    rows = run_logger.list_runs(source)
-    keep = ("run_id", "started", "finished", "architecture", "persona", "prompt_style", "scenario", "order_id",
-            "status", "source", "report", "judge")
-    return [{k: r.get(k) for k in keep} for r in rows]
+    return await asyncio.to_thread(run_logger.list_runs, source)
 
 
 async def _probe(url: str) -> bool:
@@ -188,7 +214,7 @@ async def _probe(url: str) -> bool:
 async def health():
     mcp, a2a = await asyncio.gather(_probe(MCP_URL), _probe(f"{A2A_URL}/.well-known/agent-card.json"))
     return {"web": True, "mcp_server": mcp, "a2a_route_service": a2a, "llm_key": llm_available(),
-            "worker_model": WORKER_MODEL, "judge_model": JUDGE_MODEL, "active_runs": len(_active)}
+            "worker_model": WORKER_MODEL, "judge_model": JUDGE_MODEL, "active_runs": (_prune(), len(_active))[1]}
 
 
 @app.get("/api/meta")

@@ -558,6 +558,7 @@ async function openInControl(runId) {
     live.src = new EventSource(`/api/runs/${encodeURIComponent(runId)}/stream`);
     live.src.addEventListener("agent_event", (e) => { const ev = JSON.parse(e.data); if (ev.id > last) onControlEvent(ev); });
     live.src.addEventListener("done", (e) => { live.src.close(); onControlDone(JSON.parse(e.data)); });
+    live.src.addEventListener("timeout", () => { live.src.close(); clearInterval(live.timer); });
   } else onControlDone(data);
 }
 

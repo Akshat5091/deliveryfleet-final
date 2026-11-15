@@ -11,6 +11,7 @@ so the container restarts cleanly instead of running half a system.
 from __future__ import annotations
 
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -25,9 +26,11 @@ SERVICES = [
 ]
 
 
-def wait_until_up(name: str, url: str, timeout: float = 180) -> None:
+def wait_until_up(name: str, url: str, proc: subprocess.Popen, timeout: float = 180) -> None:
     deadline = time.time() + timeout
     while time.time() < deadline:
+        if proc.poll() is not None:
+            raise RuntimeError(f"{name} exited during start-up (code {proc.returncode})")
         try:
             httpx.get(url, timeout=3)
             print(f"[start] {name} is up: {url}", flush=True)
@@ -37,13 +40,19 @@ def wait_until_up(name: str, url: str, timeout: float = 180) -> None:
     raise RuntimeError(f"{name} did not start within {timeout:.0f}s")
 
 
+def _stop(signum, frame) -> None:
+    # As PID 1 in the container, SIGTERM must become a normal shutdown so children stop cleanly.
+    raise KeyboardInterrupt
+
+
 def main() -> None:
+    signal.signal(signal.SIGTERM, _stop)
     env = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
     procs = [subprocess.Popen(cmd, env=env) for _, cmd in SERVICES]
     exit_code = 1
     try:
-        wait_until_up("MCP server", f"http://{HOST}:{MCP_PORT}/mcp")
-        wait_until_up("ADK route service", f"{A2A_URL}/.well-known/agent-card.json")
+        wait_until_up("MCP server", f"http://{HOST}:{MCP_PORT}/mcp", procs[0])
+        wait_until_up("ADK route service", f"{A2A_URL}/.well-known/agent-card.json", procs[1])
         web_host = os.getenv("WEB_HOST", "0.0.0.0")
         procs.append(subprocess.Popen([sys.executable, "-m", "uvicorn", "src.web.app:app", "--host", web_host,
                                        "--port", str(WEB_PORT), "--log-level", "warning"], env=env))

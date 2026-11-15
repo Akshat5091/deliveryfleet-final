@@ -51,7 +51,7 @@ async def decide(run_id: str, request: DeliveryRequest, compliance: ComplianceBr
         verbose=False,
     )
     shortlist = [
-        {k: c[k] for k in ("driver_id", "name", "vehicle_type", "hours_worked", "deadhead_km", "total_eta_mins",
+        {k: c[k] for k in ("driver_id", "name", "vehicle_type", "hours_worked", "deadhead_km", "deadhead_mins", "total_eta_mins",
                            "p_on_time", "rule_action", "violations")}
         for c in candidates.get("candidates", [])
     ]
@@ -69,7 +69,8 @@ async def decide(run_id: str, request: DeliveryRequest, compliance: ComplianceBr
         expected_output="A DispatchDecision for exactly one driver.",
         agent=agent,
         output_pydantic=DispatchDecision,
-        guardrail=make_guardrail(request, hour_of_day, {c["driver_id"]: c["total_eta_mins"] for c in shortlist}),
+        guardrail=make_guardrail(request, hour_of_day,
+                                 {c["driver_id"]: c["total_eta_mins"] + c["deadhead_mins"] for c in shortlist}),
         guardrail_max_retries=2,
     )
     return await run_task(run_id, "dispatch_agent", agent, task, DispatchDecision)

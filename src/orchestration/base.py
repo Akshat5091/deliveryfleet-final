@@ -1,13 +1,14 @@
 """Pieces every architecture shares: run setup, guard, disruption events, reporting."""
 from __future__ import annotations
 
+import asyncio
 import time
 import uuid
 from dataclasses import dataclass, field
 
 from src.guardrails import input_guard
 from src.guardrails.business_guardrails import check_assignment
-from src.mcp.tools.driver_db import get_driver
+from src.mcp.tools.driver_db import deadhead_minutes, get_driver
 from src.observability import run_logger, tracing
 from src.schemas.decisions import (
     DeliveryRequest,
@@ -65,11 +66,41 @@ def make_disruption(scenario: str, route: dict) -> DisruptionEvent | None:
 
 
 def business_check(request: DeliveryRequest, driver_id: str, trip_minutes: float, hour: int) -> dict:
+    """Hard-rule check in code. Shift hours count the empty drive to the pickup as well as the trip."""
     driver = get_driver(driver_id)
     if driver is None:
-        return {"action": "BLOCK", "violations": [f"{driver_id} not found"], "checks": []}
-    r = check_assignment(driver, request.weight_kg, request.pickup, request.dropoff, trip_minutes, hour)
-    return {"driver_id": driver_id, "action": r.action, "violations": r.violations, "checks": r.checks}
+        return {"driver_id": driver_id, "action": "BLOCK", "violations": [f"{driver_id} not found"], "checks": []}
+    empty = deadhead_minutes(driver["current_zone"], request.pickup)
+    r = check_assignment(driver, request.weight_kg, request.pickup, request.dropoff, trip_minutes + empty, hour)
+    return {"driver_id": driver_id, "action": r.action, "violations": r.violations, "checks": r.checks,
+            "trip_minutes": round(trip_minutes, 1), "empty_drive_minutes": empty}
+
+
+def final_assignment(state: dict) -> tuple[str | None, float | None]:
+    """The driver and ETA that actually stand after any exception replan."""
+    dispatch, route, exc = state.get("dispatch") or {}, state.get("route") or {}, state.get("exception") or {}
+    driver = exc.get("new_driver_id") or dispatch.get("driver_id")
+    eta = exc.get("new_eta_mins") or route.get("eta_mins")
+    return driver, eta
+
+
+def final_check(state: dict, request: DeliveryRequest, hour: int) -> dict | None:
+    """Re-run the hard rules on the final driver and final ETA (after a reroute or reassignment)."""
+    driver, eta = final_assignment(state)
+    if not driver or eta is None:
+        return None
+    return business_check(request, driver, float(eta), hour)
+
+
+def mark_failed(spec: RunSpec, architecture: str, state: dict, provenance: list[dict], reason: str) -> None:
+    """Last-resort close of a run so it never stays RUNNING (cancellation, store errors)."""
+    try:
+        run_logger.finish_run(spec.run_id, "FAILED", {
+            "run_id": spec.run_id, "architecture": architecture, "persona": spec.persona, "outcome": "FAILED",
+            "customer_message": "Sorry, we hit a technical problem while planning your delivery.",
+            "error": reason[:300]}, state, provenance)
+    except Exception:  # the store itself may be the thing that failed; nothing more can be recorded
+        pass
 
 
 def no_legal_driver(candidates: dict) -> dict | None:
@@ -99,3 +130,13 @@ def blocked_report(spec: RunSpec, architecture: str, verdict: GuardVerdict, star
                          "is not allowed to follow. Please resend the delivery details only.",
         total_latency_s=round(time.perf_counter() - started, 3), llm_calls=calls, total_tokens=tokens, cost_usd=cost,
     )
+
+
+async def gather_all(*aws):
+    """Like asyncio.gather, but waits for every branch before raising the first error, so no
+    agent keeps spending tokens after the run has already been marked failed."""
+    results = await asyncio.gather(*aws, return_exceptions=True)
+    for r in results:
+        if isinstance(r, BaseException):
+            raise r
+    return results

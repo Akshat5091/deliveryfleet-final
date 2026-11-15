@@ -17,9 +17,8 @@ from crewai.tools import tool
 from src.agents.a2a_client import request_route
 from src.agents.crew_common import PROMPT_STYLES, mcp_server, run_task
 from src.agents.llm import crew_llm
-from src.guardrails.business_guardrails import check_assignment
-from src.mcp.tools.driver_db import get_driver
 from src.observability import tracing
+from src.orchestration.base import business_check
 from src.schemas.decisions import DeliveryRequest, DisruptionEvent, ExceptionReplan
 
 
@@ -39,20 +38,20 @@ def make_reroute_tool(request: DeliveryRequest, hour_of_day: int, prompt_style: 
 
 
 def make_guardrail(request: DeliveryRequest, hour_of_day: int, original_driver: str):
+    """Any plan that keeps a driver on the road (same or new) is re-checked against the hard rules."""
     def _legal(output: TaskOutput) -> tuple[bool, Any]:
         replan: ExceptionReplan | None = output.pydantic
         if replan is None:
             return False, "Return an ExceptionReplan."
-        if replan.action in ("REASSIGN", "REROUTE_AND_REASSIGN"):
-            if not replan.new_driver_id or replan.new_driver_id == original_driver:
-                return False, "A reassignment needs a new_driver_id different from the original driver."
-            driver = get_driver(replan.new_driver_id)
-            if driver is None:
-                return False, f"{replan.new_driver_id} is not in the fleet database."
-            verdict = check_assignment(driver, request.weight_kg, request.pickup, request.dropoff,
-                                       replan.new_eta_mins or 60.0, hour_of_day)
-            if verdict.action == "BLOCK":
-                return False, f"{replan.new_driver_id} is illegal: {'; '.join(verdict.violations)}"
+        if replan.action == "ESCALATE":
+            return True, output
+        if replan.action in ("REASSIGN", "REROUTE_AND_REASSIGN") and (
+                not replan.new_driver_id or replan.new_driver_id == original_driver):
+            return False, "A reassignment needs a new_driver_id different from the original driver."
+        driver = replan.new_driver_id or original_driver
+        verdict = business_check(request, driver, replan.new_eta_mins or 60.0, hour_of_day)
+        if verdict["action"] == "BLOCK":
+            return False, f"{driver} is illegal for this plan: {'; '.join(verdict['violations'])}"
         return True, output
     return _legal
 

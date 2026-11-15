@@ -14,6 +14,7 @@ ADK's structured set_model_response step). All six ADK callback hook points are 
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 from typing import Any
@@ -93,8 +94,9 @@ def before_agent(callback_context: CallbackContext) -> types.Content | None:
     return None
 
 
-def before_model(callback_context: CallbackContext, llm_request: LlmRequest) -> LlmResponse | None:
-    limiter.wait()
+async def before_model(callback_context: CallbackContext, llm_request: LlmRequest) -> LlmResponse | None:
+    # ADK runs callbacks on the server's event loop; the wait must not block other requests.
+    await asyncio.to_thread(limiter.wait)
     _llm_started[callback_context.invocation_id] = time.perf_counter()
     return None
 
@@ -112,7 +114,6 @@ def after_model(callback_context: CallbackContext, llm_response: LlmResponse) ->
         status="ERROR" if llm_response.error_code else "OK",
         preview=text or (f"function_call: {', '.join(calls)}" if calls else ""), ctx=ctx,
     )
-    _llm_started[callback_context.invocation_id] = time.perf_counter()
     return None
 
 

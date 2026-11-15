@@ -57,6 +57,11 @@ def get_driver(driver_id: str) -> dict | None:
         return dict(row) if row else None
 
 
+def deadhead_minutes(driver_zone: str, pickup: str) -> float:
+    """Minutes of empty driving from a driver's zone to the pickup."""
+    return round(deadhead_km(driver_zone, pickup) / (FREE_FLOW_KMH * 0.8) * 60.0, 1)
+
+
 def rank_drivers(pickup: str, dropoff: str, weight_kg: float, deadline_mins: int, hour_of_day: int = 14,
                  closed_corridors: list[str] | None = None, exclude_ids: list[str] | None = None,
                  rainfall_override: dict[str, float] | None = None) -> dict:
@@ -71,13 +76,14 @@ def rank_drivers(pickup: str, dropoff: str, weight_kg: float, deadline_mins: int
         if d["driver_id"] in excluded:
             continue
         empty_km = deadhead_km(d["current_zone"], pickup)
-        empty_min = round(empty_km / (FREE_FLOW_KMH * 0.8) * 60.0, 1)
-        # The deadline runs from pickup; the empty drive to the pickup is reported separately.
+        empty_min = deadhead_minutes(d["current_zone"], pickup)
+        # The deadline runs from pickup; the empty drive to the pickup is reported separately,
+        # but it still counts towards the driver's shift hours.
         slack = deadline_mins - primary["base_eta_mins"]
         f = forecast(primary["distance_km"], primary["speed_factor"], rain, hour_of_day, weight_kg,
                      d["vehicle_type"], zone_of(pickup), zone_of(dropoff), slack_mins=slack)
         total = round(primary["base_eta_mins"] + f.mean_mins, 1)
-        rules = check_assignment(d, weight_kg, pickup, dropoff, total, hour_of_day)
+        rules = check_assignment(d, weight_kg, pickup, dropoff, total + empty_min, hour_of_day)
         candidates.append({
             "driver_id": d["driver_id"], "name": d["name"], "vehicle_type": d["vehicle_type"],
             "current_zone": d["current_zone"], "capacity_kg": d["capacity_kg"], "hours_worked": d["hours_worked"],

@@ -42,7 +42,9 @@ class RateLimiter:
             time.sleep(slot - now)
 
 
-limiter = RateLimiter(LLM_RPM)
+# Two processes call Gemini (the web app and the ADK route service), each with its own limiter,
+# so each gets half of the key's per-minute budget and together they stay under LLM_RPM.
+limiter = RateLimiter(max(LLM_RPM // 2, 1))
 
 
 def is_retryable(exc: BaseException) -> bool:

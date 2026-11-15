@@ -9,7 +9,6 @@ the run is auditable.
 """
 from __future__ import annotations
 
-import asyncio
 import time
 
 from src.agents import crew_dispatch_agent, crew_exception_agent, crew_retrieval_agent, crew_supervisor
@@ -21,7 +20,10 @@ from src.orchestration.base import (
     blocked_report,
     business_check,
     guard_input,
+    final_check,
+    gather_all,
     make_disruption,
+    mark_failed,
     no_legal_driver,
 )
 from src.orchestration.blackboard_manager import Blackboard
@@ -32,11 +34,11 @@ from src.schemas.decisions import DeliveryRequest, DisruptionEvent, FinalDeliver
 ARCHITECTURE = "parallel"
 
 
-async def run(spec: RunSpec) -> FinalDeliveryReport:
+async def _run(spec: RunSpec) -> FinalDeliveryReport:
     started = time.perf_counter()
     run_logger.start_run(spec.run_id, architecture=ARCHITECTURE, persona=spec.persona, prompt_style=spec.prompt_style,
                          scenario=spec.scenario, order_id=(spec.order or {}).get("order_id"), source=spec.source,
-                         input_text=spec.message)
+                         input_text="")
     bb = Blackboard(spec.run_id, on_change=_bb_logger(spec.run_id))
     with tracing.tracer().start_as_current_span("mas.run", attributes={
             "run_id": spec.run_id, "architecture": ARCHITECTURE, "persona": spec.persona,
@@ -62,7 +64,7 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
                 return candidates, await crew_dispatch_agent.decide(spec.run_id, request, None, candidates,
                                                                     spec.hour_of_day, spec.prompt_style)
 
-            compliance, (candidates, decision), plan = await asyncio.gather(
+            compliance, (candidates, decision), plan = await gather_all(
                 crew_retrieval_agent.retrieve_rules(spec.run_id, request, spec.hour_of_day, spec.prompt_style),
                 blind_dispatch(),
                 request_route({"pickup": request.pickup, "dropoff": request.dropoff, "weight_kg": request.weight_kg,
@@ -87,6 +89,9 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
                                                             DisruptionEvent.model_validate(event.model_dump()),
                                                             spec.hour_of_day, spec.prompt_style)
                 bb.write("exception", replan, "exception_agent", replan.action)
+                check = final_check(bb.snapshot(), request, spec.hour_of_day)
+                if check:
+                    bb.write("business_check", check, "business_guardrail", "re-check after replan")
 
             review = await crew_supervisor.review(spec.run_id, bb.view_for("supervisor"), request.deadline_mins,
                                                   spec.prompt_style)
@@ -98,4 +103,9 @@ async def run(spec: RunSpec) -> FinalDeliveryReport:
             report = build_report(spec, ARCHITECTURE, bb.snapshot(), started, error=str(exc))
         return finish(spec, report, bb.snapshot(), bb.provenance())
 
-
+async def run(spec: RunSpec) -> FinalDeliveryReport:
+    try:
+        return await _run(spec)
+    except BaseException as exc:  # cancellation or a failing store: never leave the run RUNNING
+        mark_failed(spec, ARCHITECTURE, {}, [], repr(exc))
+        raise

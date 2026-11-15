@@ -10,7 +10,7 @@ from src.web import app as web
 @pytest.fixture()
 def client(monkeypatch):
     started: list = []
-    monkeypatch.setattr(web, "launch", lambda spec, arch: started.append((spec, arch)) or {"run_id": spec.run_id, "message": spec.message})
+    monkeypatch.setattr(web, "launch", lambda spec, arch, ip: started.append((spec, arch)) or {"run_id": spec.run_id, "message": spec.message})
     with TestClient(web.app) as c:
         c.started = started
         yield c
