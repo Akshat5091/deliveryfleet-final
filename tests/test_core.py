@@ -177,3 +177,12 @@ def test_peer_inbox_only_sees_direct_messages():
     inbox.send("a", "b", {"x": 1})
     assert inbox.receive("b") == {"x": 1}
     assert inbox.receive("c") is None
+
+
+def test_benchmark_shards_cover_every_cell_exactly_once():
+    from src.evaluation.benchmark_runner import matrix, shard_of
+
+    cells = matrix()
+    ids = [c["run_id"] for k in range(4) for c in shard_of(cells, (k, 4))]
+    assert len(cells) == 72
+    assert sorted(ids) == sorted(c["run_id"] for c in cells)

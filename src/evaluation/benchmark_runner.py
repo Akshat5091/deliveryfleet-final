@@ -9,6 +9,7 @@ can be stopped and restarted: finished runs and judged runs are skipped.
 
   uv run python -m src.evaluation.benchmark_runner            # run + judge + report
   uv run python -m src.evaluation.benchmark_runner --report   # only rebuild charts/summary
+  uv run python -m src.evaluation.benchmark_runner --shard 0/4 --skip-judge   # one of 4 parallel processes
 """
 from __future__ import annotations
 
@@ -52,10 +53,25 @@ def matrix() -> list[dict]:
             for a, s, p, o in itertools.product(ARCHITECTURES, STYLES, PERSONAS, ORDERS)]
 
 
-async def execute(fresh: bool = False, concurrency: int = 3) -> None:
+def shard_of(cells: list[dict], shard: tuple[int, int] | None) -> list[dict]:
+    """Every n-th cell starting at k, so n processes (one per API key) split the matrix evenly."""
+    if shard is None:
+        return cells
+    k, n = shard
+    return [c for i, c in enumerate(cells) if i % n == k]
+
+
+def parse_shard(text: str) -> tuple[int, int]:
+    k, n = (int(x) for x in text.split("/"))
+    if not 0 <= k < n:
+        raise argparse.ArgumentTypeError("shard must be k/n with 0 <= k < n, e.g. 0/4")
+    return k, n
+
+
+async def execute(fresh: bool = False, concurrency: int = 3, shard: tuple[int, int] | None = None) -> None:
     """Run every unfinished cell, `concurrency` at a time. Each run has its own Blackboard,
     trace and run id, so parallel runs never share state."""
-    cells = matrix()
+    cells = shard_of(matrix(), shard)
     gate = asyncio.Semaphore(concurrency)
 
     async def one(i: int, cell: dict) -> None:
@@ -94,10 +110,13 @@ async def judge_all(concurrency: int = 4) -> None:
     await asyncio.gather(*(one(c) for c in matrix()))
 
 
-async def run_and_judge(fresh: bool, concurrency: int) -> None:
+async def run_and_judge(fresh: bool, concurrency: int, shard: tuple[int, int] | None = None,
+                        run: bool = True, judge: bool = True) -> None:
     """One event loop for both steps: the cached Gemini client must not outlive its loop."""
-    await execute(fresh, concurrency)
-    await judge_all()
+    if run:
+        await execute(fresh, concurrency, shard)
+    if judge:
+        await judge_all()
 
 
 def collect() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -200,10 +219,16 @@ def main() -> None:
     parser.add_argument("--report", action="store_true", help="only rebuild charts and summary")
     parser.add_argument("--fresh", action="store_true", help="re-run every cell")
     parser.add_argument("--concurrency", type=int, default=3, help="runs executed at the same time")
+    parser.add_argument("--shard", type=parse_shard, help="k/n: run only this process's share of the matrix")
+    parser.add_argument("--skip-judge", action="store_true", help="run cells but leave judging for later")
+    parser.add_argument("--judge-only", action="store_true", help="only judge finished runs")
     args = parser.parse_args()
     if not args.report:
         tracing.init("deliveryfleet-benchmark")
-        asyncio.run(run_and_judge(args.fresh, args.concurrency))
+        asyncio.run(run_and_judge(args.fresh, args.concurrency, args.shard,
+                                  run=not args.judge_only, judge=not args.skip_judge))
+    if args.shard:
+        return  # shards share one database; the report is built once, after the last shard
     s = build_report()
     print(json.dumps(s["headline"], indent=2))
 
