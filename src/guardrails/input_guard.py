@@ -66,7 +66,7 @@ async def screen(text: str, use_llm_judge: bool = True) -> GuardVerdict:
     injection, toxic, pii, sanitized = regex_screen(text or "")
     judge_label = None
     if not injection and use_llm_judge:
-        judge_label = await _llm_judge(text)
+        judge_label = await _llm_judge(sanitized)
         if judge_label == "UNSAFE":
             injection = ["llm-judge: paraphrased instruction override"]
     if injection:
@@ -87,4 +87,5 @@ async def _llm_judge(text: str) -> str:
     from src.agents.llm import gemini_generate
 
     reply = await gemini_generate(JUDGE_PROMPT + text, agent="input_guard_judge", max_tokens=20, thinking="minimal")
-    return "UNSAFE" if "UNSAFE" in reply.upper() else "SAFE"
+    # Fail closed: anything other than a clear SAFE (empty, cut off, filtered) counts as UNSAFE.
+    return "SAFE" if reply.strip().upper().rstrip(".") == "SAFE" else "UNSAFE"

@@ -38,6 +38,8 @@ async def guard_input(spec: RunSpec) -> GuardVerdict:
         verdict = await input_guard.screen(spec.message)
     finally:
         tracing.reset_context(token)
+    # Never keep the raw message: PII and abuse are stored only in masked form.
+    run_logger.set_input_text(spec.run_id, verdict.sanitized_text)
     run_logger.log_event(spec.run_id, "guardrail", "input_guard", "Guardrail", name="input_screen",
                          duration_ms=verdict.latency_ms, status=verdict.status, payload=verdict.model_dump())
     return verdict
@@ -53,8 +55,8 @@ def make_disruption(scenario: str, route: dict) -> DisruptionEvent | None:
         return DisruptionEvent(kind="CORRIDOR_CLOSED", closed_corridor=first_leg,
                                detail=f"Police barricade after an accident closes {first_leg} for 2 hours.")
     if scenario == "breakdown":
-        return DisruptionEvent(kind="VEHICLE_BREAKDOWN", closed_corridor=first_leg if first_leg else None,
-                               detail="Assigned vehicle reports a flat tyre and cannot continue.")
+        return DisruptionEvent(kind="VEHICLE_BREAKDOWN",
+                               detail="Assigned vehicle reports a flat tyre and cannot continue; roads are open.")
     if scenario == "rain_spike":
         return DisruptionEvent(kind="WEATHER_SPIKE", rainfall_mm=18.0,
                                detail="Cloudburst: rainfall jumps to 18 mm/h across Zone D.")

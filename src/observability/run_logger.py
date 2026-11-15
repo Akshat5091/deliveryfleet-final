@@ -94,6 +94,13 @@ def start_run(run_id: str, **fields: Any) -> None:
         con.commit()
 
 
+def set_input_text(run_id: str, text: str) -> None:
+    """Replace the stored customer message with the guard's masked version."""
+    with closing(_connect()) as con:
+        con.execute("UPDATE runs SET input_text = ? WHERE run_id = ?", (text, run_id))
+        con.commit()
+
+
 def finish_run(run_id: str, status: str, report: dict, blackboard: dict, provenance: list[dict]) -> None:
     with closing(_connect()) as con:
         con.execute(
