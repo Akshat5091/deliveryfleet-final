@@ -15,7 +15,7 @@ the data, the file names the Eval-2 report cites, the 72-run design.
 | Blackboard | Written to, but downstream agents mostly got their inputs as function arguments | Every hand-off goes through the Blackboard; each agent may read only its own sections; every read and write logged |
 | Callbacks | A callback class existed but nothing called it | CrewAI event listener and tool hooks, all six ADK callbacks, wired into every run |
 | Tokens and cost | Hard-coded (`740 if not simulate_exception else 1045`) | Taken from Gemini's usage data on every call, thinking tokens included |
-| "LLM-as-judge" | A hand-written formula (`0.25*input + 0.35*dispatch + ...`) | A real Gemini 3.6 Flash judge with a rubric, plus reference answers computed from the tools |
+| "LLM-as-judge" | A hand-written formula (`0.25*input + 0.35*dispatch + ...`) | A real Gemini judge with a rubric at temperature 0, plus reference answers computed from the tools |
 | Heatmaps | Some cells filled with generated fallback values | Every value comes from logged runs |
 | 72 runs | Finished in minutes because nothing called an LLM | About an hour on the free tier, because every run makes about 16 real calls |
 

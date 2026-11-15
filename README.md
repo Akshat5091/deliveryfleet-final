@@ -98,9 +98,11 @@ deploy/            Hugging Face deployment guide
 
 ## Models and cost
 
-Workers use `gemini-3.5-flash-lite`; the LLM judge uses the stronger `gemini-3.6-flash`. Costs in the
+Every agent, the input guard and the LLM judge use `gemini-3.1-flash-lite`, the cheapest Gemini model
+open to new API keys ($0.25 in / $1.50 out per 1M tokens). Each role has its own setting
+(`WORKER_MODEL`, `ROUTE_MODEL`, `JUDGE_MODEL`) so it can be changed from `.env`. Costs in the
 app use Google's published paid-tier prices (see `src/config.py`). A normal run makes about 16 LLM
-calls and costs about $0.02; a run with a disruption about 27 calls and $0.04. Thinking tokens are
+calls and costs about $0.015; a run with a disruption about 27 calls and $0.03. Thinking tokens are
 included in the cost.
 
 ## Known limitations
