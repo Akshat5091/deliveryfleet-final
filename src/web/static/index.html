@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeliveryFleet MAS · Dispatch Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <h1>DeliveryFleet MAS</h1>
+      <p>Multi-agent dispatch desk · CSE3101 Agentic AI · Group 8</p>
+    </div>
+  </div>
+  <ul class="status" id="status" aria-label="Service status">
+    <li data-svc="mcp_server">MCP tools</li>
+    <li data-svc="a2a_route_service">ADK route service (A2A)</li>
+    <li data-svc="llm_key">Gemini</li>
+  </ul>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" aria-selected="true" data-tab="dispatch">Dispatch</button>
+  <button role="tab" aria-selected="false" data-tab="how">How it works</button>
+  <button role="tab" aria-selected="false" data-tab="runs">Runs</button>
+  <button role="tab" aria-selected="false" data-tab="evaluation">Evaluation</button>
+  <button role="tab" aria-selected="false" data-tab="data">Fleet &amp; data</button>
+</nav>
+
+<main>
+<!-- ============ DISPATCH ============ -->
+<section id="tab-dispatch" class="tab-panel" role="tabpanel">
+  <div class="dispatch-grid">
+    <aside class="control">
+      <h2>Demo cases</h2>
+      <ol class="cases" id="cases"></ol>
+
+      <details class="custom" id="custom">
+        <summary>Custom run</summary>
+        <form id="run-form">
+          <label>Order
+            <select name="order_id" id="f-order"></select>
+          </label>
+          <label>Customer persona
+            <select name="persona" id="f-persona"></select>
+          </label>
+          <label>Message <span class="hint">edit freely; it goes through the input guard</span>
+            <textarea name="message" id="f-message" rows="5" maxlength="1200"></textarea>
+          </label>
+          <div class="row">
+            <label>Architecture
+              <select name="architecture">
+                <option value="hierarchical">Hierarchical (deployed)</option>
+                <option value="sequential">Sequential · P2P</option>
+                <option value="parallel">Parallel · broadcast</option>
+              </select>
+            </label>
+            <label>Prompt style
+              <select name="prompt_style"><option>ReAct</option><option>Direct</option></select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Mid-route event
+              <select name="scenario">
+                <option value="normal">None</option>
+                <option value="corridor_closed">Road closed</option>
+                <option value="breakdown">Vehicle breakdown</option>
+                <option value="rain_spike">Rain spike (Zone D)</option>
+              </select>
+            </label>
+            <label>Clock
+              <select name="hour_of_day" id="f-hour"></select>
+            </label>
+          </div>
+          <button type="submit" class="primary">Dispatch</button>
+        </form>
+      </details>
+    </aside>
+
+    <div class="live" id="live">
+      <div class="live-head">
+        <div>
+          <p class="eyebrow" id="run-id">No run yet</p>
+          <h2 id="run-title">Pick a demo case to start</h2>
+          <p class="input-text" id="run-input"></p>
+        </div>
+        <div class="clock" id="run-clock" aria-live="polite">0.0 s</div>
+      </div>
+
+      <ol class="pipeline" id="pipeline" aria-label="Agent pipeline"></ol>
+
+      <div class="live-grid">
+        <figure class="map-wrap">
+          <figcaption>Zone network <span class="hint" id="map-note">corridor chosen by the Route Agent</span></figcaption>
+          <svg id="map" viewBox="0 0 420 300" role="img" aria-label="Zone network map"></svg>
+        </figure>
+        <div class="report" id="report">
+          <h3>Final delivery report</h3>
+          <p class="empty">Appears when the Supervisor signs off.</p>
+        </div>
+      </div>
+
+      <div class="panes">
+        <section class="pane">
+          <header class="pane-head">
+            <h3>Event log</h3>
+            <div class="filters" id="filters" role="group" aria-label="Filter events">
+              <button data-kind="all" aria-pressed="true">All</button>
+              <button data-kind="llm_call" aria-pressed="false">LLM</button>
+              <button data-kind="tool_call" aria-pressed="false">MCP tools</button>
+              <button data-kind="a2a_message" aria-pressed="false">A2A</button>
+              <button data-kind="blackboard" aria-pressed="false">Blackboard</button>
+              <button data-kind="guardrail" aria-pressed="false">Guardrails</button>
+            </div>
+          </header>
+          <ol class="log" id="log"></ol>
+        </section>
+        <section class="pane">
+          <header class="pane-head"><h3>Blackboard</h3><span class="hint">shared state, latest version per section</span></header>
+          <dl class="board" id="board"></dl>
+          <header class="pane-head sub"><h3>Per-agent heat</h3><span class="hint">darker = larger share of this run</span></header>
+          <div id="heat"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section id="tab-how" class="tab-panel" role="tabpanel" hidden>
+  <div class="prose">
+    <h2>One supervisor, four workers, two frameworks</h2>
+    <p class="lede">A customer message goes through a guard, then the Supervisor splits the job between four specialist agents. They never call each other's code: each one reads its part of a shared <strong>blackboard</strong>, uses tools only through the <strong>MCP server</strong>, and the Route Agent lives in a separate Google ADK service reached over <strong>A2A</strong>.</p>
+  </div>
+  <div id="arch"></div>
+  <h2 class="section-title">Where each requirement lives</h2>
+  <table class="grid-table" id="criteria"></table>
+</section>
+
+<!-- ============ RUNS ============ -->
+<section id="tab-runs" class="tab-panel" role="tabpanel" hidden>
+  <div class="section-head">
+    <h2>All runs</h2>
+    <p class="hint">Every run has its own ID, trace and blackboard record. Click one to replay it on the Dispatch tab.</p>
+  </div>
+  <table class="grid-table runs" id="runs-table"></table>
+</section>
+
+<!-- ============ EVALUATION ============ -->
+<section id="tab-evaluation" class="tab-panel" role="tabpanel" hidden>
+  <div id="evaluation"></div>
+</section>
+
+<!-- ============ DATA ============ -->
+<section id="tab-data" class="tab-panel" role="tabpanel" hidden>
+  <div id="data"></div>
+</section>
+</main>
+
+<footer class="foot">
+  Bhumika Yadav (230732) · Aadit Bassi (230728) · Akshat Nagori (230682) · Sahil Mudgil (230743) · BML Munjal University
+</footer>
+<script src="/static/app.js" type="module"></script>
+</body>
+</html>
