@@ -111,7 +111,7 @@ async def recover(run_id: str, request: DeliveryRequest, dispatch: dict, route: 
         verbose=False,
     )
     remaining = max(request.deadline_mins - event.at_minute, 1)
-    # The old plan's alternative is a base time without a delay forecast; showing it invites a wrong ETA.
+    # alternative_eta_mins has no delay forecast in it, so don't show it
     route = {k: v for k, v in route.items() if not k.startswith("alternative_")}
     task = Task(
         description=(
@@ -134,12 +134,12 @@ async def recover(run_id: str, request: DeliveryRequest, dispatch: dict, route: 
     )
     replan = await run_task(run_id, "exception_agent", agent, task, ExceptionReplan)
     if replan.action == "ESCALATE":
-        # Report the best detour the Route Agent actually found (the reason for escalating), or none.
+        # show the detour the Route Agent found (why we escalated)
         match = [p for p in plans if p["corridor"] == replan.new_corridor] or plans[-1:]
         replan = replan.model_copy(update={"new_corridor": match[-1]["corridor"] if match else None,
                                            "new_eta_mins": match[-1]["eta_mins"] if match else None})
     elif replan.action in ("REROUTE", "REROUTE_AND_REASSIGN"):
-        # Code is the source of truth for the ETA: always the Route Agent's number, never the LLM's copy.
+        # always use the Route Agent's ETA, not the LLM's copy
         eta = routed_eta(replan, plans)
         if eta is None or eta > request.deadline_mins:
             replan = replan.model_copy(update={

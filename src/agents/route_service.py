@@ -14,7 +14,7 @@ from src.config import A2A_PORT, HOST
 from src.observability import tracing
 
 tracing.init("deliveryfleet-adk-route-service")
-mark_route_service()  # this process gets the Route Agent's share of the shared model's budget
+mark_route_service()
 
 
 def build_app():

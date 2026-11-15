@@ -62,17 +62,16 @@ async def security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "no-referrer"
-    # Hugging Face shows the app inside an iframe on huggingface.co, so framing is allowed only from there.
+    # HF shows the Space inside an iframe on huggingface.co
     response.headers["Content-Security-Policy"] = "frame-ancestors 'self' https://huggingface.co https://*.hf.space"
     if request.url.path.startswith(("/static/", "/artifacts/")) or request.url.path == "/":
-        # Revalidate on every load (a cheap 304 via the ETag) so a redeploy never serves an old app.js or chart.
+        # no stale app.js after a redeploy
         response.headers["Cache-Control"] = "no-cache"
     return response
 
 
 def client_ip(request: Request) -> str:
-    # The right-most X-Forwarded-For entry is added by the hosting proxy; the ones before it come from
-    # the client and can be made up to dodge the one-run-per-visitor limit.
+    # last entry is added by the proxy; earlier ones can be faked by the client
     forwarded = request.headers.get("x-forwarded-for", "")
     return forwarded.split(",")[-1].strip() or (request.client.host if request.client else "unknown")
 
@@ -121,10 +120,9 @@ def launch(spec: RunSpec, architecture: str, ip: str) -> dict:
         raise HTTPException(429, "You already have a run in progress. Please wait for it to finish.")
     if len(_active) >= MAX_ACTIVE_RUNS:
         raise HTTPException(429, f"{MAX_ACTIVE_RUNS} runs are already in progress. Please wait a few seconds.")
-    # A stalled Gemini or A2A call must not hold one of the two run slots forever: after RUN_TIMEOUT_S
-    # the run is cancelled, and the orchestrator's cancellation handler closes it as FAILED.
+    # a stuck run is cancelled (and marked FAILED) instead of holding a slot forever
     task = asyncio.create_task(asyncio.wait_for(get_orchestrator(architecture)(spec), RUN_TIMEOUT_S))
-    task.add_done_callback(lambda t: t.cancelled() or t.exception())  # mark the outcome as seen
+    task.add_done_callback(lambda t: t.cancelled() or t.exception())
     _active[spec.run_id] = (task, ip)
     return {"run_id": spec.run_id, "message": spec.message}
 
@@ -179,8 +177,7 @@ async def stream(run_id: str, request: Request):
             while True:
                 if await request.is_disconnected():
                     return
-                # Status first, events second: if the run was already finished before this batch was
-                # read, an empty batch really means nothing is left to send.
+                # read status before events, so no final event is missed
                 status = await asyncio.to_thread(run_logger.run_status, run_id)
                 batch = await asyncio.to_thread(run_logger.events_after, run_id, last)
                 for ev in batch:

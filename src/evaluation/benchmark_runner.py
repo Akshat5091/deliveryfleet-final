@@ -183,7 +183,7 @@ def build_report() -> dict:
 
     by_arch = served.groupby("architecture").agg(
         runs=("run_id", "count"), p50_latency_s=("latency_s", "median"),
-        # p95, not p99: with 18 runs per architecture p99 is just the single slowest run.
+        # p95 not p99: only 18 runs per architecture
         p95_latency_s=("latency_s", lambda s: s.quantile(0.95)), mean_latency_s=("latency_s", "mean"),
         mean_tokens=("tokens", "mean"), mean_cost_usd=("cost_usd", "mean"), judge_mean=("judge_overall", "mean"),
         driver_match=("driver_ok", "mean"), corridor_match=("corridor_ok", "mean"),
@@ -207,7 +207,7 @@ def build_report() -> dict:
         {"file": viz.prompt_style_cost(served),
          "title": "Cost of each prompt style", "caption": "ReAct vs Direct on the same inputs: time and tokens per run."},
     ]
-    # Stacked copies of the two full-width charts, so they stay readable on an A4 page in the report.
+    # narrower versions of the wide charts for the A4 report
     viz.per_agent_heatmaps(agents[agents["persona"] != "injection"], stacked=True)
     viz.prompt_style_cost(served, stacked=True)
     sens = sensitivity_specificity(df.to_dict("records"))
@@ -249,7 +249,7 @@ def main() -> None:
         asyncio.run(run_and_judge(args.fresh, args.concurrency, args.shard,
                                   run=not args.judge_only, judge=not args.skip_judge))
     if args.shard:
-        return  # shards share one database; the report is built once, after the last shard
+        return  # report is built once, after all shards
     s = build_report()
     print(json.dumps(s["headline"], indent=2))
 

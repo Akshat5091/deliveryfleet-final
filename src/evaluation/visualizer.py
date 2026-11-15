@@ -15,8 +15,7 @@ import pandas as pd
 from src.config import ARTIFACTS_DIR
 
 ARCH_COLOURS = {"hierarchical": "#991b1b", "sequential": "#2a78d6", "parallel": "#1baf7a"}
-# Two chart widths only, so every chart's text prints at the same size on the website and in the
-# report: a half-width card holds a HALF_W figure, a full-width card a FULL_W figure.
+# fixed widths so text is the same size in every chart
 HALF_W, FULL_W = 7.2, 14.4
 INK, MUTED, GRID = "#111827", "#4b5563", "#e5e7eb"
 AGENTS = ["supervisor", "retrieval_agent", "dispatch_agent", "route_agent", "exception_agent"]
@@ -25,7 +24,6 @@ plt.rcParams.update({
     "font.family": "DejaVu Sans", "font.size": 9.5, "axes.edgecolor": "#9ca3af", "axes.labelcolor": INK,
     "xtick.color": MUTED, "ytick.color": MUTED, "axes.titleweight": "bold", "axes.titlesize": 11,
     "axes.titlecolor": INK, "axes.titlelocation": "left", "figure.dpi": 150, "savefig.dpi": 400,
-    # Fixed output size (no tight crop) with constrained layout: every half chart is exactly HALF_W wide.
     "savefig.bbox": "standard", "figure.constrained_layout.use": True,
 })
 

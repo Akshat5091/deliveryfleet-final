@@ -114,7 +114,7 @@ def _after_tool(ctx: ToolCallHookContext) -> str | None:
 
 
 _installed = False
-_listener: FleetEventListener | None = None  # module-level reference keeps the listener registered
+_listener: FleetEventListener | None = None  # keep a reference so it is not garbage collected
 
 
 def install() -> None:

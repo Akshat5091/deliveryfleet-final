@@ -46,9 +46,7 @@ A2A_PORT = int(os.getenv("A2A_PORT", "8002"))
 MCP_URL = os.getenv("MCP_URL", f"http://{HOST}:{MCP_PORT}/mcp")
 A2A_URL = os.getenv("A2A_URL", f"http://{HOST}:{A2A_PORT}")
 
-# Every agent and the input guard run on Gemini 3.1 Flash-Lite, the cheapest Gemini model open to
-# new keys. The judge uses a different model so it does not grade its own model's answers.
-# Gemini rate limits are per model, so each distinct model has its own budget.
+# cheapest model for the agents; a different one for the judge so it doesn't grade itself
 WORKER_MODEL = os.getenv("WORKER_MODEL", "gemini-3.1-flash-lite")
 ROUTE_MODEL = os.getenv("ROUTE_MODEL", "gemini-3.1-flash-lite")
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-3.5-flash-lite")

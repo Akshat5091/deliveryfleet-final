@@ -336,7 +336,7 @@ textarea::placeholder { color: #6b7280; }
 .kpis div { padding: 14px 16px; border-right: 1px solid var(--seam); }
 .kpis b { display: block; font-size: 1.7rem; font-weight: 750; color: var(--ink); font-stretch: 88%; }
 .kpis span { font-size: .8rem; color: var(--muted); }
-/* Evaluation: one question per section, a strict two-column grid, captions as card headers. */
+/* ---------------------------------------------------------------- evaluation */
 .ev-section { margin-top: 34px; }
 .ev-section > h3 { font-size: 1.2rem; letter-spacing: -.01em; }
 .ev-section > .lead { color: var(--muted); max-width: 78ch; margin: 6px 0 14px; }

@@ -33,7 +33,7 @@ _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
 FINAL_TAG = "/*FINAL_ANSWER*/"
 ATTEMPTS = 3
-RATE_LIMIT_WAIT_S = 20  # Gemini per-minute quota: wait 20 s, then 40 s, before asking the service again
+RATE_LIMIT_WAIT_S = 20  # then 40 s
 
 
 def _parse_plan(text: str) -> RoutePlan:
@@ -47,7 +47,7 @@ def _parse_plan(text: str) -> RoutePlan:
     if "error" in data:
         raise A2AError(f"route agent refused: {data['error']}")
     plan = RoutePlan.model_validate(data)
-    # The ETA is arithmetic on two tool numbers; recompute it rather than trust the model's sum.
+    # recompute the sum instead of trusting the model
     return plan.model_copy(update={"eta_mins": round(plan.base_eta_mins + plan.delay_mean_mins, 1)})
 
 
@@ -100,11 +100,11 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
                                  status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
                                                           "attempt": attempt, "error": str(exc), "raw": final[-800:]})
             if daily_quota_spent(exc):
-                break  # the daily quota resets at midnight Pacific; retrying only delays the failure
+                break  # daily quota: retrying won't help
             if attempt < ATTEMPTS and rate_limited(exc):
                 await asyncio.sleep(RATE_LIMIT_WAIT_S * attempt)
             elif attempt < ATTEMPTS and (is_retryable(exc) or isinstance(exc, httpx.HTTPError)):
-                await asyncio.sleep(2 ** attempt)  # Gemini overload or a network blip clears in seconds
+                await asyncio.sleep(2 ** attempt)
             continue
         ms = round((time.perf_counter() - start) * 1000, 1)
         run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,

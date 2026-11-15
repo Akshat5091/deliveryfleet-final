@@ -57,9 +57,9 @@ class RateLimiter:
             self._sleep(delay)
 
 
-# Set by the ADK route service at start-up: the shared model's budget is split between processes.
+# set by the route service at start-up (it gets a smaller share of the per-minute budget)
 _route_process = False
-ROUTE_SHARE = 0.2  # measured: the Route Agent makes 3 of a booking's 14 calls (6 when it also reroutes)
+ROUTE_SHARE = 0.2  # Route Agent: about 3 of a booking's 14 calls
 
 
 def mark_route_service() -> None:
@@ -74,7 +74,7 @@ def shared_budget(rpm: int, route_process: bool) -> int:
     return route if route_process else max(1, rpm - route)
 
 
-# Gemini counts requests per model, so each model gets its own limiter.
+# Gemini rate limits are per model
 _limiters: dict[str, RateLimiter] = {}
 _limiters_lock = threading.Lock()
 
@@ -147,8 +147,7 @@ _client: genai.Client | None = None
 def genai_client() -> genai.Client:
     global _client
     if _client is None:
-        # Without a timeout a stalled connection would wait forever (google-genai's default is none).
-        _client = genai.Client(http_options=types.HttpOptions(timeout=90_000))  # milliseconds
+        _client = genai.Client(http_options=types.HttpOptions(timeout=90_000))  # ms
     return _client
 
 

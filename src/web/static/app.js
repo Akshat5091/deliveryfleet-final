@@ -73,7 +73,7 @@ function drawCity(svg, { from, to, primary, detour, closed, label = true } = {})
   const pin = (loc, cls, letter) => {
     if (!loc) return "";
     const [x, y] = locPoint(loc); const name = loc.split(" - ").slice(1).join(" - ");
-    // The map is 640 wide; flip a label to the pin's left only when it would run off the right edge.
+    // flip the label above the pin if it would run off the map
     const left = x + 14 + (letter.length + name.length + 3) * 7.4 > 636;
     return `<g class="pt ${cls}"><circle class="ring" cx="${x}" cy="${y}" r="9"/><circle cx="${x}" cy="${y}" r="3.5" fill="${cls === "to" ? "var(--crimson)" : "var(--ink)"}"/>
       <text x="${left ? x + 8 : x + 14}" y="${left ? y - 16 : y + 4}" text-anchor="${left ? "end" : "start"}">${esc(letter)} · ${esc(name)}</text></g>`;
@@ -122,12 +122,11 @@ $$("[data-go]").forEach((a) => a.addEventListener("click", (e) => { e.preventDef
 function stream(runId, onEvent, onDone) {
   const url = `/api/runs/${encodeURIComponent(runId)}`;
   const src = new EventSource(`${url}/stream`);
-  // When the page closes this stream (a new run started), any fallback polling must stop too.
+  // stop polling once a new run replaces this stream
   let superseded = false;
   const closeStream = src.close.bind(src);
   src.close = () => { superseded = true; closeStream(); };
-  // If the live stream stops (idle timeout, too many viewers, network), keep checking the run
-  // until it finishes, so the page never waits forever.
+  // if the stream drops, poll until the run ends
   const poll = async () => {
     closeStream();
     for (;;) {
@@ -300,7 +299,6 @@ async function onBookDone({ run }) {
     await animateRider($("#bmap"), pts, 7000);
     renderTimeline(steps, 6);
     $("#t-title").textContent = r.outcome === "ESCALATED" ? "Delivered, late" : "Delivered";
-    // The agents' message was written at dispatch ("on the way"); once the ride ends, say what happened.
     $("#t-sub").textContent = `Dropped at ${to.split(" - ")[1]} by ${driver.name || disp.driver_name} in about `
       + `${Math.round(route.eta_mins)} min. Fare ₹${book.fare}.`;
   }
@@ -358,7 +356,7 @@ function renderCounters() {
 }
 
 function postmark(stage, label, tone) {
-  // Stamp the time the event happened (a replay must show the run's time, not the time it is replayed).
+  // replays show the run's own time
   const t = (live.ts ? new Date(live.ts * 1000) : new Date()).toTimeString().slice(0, 8);
   const id = `pm-${stage.id}-${Math.random().toString(36).slice(2, 7)}`;
   const rot = (hash(stage.id + t) % 17) - 11;
@@ -650,8 +648,7 @@ function archTable(rows) {
     <tbody>${body}</tbody></table>`;
 }
 
-// Each section answers one question: charts sit in a two-column grid (half-width charts are drawn
-// 7.2 in wide, full-width ones 14.4 in, so their text prints at one size) next to a short reading of them.
+// one question per section, charts in a two-column grid
 function evalSections(ev) {
   const figs = Object.fromEntries(ev.figures.map((f) => [f.file, f]));
   const used = new Set();
@@ -759,7 +756,7 @@ function renderHow() {
   const box = (x, y, w, h, t, s, accent) => `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${accent ? "#fbeeee" : "#f7f8f9"}" stroke="${accent ? "#991b1b" : "#d1d5db"}"/>
     <text x="${x + w / 2}" y="${y + h / 2 - 3}" text-anchor="middle" font-weight="700" font-size="14" fill="#111827">${t}</text>
     <text x="${x + w / 2}" y="${y + h / 2 + 14}" text-anchor="middle" font-size="11.5" fill="#4b5563">${s}</text></g>`;
-  // Each label is placed beside its arrow (lx, ly, anchor) with a white halo, so it never sits on a line.
+  // labels placed by hand next to their arrow
   const arrow = (x1, y1, x2, y2, dash = false, label = "", lx = 0, ly = 0, anchor = "middle") =>
     `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111827" stroke-width="1.4" ${dash ? 'stroke-dasharray="5 4"' : ""} marker-end="url(#ah)"/>
     ${label ? `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="11.5" font-weight="650" fill="#991b1b" stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${label}</text>` : ""}`;

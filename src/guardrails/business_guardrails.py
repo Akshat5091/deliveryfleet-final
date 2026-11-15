@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from src.config import FATIGUE_MAX_TRIP_MINS, FATIGUE_WARN_HOURS, MAX_SHIFT_HOURS
 from src.mcp.tools.routing_engine import zone_of
 
-ZONE_B_PEAK = range(17, 20)  # 17:00 to 20:00, as in delivery_zone_rules.txt (same convention as the EV window)
+ZONE_B_PEAK = range(17, 20)  # 17:00-20:00
 ZONE_B_PEAK_LIMIT_KG = 50.0
 ZONE_A_TRUCK_LIMIT_KG = 150.0
 ZONE_A_EV_WINDOW = range(9, 19)
