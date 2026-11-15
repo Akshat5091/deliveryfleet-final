@@ -100,6 +100,8 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
             run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
                                  status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
                                                           "attempt": attempt, "error": str(exc), "raw": final[-800:]})
+            if "PerDay" in str(exc):
+                break  # the daily quota resets at midnight Pacific; retrying only delays the failure
             if attempt < ATTEMPTS and _rate_limited(exc):
                 await asyncio.sleep(RATE_LIMIT_WAIT_S * attempt)
             continue

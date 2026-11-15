@@ -232,3 +232,51 @@ def test_exception_on_time_reroute_from_the_route_agent_is_accepted():
     on_time = {"corridor": "Zone B -> Zone C -> Zone A", "eta_mins": 45.0}
     ok, _ = make_guardrail(ORD_105, 14, "D10", [on_time])(_Out(_reroute(45.0)))
     assert ok
+
+
+def _fake_time():
+    now, slept = [0.0], []
+
+    def sleep(s):
+        slept.append(s)
+        now[0] += s
+    return now, slept, (lambda: now[0]), sleep
+
+
+def test_rate_limiter_lets_a_burst_within_budget_through_without_waiting():
+    from src.agents.llm import RateLimiter
+
+    now, slept, clock, sleep = _fake_time()
+    limiter = RateLimiter(5, clock=clock, sleep=sleep)
+    for _ in range(5):
+        limiter.wait()
+    assert slept == []
+
+
+def test_rate_limiter_waits_only_until_the_oldest_call_leaves_the_window():
+    from src.agents.llm import RateLimiter
+
+    now, slept, clock, sleep = _fake_time()
+    limiter = RateLimiter(5, clock=clock, sleep=sleep)
+    for _ in range(5):
+        limiter.wait()
+    now[0] = 10.0
+    limiter.wait()
+    assert slept == [pytest.approx(50.0)]
+
+
+def test_shared_model_budget_splits_between_the_two_processes():
+    from src.agents.llm import shared_budget
+
+    route, web = shared_budget(14, route_process=True), shared_budget(14, route_process=False)
+    assert route + web == 14
+    assert web > route >= 1
+
+
+def test_daily_quota_error_is_not_retried():
+    from src.agents.llm import is_retryable
+
+    daily = RuntimeError("429 RESOURCE_EXHAUSTED quotaId: GenerateRequestsPerDayPerProjectPerModel-FreeTier")
+    per_minute = RuntimeError("429 RESOURCE_EXHAUSTED quotaId: GenerateRequestsPerMinutePerProjectPerModel-FreeTier")
+    assert not is_retryable(daily)
+    assert is_retryable(per_minute)

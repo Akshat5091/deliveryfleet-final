@@ -9,10 +9,12 @@ from __future__ import annotations
 import uvicorn
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
 
+from src.agents.llm import mark_route_service
 from src.config import A2A_PORT, HOST
 from src.observability import tracing
 
 tracing.init("deliveryfleet-adk-route-service")
+mark_route_service()  # this process gets the Route Agent's share of the shared model's budget
 
 
 def build_app():
