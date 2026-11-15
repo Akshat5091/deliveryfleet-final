@@ -616,20 +616,85 @@ async function loadEvaluation() {
       <div><b>${fmt(k.p50_latency_s)} s</b><span>median time per run</span></div>
       <div><b>$${fmt(k.mean_cost_usd, 4)}</b><span>mean cost per run</span></div>
     </div>
-    <div class="figs">${ev.figures.map((f) => `<figure><img src="/artifacts/${esc(f.file)}" alt="${esc(f.title)}" loading="lazy">
-      <figcaption><b>${esc(f.title)}.</b> ${esc(f.caption)}</figcaption></figure>`).join("")}</div>
-    <h3 class="h3">By architecture</h3><div class="table-wrap">${table(ev.by_architecture)}</div>`;
-  // Very wide charts (one panel per agent) are unreadable in a third of the row, so give them the full row.
-  $("#evaluation").querySelectorAll(".figs img").forEach((img) => {
-    const widen = () => img.closest("figure").classList.toggle("wide", img.naturalWidth > 3 * img.naturalHeight);
-    img.complete ? widen() : img.addEventListener("load", widen, { once: true });
-  });
+    ${evalSections(ev)}`;
+}
+
+const int = (v) => (v == null ? "–" : Math.round(v).toLocaleString("en-IN"));
+
+function archTable(rows) {
+  const pct = (v) => (v == null ? "–" : `${fmt(v * 100, 0)}%`);
+  const body = (rows || []).map((r) => `<tr><td>${esc(r.architecture)}</td><td class="num">${r.runs}</td>
+    <td class="num">${fmt(r.p50_latency_s, 0)} s</td><td class="num">${fmt(r.p95_latency_s, 0)} s</td>
+    <td class="num">${fmt(r.mean_latency_s, 0)} s</td>
+    <td class="num">${int(r.mean_tokens)}</td><td class="num">$${fmt(r.mean_cost_usd, 3)}</td>
+    <td class="num">${fmt(r.judge_mean, 2)}</td><td class="num">${pct(r.driver_match)}</td>
+    <td class="num">${pct(r.corridor_match)}</td><td class="num">${r.escalated}</td></tr>`).join("");
+  return `<table class="table"><thead><tr><th>Architecture</th><th class="num">Runs served</th><th class="num">Median (p50)</th>
+    <th class="num">p95</th><th class="num">Mean time</th><th class="num">Mean tokens</th><th class="num">Mean cost</th><th class="num">Judge (1–5)</th>
+    <th class="num">Best driver chosen</th><th class="num">Fastest road chosen</th><th class="num">Escalated</th></tr></thead>
+    <tbody>${body}</tbody></table>`;
+}
+
+// Each section answers one question: charts sit in a two-column grid (half-width charts are drawn
+// 7.2 in wide, full-width ones 14.4 in, so their text prints at one size) next to a short reading of them.
+function evalSections(ev) {
+  const figs = Object.fromEntries(ev.figures.map((f) => [f.file, f]));
+  const used = new Set();
+  const fig = (file, full = false) => {
+    const f = figs[file];
+    if (!f) return "";
+    used.add(file);
+    return `<figure class="ev-fig${full ? " full" : ""}"><figcaption><b>${esc(f.title)}</b><span>${esc(f.caption)}</span></figcaption>
+      <img src="/artifacts/${esc(f.file)}" alt="${esc(f.title)}: ${esc(f.caption)}" loading="lazy"></figure>`;
+  };
+  const note = (title, rows, text = "") => `<div class="ev-note"><b>${esc(title)}</b>
+    <dl>${rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join("")}</dl>${text ? `<p>${text}</p>` : ""}</div>`;
+  const section = (title, lead, body) => `<section class="ev-section"><h3>${esc(title)}</h3><p class="lead">${lead}</p>
+    <div class="ev-grid">${body}</div></section>`;
+  const c = ev.confusion || {}, k = ev.headline, o = ev.outcomes || {};
+  const style = Object.fromEntries((ev.by_prompt_style || []).map((s) => [s.prompt_style, s]));
+  const served = (k.runs || 0) - (o.BLOCKED || 0);
+
+  const html = [
+    section("Did the agents do the right thing?",
+      "Every architecture got the same 24 inputs. The outcome is decided in code from the Blackboard, so the LLM review cannot mark a late or illegal delivery as done.",
+      fig("outcomes_by_architecture.png") + note("Guard and decisions", [
+        ["Attacks blocked", `${c.tp ?? "–"} of ${(c.tp ?? 0) + (c.fn ?? 0)}`],
+        ["Genuine customers served", `${c.tn ?? "–"} of ${(c.tn ?? 0) + (c.fp ?? 0)}`],
+        ["Driver = tool-computed best", k.driver_reference_match != null ? `${fmt(k.driver_reference_match * 100, 0)}%` : "–"],
+        ["Escalated to a human", `${o.ESCALATED ?? 0} runs`]],
+        "Road-closure runs escalate because the Route Agent's detour (53.1 min) misses the 50-minute deadline.")),
+    section("How long does a run take, and where does the time go?",
+      `Median ${fmt(k.p50_latency_s, 0)} s per run, p95 ${fmt(k.p95_latency_s, 0)} s (95% of runs finish within it). Most of it is Gemini answering one agent after another; the free-tier rate limit adds waiting when several runs share a key.`,
+      fig("latency_by_architecture.png") + fig("agent_metric_heatmap.png") + fig("heatmap_per_agent.png", true)
+        + `<div class="ev-table full"><div class="table-wrap">${archTable(ev.by_architecture)}</div></div>`),
+    section("Can we trust the quality score?",
+      `The judge (a different model from the agents) gave ${fmt(k.judge_mean, 2)} of 5 to the served runs. A judge that always says 5 could just be lenient, so we planted faults in a clean run and judged it again.`,
+      fig("judge_check.png") + note("What the check shows", [
+        ["Clean run", "5 on every criterion"],
+        ["Each planted fault", "marked down to 1–3"],
+        ["Judge model", "Gemini 3.5 Flash-Lite, temperature 0"]],
+        "So the 5s for the real runs are earned. The judge also cross-checks every number in the report against the Blackboard value it came from.")),
+    section("What does a run cost?",
+      `Gemini list price: $${fmt(k.mean_cost_usd, 4)} per run on average, $${fmt(k.total_cost_usd, 2)} for all ${k.runs} runs (nothing on the free tier).`,
+      fig("cost_by_persona.png") + note("ReAct vs Direct prompts", [
+        ["ReAct", style.ReAct ? `${fmt(style.ReAct.latency_s, 0)} s · ${int(style.ReAct.tokens)} tokens` : "–"],
+        ["Direct", style.Direct ? `${fmt(style.Direct.latency_s, 0)} s · ${int(style.Direct.tokens)} tokens` : "–"],
+        ["Judge score", style.ReAct && style.Direct ? `${fmt(style.ReAct.judge_overall, 2)} vs ${fmt(style.Direct.judge_overall, 2)}` : "–"]],
+        "Same answers, so the shorter Direct prompt is the cheaper choice.") + fig("cost_by_prompt_style.png", true)),
+  ].join("");
+  const rest = ev.figures.filter((f) => !used.has(f.file));
+  return html + (rest.length ? section("More charts", "", rest.map((f) => fig(f.file)).join("")) : "");
 }
 
 function table(rows) {
   if (!rows?.length) return "";
   const cols = Object.keys(rows[0]);
-  return `<table class="table"><thead><tr>${cols.map((c) => `<th>${esc(c.replaceAll("_", " "))}</th>`).join("")}</tr></thead>
+  const LABELS = { cv_mae: "CV MAE (min)", cv_rmse: "CV RMSE (min)", cv_r2: "CV R²", cv_r2_std: "R² spread",
+    weight_kg: "Weight (kg)", capacity_kg: "Capacity (kg)", deadline_mins: "Deadline (min)", hours_worked: "Hours worked" };
+  const head = (c) => LABELS[c] || c.replaceAll("_", " ").replace(/^./, (s) => s.toUpperCase()).replace(/\bid\b/, "ID");
+  const isNum = (c) => typeof rows[0][c] === "number";
+  return `<table class="table"><thead><tr>${cols.map((c) => `<th${isNum(c) ? ' class="num"' : ""}>${esc(head(c))}</th>`).join("")}</tr></thead>
     <tbody>${rows.map((r) => `<tr>${cols.map((c) => `<td${typeof r[c] === "number" ? ' class="num"' : ""}>${esc(typeof r[c] === "number" ? +r[c].toFixed(3) : r[c])}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
 }
 
@@ -679,8 +744,10 @@ function renderHow() {
   const box = (x, y, w, h, t, s, accent) => `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${accent ? "#fbeeee" : "#f7f8f9"}" stroke="${accent ? "#991b1b" : "#d1d5db"}"/>
     <text x="${x + w / 2}" y="${y + h / 2 - 3}" text-anchor="middle" font-weight="700" font-size="14" fill="#111827">${t}</text>
     <text x="${x + w / 2}" y="${y + h / 2 + 14}" text-anchor="middle" font-size="11.5" fill="#4b5563">${s}</text></g>`;
-  const arrow = (x1, y1, x2, y2, label = "", dash = false) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111827" stroke-width="1.4" ${dash ? 'stroke-dasharray="5 4"' : ""} marker-end="url(#ah)"/>
-    ${label ? `<text x="${(x1 + x2) / 2 + 5}" y="${(y1 + y2) / 2 - 5}" font-size="11" font-weight="600" fill="#991b1b">${label}</text>` : ""}`;
+  // Each label is placed beside its arrow (lx, ly, anchor) with a white halo, so it never sits on a line.
+  const arrow = (x1, y1, x2, y2, dash = false, label = "", lx = 0, ly = 0, anchor = "middle") =>
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#111827" stroke-width="1.4" ${dash ? 'stroke-dasharray="5 4"' : ""} marker-end="url(#ah)"/>
+    ${label ? `<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="11.5" font-weight="650" fill="#991b1b" stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${label}</text>` : ""}`;
   $("#arch").innerHTML = `<svg class="arch-svg" viewBox="0 0 1040 420" role="img" aria-label="System architecture" font-family="Archivo, sans-serif">
     <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#111827"/></marker></defs>
     ${box(20, 175, 120, 58, "Customer", "booking or message")}${box(170, 175, 120, 58, "Input guard", "regex + Gemini judge", true)}
@@ -690,9 +757,11 @@ function renderHow() {
     ${box(320, 330, 370, 64, "Blackboard (shared state)", "request · compliance · candidates · dispatch · route · exception · review")}
     ${box(760, 28, 260, 92, "MCP tool server", "RAG · routing · delay model · fleet DB")}
     ${box(760, 330, 260, 64, "Trace store", "events · OpenTelemetry spans · runs")}
-    ${arrow(140, 204, 170, 204)}${arrow(290, 204, 320, 204)}${arrow(470, 190, 520, 58, "delegate")}${arrow(470, 200, 520, 150)}${arrow(470, 216, 520, 260, "on event")}
-    ${arrow(690, 150, 760, 196, "A2A")}${arrow(690, 260, 760, 214, "A2A")}${arrow(690, 58, 760, 70, "MCP", true)}${arrow(690, 140, 760, 100, "MCP", true)}${arrow(845, 175, 845, 120, "MCP", true)}
-    ${arrow(395, 233, 395, 330, "read / write", true)}${arrow(605, 290, 605, 330, "", true)}${arrow(845, 233, 845, 330, "trace", true)}
+    ${arrow(140, 204, 170, 204)}${arrow(290, 204, 320, 204)}
+    ${arrow(470, 190, 520, 58, false, "delegate", 488, 112, "end")}${arrow(470, 200, 520, 150)}${arrow(470, 216, 520, 260, false, "on event", 486, 262, "end")}
+    ${arrow(690, 150, 760, 196, false, "A2A", 703, 192, "start")}${arrow(690, 260, 760, 214, false, "A2A", 734, 262)}
+    ${arrow(690, 58, 760, 70, true, "MCP", 724, 52)}${arrow(690, 140, 760, 100, true, "MCP", 736, 136)}${arrow(845, 175, 845, 120, true, "MCP", 853, 152, "start")}
+    ${arrow(395, 233, 395, 330, true, "read / write", 403, 286, "start")}${arrow(605, 290, 605, 330, true)}${arrow(845, 233, 845, 330, true, "trace", 853, 286, "start")}
   </svg>
   <div class="agents">${AGENTS.map((a) => `<article><h3>${a.name}</h3><span class="fw">${a.fw}</span><p>${a.why}</p>
     <dl><dt>reads</dt><dd>${a.reads}</dd><dt>writes</dt><dd>${a.writes}</dd><dt>tools</dt><dd>${a.tools}</dd></dl></article>`).join("")}</div>`;

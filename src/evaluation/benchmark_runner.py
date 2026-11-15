@@ -182,7 +182,9 @@ def build_report() -> dict:
     entropy = pd.DataFrame(entropy_rows)
 
     by_arch = served.groupby("architecture").agg(
-        runs=("run_id", "count"), p50_latency_s=("latency_s", "median"), mean_latency_s=("latency_s", "mean"),
+        runs=("run_id", "count"), p50_latency_s=("latency_s", "median"),
+        # p95, not p99: with 18 runs per architecture p99 is just the single slowest run.
+        p95_latency_s=("latency_s", lambda s: s.quantile(0.95)), mean_latency_s=("latency_s", "mean"),
         mean_tokens=("tokens", "mean"), mean_cost_usd=("cost_usd", "mean"), judge_mean=("judge_overall", "mean"),
         driver_match=("driver_ok", "mean"), corridor_match=("corridor_ok", "mean"),
         escalated=("outcome", lambda s: int((s == "ESCALATED").sum())),
@@ -204,12 +206,6 @@ def build_report() -> dict:
          "title": "Outcomes by architecture", "caption": "Each architecture ran the same 24 inputs; counts of each final outcome."},
         {"file": viz.prompt_style_cost(served),
          "title": "Cost of each prompt style", "caption": "ReAct vs Direct on the same inputs: time and tokens per run."},
-        {"file": viz.heatmap(
-            agents[agents["persona"] != "injection"].pivot_table(index="run_id", columns="agent", values="latency_s",
-                                                                 aggfunc="sum").reindex(columns=viz.AGENTS).fillna(0),
-            "Runs x agents: latency (s)", "heatmap_runs_by_agent.png", cbar_label="seconds",
-            figsize=(7.5, 11)),
-         "title": "Runs x agents", "caption": "Every served run (rows) against every agent (columns)."},
     ]
     sens = sensitivity_specificity(df.to_dict("records"))
     summary = {
@@ -217,7 +213,8 @@ def build_report() -> dict:
                   "x 3 orders (ORD-101, ORD-103, ORD-105 with a mid-trip road closure) = 72 runs.",
         "headline": {"runs": int(len(df)), "sensitivity": sens["sensitivity"], "specificity": sens["specificity"],
                      "judge_mean": float(served["judge_overall"].mean()) if served["judge_overall"].notna().any() else None,
-                     "p50_latency_s": float(served["latency_s"].median()), "mean_cost_usd": float(served["cost_usd"].mean()),
+                     "p50_latency_s": float(served["latency_s"].median()),
+                     "p95_latency_s": float(served["latency_s"].quantile(0.95)), "mean_cost_usd": float(served["cost_usd"].mean()),
                      "total_cost_usd": float(df["cost_usd"].sum()), "total_tokens": int(df["tokens"].sum()),
                      "driver_reference_match": float(served["driver_ok"].dropna().mean()) if served["driver_ok"].notna().any() else None},
         "confusion": sens,

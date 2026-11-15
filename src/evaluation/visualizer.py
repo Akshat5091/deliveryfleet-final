@@ -16,13 +16,18 @@ import pandas as pd
 from src.config import ARTIFACTS_DIR
 
 ARCH_COLOURS = {"hierarchical": "#991b1b", "sequential": "#2a78d6", "parallel": "#1baf7a"}
+# Two chart widths only, so every chart's text prints at the same size on the website and in the
+# report: a half-width card holds a HALF_W figure, a full-width card a FULL_W figure.
+HALF_W, FULL_W = 7.2, 14.4
 INK, MUTED, GRID = "#111827", "#4b5563", "#e5e7eb"
 AGENTS = ["supervisor", "retrieval_agent", "dispatch_agent", "route_agent", "exception_agent"]
 
 plt.rcParams.update({
     "font.family": "DejaVu Sans", "font.size": 9.5, "axes.edgecolor": "#9ca3af", "axes.labelcolor": INK,
     "xtick.color": MUTED, "ytick.color": MUTED, "axes.titleweight": "bold", "axes.titlesize": 11,
-    "axes.titlecolor": INK, "axes.titlelocation": "left", "figure.dpi": 150, "savefig.dpi": 400, "savefig.bbox": "tight",
+    "axes.titlecolor": INK, "axes.titlelocation": "left", "figure.dpi": 150, "savefig.dpi": 400,
+    # Fixed output size (no tight crop) with constrained layout: every half chart is exactly HALF_W wide.
+    "savefig.bbox": "standard", "figure.constrained_layout.use": True,
 })
 
 
@@ -37,7 +42,7 @@ def boxplot_by(df: pd.DataFrame, value: str, group: str, title: str, xlabel: str
                order: list[str] | None = None, colour_by_arch: bool = False) -> str:
     groups = order or sorted(df[group].dropna().unique())
     data = [df.loc[df[group] == g, value].dropna().to_numpy() for g in groups]
-    fig, ax = plt.subplots(figsize=(7.2, 0.62 * len(groups) + 1.4))
+    fig, ax = plt.subplots(figsize=(HALF_W, 0.62 * len(groups) + 1.4))
     bp = ax.boxplot(data, orientation="horizontal", widths=0.5, patch_artist=True, showfliers=False,
                     medianprops={"color": INK, "linewidth": 2}, whiskerprops={"color": MUTED},
                     capprops={"color": MUTED})
@@ -57,35 +62,10 @@ def boxplot_by(df: pd.DataFrame, value: str, group: str, title: str, xlabel: str
     return file
 
 
-def heatmap(matrix: pd.DataFrame, title: str, file: str, fmt: str = "{:.1f}", cbar_label: str = "",
-            figsize: tuple[float, float] | None = None) -> str:
-    """Sequential single-hue (crimson) heatmap with every value printed in the cell."""
-    figsize = figsize or (1.15 * matrix.shape[1] + 2.4, 0.42 * matrix.shape[0] + 1.3)
-    fig, ax = plt.subplots(figsize=figsize)
-    values = matrix.to_numpy(dtype=float)
-    im = ax.imshow(values, cmap="Reds", aspect="auto", vmin=np.nanmin(values) if values.size else 0)
-    ax.set_xticks(range(matrix.shape[1]), matrix.columns, rotation=0)
-    ax.set_yticks(range(matrix.shape[0]), matrix.index)
-    top = np.nanmax(values) if values.size else 1
-    for (i, j), v in np.ndenumerate(values):
-        if not np.isnan(v):
-            ax.text(j, i, fmt.format(v), ha="center", va="center", fontsize=8.5,
-                    color="white" if v > 0.6 * top else INK)
-    ax.set_title(title)
-    for s in ax.spines.values():
-        s.set_visible(False)
-    cb = fig.colorbar(im, ax=ax, fraction=0.035, pad=0.02)
-    cb.set_label(cbar_label, color=MUTED)
-    cb.outline.set_visible(False)
-    fig.savefig(ARTIFACTS_DIR / file)
-    plt.close(fig)
-    return file
-
-
 def per_agent_heatmaps(agent_rows: pd.DataFrame) -> str:
     """One panel per agent: persona (rows) x architecture (cols), mean latency in seconds."""
     present = [a for a in AGENTS if a in set(agent_rows["agent"])]
-    fig, axes = plt.subplots(1, len(present), figsize=(3.0 * len(present) + 1, 3.0), sharey=True)
+    fig, axes = plt.subplots(1, len(present), figsize=(FULL_W, 3.2), sharey=True)
     axes = np.atleast_1d(axes)
     archs = ["hierarchical", "sequential", "parallel"]
     personas = ["polite", "urgent", "abusive"]
@@ -106,7 +86,6 @@ def per_agent_heatmaps(agent_rows: pd.DataFrame) -> str:
             s.set_visible(False)
     fig.suptitle("Inside each agent: mean latency (s) by persona and architecture", x=0.01, ha="left",
                  fontweight="bold", color=INK)
-    fig.tight_layout()
     fig.savefig(ARTIFACTS_DIR / "heatmap_per_agent.png")
     plt.close(fig)
     return "heatmap_per_agent.png"
@@ -123,7 +102,7 @@ def agent_metric_heatmap(agent_rows: pd.DataFrame) -> str:
     present = [a for a in AGENTS if a in set(agent_rows["agent"])]
     means = agent_rows.groupby("agent")[[m for m, _, _ in AGENT_METRICS]].mean().reindex(present)
     shade = means / means.max().replace(0, 1)
-    fig, ax = plt.subplots(figsize=(7.6, 0.5 * len(present) + 1.3))
+    fig, ax = plt.subplots(figsize=(HALF_W, 0.5 * len(present) + 1.3))
     ax.imshow(shade.to_numpy(dtype=float), cmap="Reds", vmin=0, vmax=1.15, aspect="auto")
     for (i, j), v in np.ndenumerate(means.to_numpy(dtype=float)):
         ax.text(j, i, AGENT_METRICS[j][2].format(v), ha="center", va="center", fontsize=8.5,
@@ -131,7 +110,7 @@ def agent_metric_heatmap(agent_rows: pd.DataFrame) -> str:
     ax.set_xticks(range(len(AGENT_METRICS)), [label for _, label, _ in AGENT_METRICS])
     ax.set_yticks(range(len(present)), [a.replace("_", " ") for a in present])
     ax.xaxis.tick_top()
-    ax.set_title("Mean work per run for each agent (darker = the largest in that column)", pad=26)
+    ax.set_title("Mean work per run (darker = largest in column)", pad=26)
     for s in ax.spines.values():
         s.set_visible(False)
     fig.savefig(ARTIFACTS_DIR / "agent_metric_heatmap.png")
@@ -150,7 +129,7 @@ def outcome_bars(df: pd.DataFrame) -> str:
     archs = [a for a in ["hierarchical", "sequential", "parallel"] if a in set(df["architecture"])]
     counts = df.groupby(["architecture", "outcome"]).size().unstack(fill_value=0).reindex(archs).fillna(0)
     outcomes = [o for o in OUTCOME_COLOURS if o in counts.columns]
-    fig, ax = plt.subplots(figsize=(7.2, 0.62 * len(archs) + 1.6))
+    fig, ax = plt.subplots(figsize=(HALF_W, 0.62 * len(archs) + 1.6))
     left = np.zeros(len(archs))
     for o in outcomes:
         vals = counts[o].to_numpy(dtype=float)
@@ -173,7 +152,7 @@ def outcome_bars(df: pd.DataFrame) -> str:
 def prompt_style_cost(df: pd.DataFrame) -> str:
     """ReAct vs Direct on the same inputs: time and tokens per run, side by side."""
     styles = [s for s in ["ReAct", "Direct"] if s in set(df["prompt_style"])]
-    fig, axes = plt.subplots(1, 2, figsize=(8.4, 2.6), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(FULL_W, 2.8), sharey=True)
     rng = np.random.default_rng(0)
     for ax, (col, label) in zip(axes, [("latency_s", "seconds per run"), ("tokens", "tokens per run")]):
         data = [df.loc[df["prompt_style"] == s, col].dropna().to_numpy() for s in styles]
@@ -189,7 +168,6 @@ def prompt_style_cost(df: pd.DataFrame) -> str:
         _clean(ax)
     fig.suptitle("What each prompt style costs: time and tokens per run", x=0.01, ha="left",
                  fontweight="bold", color=INK)
-    fig.tight_layout()
     fig.savefig(ARTIFACTS_DIR / "cost_by_prompt_style.png")
     plt.close(fig)
     return "cost_by_prompt_style.png"
@@ -198,7 +176,7 @@ def prompt_style_cost(df: pd.DataFrame) -> str:
 def judge_check_bars(check: dict) -> str:
     """Judge score on a clean run vs the same run with one planted fault (scripts/judge_sanity_check.py)."""
     cases = check["cases"]
-    fig, ax = plt.subplots(figsize=(7.4, 0.62 * len(cases) + 1.5))
+    fig, ax = plt.subplots(figsize=(HALF_W, 0.62 * len(cases) + 1.5))
     y = np.arange(len(cases))
     clean = [c["original"] for c in cases]
     broken = [c["broken"] for c in cases]
@@ -212,7 +190,7 @@ def judge_check_bars(check: dict) -> str:
     ax.set_xlim(0, 5.6)
     ax.set_xticks(range(0, 6))
     ax.set_xlabel("judge score for the criterion the fault breaks (1 = bad, 5 = excellent)")
-    ax.set_title("Does the judge notice mistakes? Clean run vs planted fault")
+    ax.set_title("Clean run vs planted fault")
     ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2, fontsize=8.5)
     _clean(ax)
     fig.savefig(ARTIFACTS_DIR / "judge_check.png")
@@ -224,7 +202,7 @@ def judge_bars(df: pd.DataFrame) -> str:
     crits = ["correctness", "safety", "grounding", "communication"]
     archs = [a for a in ["hierarchical", "sequential", "parallel"] if a in set(df["architecture"])]
     means = df.groupby("architecture")[crits].mean().reindex(archs)
-    fig, ax = plt.subplots(figsize=(7.2, 3.2))
+    fig, ax = plt.subplots(figsize=(HALF_W, 3.2))
     y = np.arange(len(crits))
     h = 0.8 / len(archs)
     for k, arch in enumerate(archs):
