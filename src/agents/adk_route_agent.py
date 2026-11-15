@@ -105,7 +105,8 @@ def after_model(callback_context: CallbackContext, llm_response: LlmResponse) ->
     text = "".join(p.text or "" for p in (llm_response.content.parts or [])) if llm_response.content else ""
     calls = [p.function_call.name for p in (llm_response.content.parts or []) if p.function_call] if llm_response.content else []
     tracing.record_llm_call(
-        WORKER_MODEL, (usage.prompt_token_count or 0) if usage else 0, (usage.candidates_token_count or 0) if usage else 0,
+        WORKER_MODEL, (usage.prompt_token_count or 0) if usage else 0,
+        ((usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0)) if usage else 0,
         round((time.perf_counter() - started) * 1000, 1) if started else None,
         status="ERROR" if llm_response.error_code else "OK",
         preview=text or (f"function_call: {', '.join(calls)}" if calls else ""), ctx=ctx,
@@ -174,6 +175,7 @@ def build_route_agent() -> LlmAgent:
         output_key="route_plan",
         generate_content_config=types.GenerateContentConfig(
             temperature=0.1,
+            thinking_config=types.ThinkingConfig(thinking_level="low"),
             safety_settings=[types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
                                                  threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE)],
         ),

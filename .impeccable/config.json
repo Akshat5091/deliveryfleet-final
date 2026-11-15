@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "src/web/static/index.html"
+        ],
+        "createdAt": "2026-11-15T14:05:29.864Z",
+        "reason": "Claude decided: the only hit is .book, the full-bleed map frame; the map is meant to touch the card edge (delivery-app pattern) and the booking sheet has its own 26px padding"
+      }
+    ]
+  }
+}

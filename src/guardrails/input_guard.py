@@ -86,5 +86,5 @@ async def screen(text: str, use_llm_judge: bool = True) -> GuardVerdict:
 async def _llm_judge(text: str) -> str:
     from src.agents.llm import gemini_generate
 
-    reply = await gemini_generate(JUDGE_PROMPT + text, agent="input_guard_judge", max_tokens=5)
+    reply = await gemini_generate(JUDGE_PROMPT + text, agent="input_guard_judge", max_tokens=20, thinking="minimal")
     return "UNSAFE" if "UNSAFE" in reply.upper() else "SAFE"

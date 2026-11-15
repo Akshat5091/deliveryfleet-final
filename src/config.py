@@ -17,8 +17,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(PROJECT_ROOT / ".env")
 load_dotenv(PROJECT_ROOT.parent / ".env")
 
-if os.getenv("GEMINI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
-    os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
 os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "FALSE")
 os.environ.setdefault("CREWAI_TRACING_ENABLED", "false")
 os.environ.setdefault("OTEL_SDK_DISABLED", "false")
@@ -49,15 +47,16 @@ MCP_URL = os.getenv("MCP_URL", f"http://{HOST}:{MCP_PORT}/mcp")
 A2A_URL = os.getenv("A2A_URL", f"http://{HOST}:{A2A_PORT}")
 
 # One model for workers, a separate (by default stronger) one for the judge.
-WORKER_MODEL = os.getenv("WORKER_MODEL", "gemini-2.5-flash-lite")
-JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-2.5-flash")
+WORKER_MODEL = os.getenv("WORKER_MODEL", "gemini-3.5-flash-lite")
+JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-3.6-flash")
 LLM_RPM = int(os.getenv("LLM_RPM", "14"))
 
-# USD per 1M tokens (input, output) used for cost estimates. Values follow the
-# published Gemini Developer API paid-tier prices; override via env if they change.
+# USD per 1M tokens (input, output incl. thinking) for cost estimates: Gemini API
+# paid-tier standard prices from aistudio.google.com/docs/pricing (read Nov 2026;
+# 3.6 Flash at its promotional rate valid until 31 Dec 2026). Override via env.
 PRICE_PER_M = {
-    "gemini-2.5-flash-lite": (float(os.getenv("PRICE_LITE_IN", "0.10")), float(os.getenv("PRICE_LITE_OUT", "0.40"))),
-    "gemini-2.5-flash": (float(os.getenv("PRICE_FLASH_IN", "0.30")), float(os.getenv("PRICE_FLASH_OUT", "2.50"))),
+    "gemini-3.5-flash-lite": (float(os.getenv("PRICE_LITE_IN", "0.30")), float(os.getenv("PRICE_LITE_OUT", "2.50"))),
+    "gemini-3.6-flash": (float(os.getenv("PRICE_FLASH_IN", "0.75")), float(os.getenv("PRICE_FLASH_OUT", "3.75"))),
 }
 
 # Statutory and company limits (SOP-2026-v4, Labor Safety Directive 4.1).
@@ -69,4 +68,4 @@ ZONES = ("Zone A", "Zone B", "Zone C", "Zone D")
 
 
 def llm_available() -> bool:
-    return bool(os.getenv("GOOGLE_API_KEY"))
+    return bool(os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"))

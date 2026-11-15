@@ -53,7 +53,8 @@ def is_retryable(exc: BaseException) -> bool:
 def crew_llm(model: str = WORKER_MODEL, temperature: float = 0.2) -> LLM:
     """CrewAI routes 'gemini/...' to its native Gemini provider; rate limiting is
     applied by the before_llm_call hook registered in install_llm_hooks()."""
-    return LLM(model=f"gemini/{model}", temperature=temperature, max_tokens=2048)
+    return LLM(model=f"gemini/{model}", temperature=temperature, max_tokens=4096,
+               thinking_config=types.ThinkingConfig(thinking_level="low"))
 
 
 _hooks_installed = False
@@ -95,9 +96,15 @@ def genai_client() -> genai.Client:
 
 
 async def gemini_generate(prompt: str, agent: str, model: str = WORKER_MODEL, max_tokens: int = 1024,
-                          response_schema: type | None = None, temperature: float = 0.0) -> str:
-    """Direct google-genai call (guard judge, LLM-as-judge), recorded as an LLM event."""
-    config = types.GenerateContentConfig(temperature=temperature, max_output_tokens=max_tokens)
+                          response_schema: type | None = None, temperature: float = 0.0,
+                          thinking: str = "low") -> str:
+    """Direct google-genai call (guard judge, LLM-as-judge), recorded as an LLM event.
+
+    Gemini 3.x models think before answering and thinking tokens count against
+    max_tokens, so the thinking level is set explicitly (Lab-07 uses "low").
+    """
+    config = types.GenerateContentConfig(temperature=temperature, max_output_tokens=max_tokens,
+                                         thinking_config=types.ThinkingConfig(thinking_level=thinking))
     if response_schema is not None:
         config.response_mime_type = "application/json"
         config.response_schema = response_schema
@@ -115,6 +122,7 @@ async def gemini_generate(prompt: str, agent: str, model: str = WORKER_MODEL, ma
         tracing.record_llm_call(model, 0, 0, None, status="ERROR", preview=str(exc), ctx=ctx)
         raise
     usage = resp.usage_metadata
-    tracing.record_llm_call(model, usage.prompt_token_count or 0, usage.candidates_token_count or 0,
+    output_tokens = (usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0)
+    tracing.record_llm_call(model, usage.prompt_token_count or 0, output_tokens,
                             round((time.perf_counter() - start) * 1000, 1), preview=resp.text or "", ctx=ctx)
     return resp.text or ""
