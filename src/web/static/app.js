@@ -120,10 +120,29 @@ $$("[data-go]").forEach((a) => a.addEventListener("click", (e) => { e.preventDef
 
 // =================================================================== event stream (shared)
 function stream(runId, onEvent, onDone) {
-  const src = new EventSource(`/api/runs/${encodeURIComponent(runId)}/stream`);
+  const url = `/api/runs/${encodeURIComponent(runId)}`;
+  const src = new EventSource(`${url}/stream`);
+  // When the page closes this stream (a new run started), any fallback polling must stop too.
+  let superseded = false;
+  const closeStream = src.close.bind(src);
+  src.close = () => { superseded = true; closeStream(); };
+  // If the live stream stops (idle timeout, too many viewers, network), keep checking the run
+  // until it finishes, so the page never waits forever.
+  const poll = async () => {
+    closeStream();
+    for (;;) {
+      await new Promise((r) => setTimeout(r, 3000));
+      if (superseded) return;
+      try {
+        const data = await api(url);
+        if (data.run.status !== "RUNNING") return onDone(data);
+      } catch { /* server busy or restarting: try again */ }
+    }
+  };
   src.addEventListener("agent_event", (e) => onEvent(JSON.parse(e.data)));
   src.addEventListener("done", (e) => { src.close(); onDone(JSON.parse(e.data)); });
-  src.addEventListener("timeout", () => src.close());
+  src.addEventListener("timeout", poll);
+  src.onerror = () => { if (src.readyState === EventSource.CLOSED) poll(); };
   return src;
 }
 
@@ -568,10 +587,7 @@ async function openInControl(runId) {
   if (run.status === "RUNNING") {
     tick();
     const last = data.events.at(-1)?.id || 0;
-    live.src = new EventSource(`/api/runs/${encodeURIComponent(runId)}/stream`);
-    live.src.addEventListener("agent_event", (e) => { const ev = JSON.parse(e.data); if (ev.id > last) onControlEvent(ev); });
-    live.src.addEventListener("done", (e) => { live.src.close(); onControlDone(JSON.parse(e.data)); });
-    live.src.addEventListener("timeout", () => { live.src.close(); clearInterval(live.timer); });
+    live.src = stream(runId, (ev) => { if (ev.id > last) onControlEvent(ev); }, onControlDone);
   } else onControlDone(data);
 }
 

@@ -32,6 +32,7 @@ STATIC = Path(__file__).parent / "static"
 MAX_ACTIVE_RUNS = 2          # Gemini rate limits make more than two simultaneous runs pointless
 MAX_STREAMS = 40             # concurrent live-event connections
 MAX_BODY_BYTES = 8_000
+RUN_TIMEOUT_S = 600          # a run never takes this long; past it something is stuck
 _active: dict[str, tuple[asyncio.Task, str]] = {}   # run_id -> (task, client ip)
 _streams = asyncio.Semaphore(MAX_STREAMS)
 
@@ -52,8 +53,12 @@ app = FastAPI(title="DeliveryFleet MAS", lifespan=lifespan, docs_url="/api/docs"
 
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
-    if request.method == "POST" and int(request.headers.get("content-length") or 0) > MAX_BODY_BYTES:
-        return JSONResponse({"detail": "Request too large."}, status_code=413)
+    if request.method == "POST":
+        size = request.headers.get("content-length") or "0"
+        if not size.isdigit():
+            return JSONResponse({"detail": "Bad Content-Length header."}, status_code=400)
+        if int(size) > MAX_BODY_BYTES:
+            return JSONResponse({"detail": "Request too large."}, status_code=413)
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "no-referrer"
@@ -66,8 +71,10 @@ async def security_headers(request: Request, call_next):
 
 
 def client_ip(request: Request) -> str:
+    # The right-most X-Forwarded-For entry is added by the hosting proxy; the ones before it come from
+    # the client and can be made up to dodge the one-run-per-visitor limit.
     forwarded = request.headers.get("x-forwarded-for", "")
-    return forwarded.split(",")[0].strip() or (request.client.host if request.client else "unknown")
+    return forwarded.split(",")[-1].strip() or (request.client.host if request.client else "unknown")
 
 
 class RunRequest(BaseModel):
@@ -114,7 +121,11 @@ def launch(spec: RunSpec, architecture: str, ip: str) -> dict:
         raise HTTPException(429, "You already have a run in progress. Please wait for it to finish.")
     if len(_active) >= MAX_ACTIVE_RUNS:
         raise HTTPException(429, f"{MAX_ACTIVE_RUNS} runs are already in progress. Please wait a few seconds.")
-    _active[spec.run_id] = (asyncio.create_task(get_orchestrator(architecture)(spec)), ip)
+    # A stalled Gemini or A2A call must not hold one of the two run slots forever: after RUN_TIMEOUT_S
+    # the run is cancelled, and the orchestrator's cancellation handler closes it as FAILED.
+    task = asyncio.create_task(asyncio.wait_for(get_orchestrator(architecture)(spec), RUN_TIMEOUT_S))
+    task.add_done_callback(lambda t: t.cancelled() or t.exception())  # mark the outcome as seen
+    _active[spec.run_id] = (task, ip)
     return {"run_id": spec.run_id, "message": spec.message}
 
 
@@ -159,7 +170,8 @@ async def stream(run_id: str, request: Request):
         raise HTTPException(404, "run not found")
     if _streams.locked():
         raise HTTPException(503, "Too many live viewers right now.")
-    resume_from = int(request.headers.get("last-event-id") or 0)
+    last_id = request.headers.get("last-event-id") or "0"
+    resume_from = int(last_id) if last_id.isdigit() else 0
 
     async def events():
         async with _streams:
@@ -167,11 +179,13 @@ async def stream(run_id: str, request: Request):
             while True:
                 if await request.is_disconnected():
                     return
+                # Status first, events second: if the run was already finished before this batch was
+                # read, an empty batch really means nothing is left to send.
+                status = await asyncio.to_thread(run_logger.run_status, run_id)
                 batch = await asyncio.to_thread(run_logger.events_after, run_id, last)
                 for ev in batch:
                     last = ev["id"]
                     yield {"event": "agent_event", "id": str(ev["id"]), "data": json.dumps(ev, default=str)}
-                status = await asyncio.to_thread(run_logger.run_status, run_id)
                 if status != "RUNNING" and not batch:
                     payload = await asyncio.to_thread(_run_payload, run_id)
                     yield {"event": "done", "data": json.dumps(payload, default=str)}

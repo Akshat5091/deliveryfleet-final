@@ -18,7 +18,7 @@ from a2a.client import ClientConfig, ClientFactory
 from a2a.helpers.proto_helpers import get_message_text, get_stream_response_text, new_text_message
 from a2a.types import Role, SendMessageRequest, TaskState
 
-from src.agents.llm import daily_quota_spent, rate_limited
+from src.agents.llm import daily_quota_spent, is_retryable, rate_limited
 from src.config import A2A_URL
 from src.observability import run_logger
 from src.schemas.decisions import RoutePlan
@@ -46,7 +46,9 @@ def _parse_plan(text: str) -> RoutePlan:
     data = json.loads(cleaned[start:end + 1])
     if "error" in data:
         raise A2AError(f"route agent refused: {data['error']}")
-    return RoutePlan.model_validate(data)
+    plan = RoutePlan.model_validate(data)
+    # The ETA is arithmetic on two tool numbers; recompute it rather than trust the model's sum.
+    return plan.model_copy(update={"eta_mins": round(plan.base_eta_mins + plan.delay_mean_mins, 1)})
 
 
 async def _send_once(request: SendMessageRequest) -> tuple[str, str | None]:
@@ -85,14 +87,15 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
                              payload={"direction": "request", "from": sender, "to": "route_agent", "attempt": attempt,
                                       "url": A2A_URL, "message_id": message.message_id, "body": payload})
         start = time.perf_counter()
-        final, failure = await _send_once(request)
-        ms = round((time.perf_counter() - start) * 1000, 1)
+        final = ""
         try:
+            final, failure = await _send_once(request)
             if failure:
                 raise A2AError(f"route agent task failed: {failure[:300]}")
             plan = _parse_plan(final)
         except Exception as exc:
             last_error = exc
+            ms = round((time.perf_counter() - start) * 1000, 1)
             run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
                                  status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
                                                           "attempt": attempt, "error": str(exc), "raw": final[-800:]})
@@ -100,7 +103,10 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
                 break  # the daily quota resets at midnight Pacific; retrying only delays the failure
             if attempt < ATTEMPTS and rate_limited(exc):
                 await asyncio.sleep(RATE_LIMIT_WAIT_S * attempt)
+            elif attempt < ATTEMPTS and (is_retryable(exc) or isinstance(exc, httpx.HTTPError)):
+                await asyncio.sleep(2 ** attempt)  # Gemini overload or a network blip clears in seconds
             continue
+        ms = round((time.perf_counter() - start) * 1000, 1)
         run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
                              payload={"direction": "response", "from": "route_agent", "to": sender,
                                       "attempt": attempt, "body": plan.model_dump()})

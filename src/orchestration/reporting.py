@@ -36,7 +36,8 @@ def build_report(spec: RunSpec, architecture: str, state: dict, started: float,
         driver_name = (get_driver(exc["new_driver_id"]) or {}).get("name")
     # Never report the corridor (or its ETA) that a disruption closed.
     closed = (state.get("disruption") or {}).get("closed_corridor")
-    route_open = route if route.get("corridor") != closed else {}
+    # A closure is one leg ("Zone A -> Zone C"); a route over that leg starts with it ("Zone A -> Zone C -> Zone D").
+    route_open = {} if closed and (route.get("corridor") or "").startswith(closed) else route
     message = review.get("customer_message") or exc.get("customer_update") or (
         "Sorry, we hit a technical problem while planning your delivery. A dispatcher will call you shortly."
         if error else "Your delivery has been scheduled.")

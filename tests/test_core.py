@@ -280,3 +280,48 @@ def test_daily_quota_error_is_not_retried():
     per_minute = RuntimeError("429 RESOURCE_EXHAUSTED quotaId: GenerateRequestsPerMinutePerProjectPerModel-FreeTier")
     assert not is_retryable(daily)
     assert is_retryable(per_minute)
+
+
+def _reassign(driver_id: str, eta: float):
+    from src.schemas.decisions import ExceptionReplan
+
+    return ExceptionReplan(trigger="VEHICLE_BREAKDOWN", action="REASSIGN", new_driver_id=driver_id,
+                           new_eta_mins=eta, minutes_vs_doing_nothing=5.0, customer_update="New rider.")
+
+
+def test_reassign_hours_check_uses_the_code_eta_not_the_llm_claim(monkeypatch):
+    from src.agents import crew_exception_agent as exc
+
+    # D08 has 7.2 h worked. If the real trip is 200 min it breaks the 9-hour limit; the LLM claims 10 min.
+    monkeypatch.setattr(exc, "reassigned_eta", lambda *args: 200.0)
+    ok, msg = exc.make_guardrail(ORD_105, 14, "D10", [])(_Out(_reassign("D08", 10.0)))
+    assert not ok and "SAFETY_HOURS" in msg
+
+
+def test_reassign_only_is_rejected_when_a_road_is_closed():
+    from src.agents.crew_exception_agent import make_guardrail
+
+    ok, msg = make_guardrail(ORD_105, 14, "D10", [], closed="Zone B -> Zone A")(_Out(_reassign("D05", 40.0)))
+    assert not ok and "closed" in msg
+
+
+def test_report_never_shows_a_multi_leg_route_over_the_closed_road():
+    from src.orchestration.base import RunSpec
+    from src.orchestration.reporting import build_report
+
+    state = {"request": {"order_id": "X", "deadline_mins": 60}, "guard": {"status": "ALLOW"},
+             "route": {"corridor": "Zone A -> Zone C -> Zone D", "eta_mins": 41.0},
+             "disruption": {"closed_corridor": "Zone A -> Zone C"},
+             "exception": {"action": "ESCALATE", "new_corridor": None, "new_eta_mins": None}}
+    spec = RunSpec(message="m", persona="polite", prompt_style="ReAct", scenario="corridor_closed", run_id="T-closed")
+    report = build_report(spec, "hierarchical", state, 0.0)
+    assert report.corridor is None and report.eta_mins is None
+
+
+def test_route_plan_eta_is_recomputed_from_the_tool_numbers():
+    from src.agents.a2a_client import _parse_plan
+
+    plan = _parse_plan('{"corridor": "Zone A -> Zone B", "distance_km": 14.5, "base_eta_mins": 30.0, '
+                       '"delay_mean_mins": 13.6, "delay_p10_mins": 9.0, "delay_p90_mins": 18.0, '
+                       '"eta_mins": 12.0, "rationale": "r"}')
+    assert plan.eta_mins == 43.6

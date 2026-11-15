@@ -17,6 +17,7 @@ from crewai.tools import tool
 from src.agents.a2a_client import request_route
 from src.agents.crew_common import PROMPT_STYLES, mcp_server, run_task
 from src.agents.llm import crew_llm
+from src.mcp.tools.driver_db import rank_drivers
 from src.observability import tracing
 from src.orchestration.base import business_check
 from src.schemas.decisions import DeliveryRequest, DisruptionEvent, ExceptionReplan
@@ -46,15 +47,33 @@ def routed_eta(replan: ExceptionReplan, plans: list[dict]) -> float | None:
     return match[-1]["eta_mins"] if match else None
 
 
-def make_guardrail(request: DeliveryRequest, hour_of_day: int, original_driver: str, plans: list[dict]):
-    """Any plan that keeps a driver on the road (same or new) is re-checked against the hard rules, and a
-    reroute must use the corridor and ETA the Route Agent actually returned."""
+def reassigned_eta(request: DeliveryRequest, driver_id: str, hour_of_day: int, closed: str | None) -> float | None:
+    """The new driver's real trip time (empty drive + delivery), computed in code by the driver ranking,
+    so the hard hours check never runs on a number the LLM wrote."""
+    ranked = rank_drivers(request.pickup, request.dropoff, request.weight_kg, request.deadline_mins, hour_of_day,
+                          closed_corridors=[closed] if closed else None)
+    match = next((c for c in ranked.get("candidates", []) if c["driver_id"] == driver_id), None)
+    return match["total_eta_mins"] if match else None
+
+
+def make_guardrail(request: DeliveryRequest, hour_of_day: int, original_driver: str, plans: list[dict],
+                   closed: str | None = None):
+    """Any plan that keeps a driver on the road (same or new) is re-checked against the hard rules on an ETA
+    computed in code; a reroute must use the corridor and ETA the Route Agent actually returned."""
     def _legal(output: TaskOutput) -> tuple[bool, Any]:
         replan: ExceptionReplan | None = output.pydantic
         if replan is None:
             return False, "Return an ExceptionReplan."
         if replan.action == "ESCALATE":
             return True, output
+        if closed and replan.action == "REASSIGN":
+            return False, (f"{closed} is closed, so a new driver alone would still use it. Reroute "
+                           "(REROUTE or REROUTE_AND_REASSIGN) or ESCALATE.")
+        eta = replan.new_eta_mins
+        if replan.action == "REASSIGN" and replan.new_driver_id:
+            eta = reassigned_eta(request, replan.new_driver_id, hour_of_day, closed)
+            if eta is None:
+                return False, f"{replan.new_driver_id} is not an available driver for this order; call rank_drivers."
         if replan.action in ("REROUTE", "REROUTE_AND_REASSIGN"):
             eta = routed_eta(replan, plans)
             if eta is None:
@@ -70,7 +89,7 @@ def make_guardrail(request: DeliveryRequest, hour_of_day: int, original_driver: 
                 not replan.new_driver_id or replan.new_driver_id == original_driver):
             return False, "A reassignment needs a new_driver_id different from the original driver."
         driver = replan.new_driver_id or original_driver
-        verdict = business_check(request, driver, replan.new_eta_mins or 60.0, hour_of_day)
+        verdict = business_check(request, driver, eta or 60.0, hour_of_day)
         if verdict["action"] == "BLOCK":
             return False, f"{driver} is illegal for this plan: {'; '.join(verdict['violations'])}"
         return True, output
@@ -110,7 +129,7 @@ async def recover(run_id: str, request: DeliveryRequest, dispatch: dict, route: 
         expected_output="An ExceptionReplan.",
         agent=agent,
         output_pydantic=ExceptionReplan,
-        guardrail=make_guardrail(request, hour_of_day, dispatch.get("driver_id", ""), plans),
+        guardrail=make_guardrail(request, hour_of_day, dispatch.get("driver_id", ""), plans, event.closed_corridor),
         guardrail_max_retries=2,
     )
     replan = await run_task(run_id, "exception_agent", agent, task, ExceptionReplan)
@@ -127,6 +146,15 @@ async def recover(run_id: str, request: DeliveryRequest, dispatch: dict, route: 
                 "action": "ESCALATE", "new_driver_id": None, "new_eta_mins": eta,
                 "customer_update": ("A road on your delivery route has closed and the detour cannot reach you within "
                                     "the promised time. A dispatcher will call you shortly with the options.")})
+        else:
+            replan = replan.model_copy(update={"new_eta_mins": eta})
+    elif replan.action == "REASSIGN":
+        eta = reassigned_eta(request, replan.new_driver_id or "", hour_of_day, event.closed_corridor)
+        if eta is None or eta > request.deadline_mins:
+            replan = replan.model_copy(update={
+                "action": "ESCALATE", "new_driver_id": None, "new_eta_mins": eta,
+                "customer_update": ("Your rider's vehicle broke down and no other rider can reach you within the "
+                                    "promised time. A dispatcher will call you shortly with the options.")})
         else:
             replan = replan.model_copy(update={"new_eta_mins": eta})
     return replan

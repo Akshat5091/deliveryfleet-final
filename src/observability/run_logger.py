@@ -41,6 +41,8 @@ def _connect() -> sqlite3.Connection:
     global _initialised
     con = sqlite3.connect(STORE_DB, timeout=15, check_same_thread=False)
     con.row_factory = sqlite3.Row
+    # Safe with WAL and much faster per commit than the default FULL (no fsync on every event).
+    con.execute("PRAGMA synchronous=NORMAL")
     if not _initialised:
         with _lock:
             con.execute("PRAGMA journal_mode=WAL")

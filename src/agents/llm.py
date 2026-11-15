@@ -23,7 +23,8 @@ from src.config import LLM_RPM, ROUTE_MODEL, WORKER_MODEL
 from src.observability import tracing
 
 T = TypeVar("T")
-RETRYABLE = ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "overloaded", "rate limit", "500 INTERNAL")
+RETRYABLE = ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "504", "DEADLINE_EXCEEDED", "overloaded", "rate limit",
+             "500 INTERNAL")
 
 
 class RateLimiter:
@@ -146,7 +147,8 @@ _client: genai.Client | None = None
 def genai_client() -> genai.Client:
     global _client
     if _client is None:
-        _client = genai.Client()
+        # Without a timeout a stalled connection would wait forever (google-genai's default is none).
+        _client = genai.Client(http_options=types.HttpOptions(timeout=90_000))  # milliseconds
     return _client
 
 
