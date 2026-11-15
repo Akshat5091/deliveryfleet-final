@@ -1,0 +1,83 @@
+{
+  "model": "RandomForestRegressor(n_estimators=300, min_samples_leaf=4, max_features=0.6)",
+  "rows": 1500,
+  "split": {
+    "train": 843,
+    "calibration": 282,
+    "holdout": 375
+  },
+  "cv_comparison": {
+    "linear_regression": {
+      "cv_mae": 3.09,
+      "cv_rmse": 4.15,
+      "cv_r2": 0.793,
+      "cv_r2_std": 0.009
+    },
+    "random_forest": {
+      "cv_mae": 2.191,
+      "cv_rmse": 2.933,
+      "cv_r2": 0.895,
+      "cv_r2_std": 0.014
+    },
+    "gradient_boosting": {
+      "cv_mae": 2.088,
+      "cv_rmse": 2.726,
+      "cv_r2": 0.91,
+      "cv_r2_std": 0.007
+    }
+  },
+  "holdout": {
+    "mae": 2.118,
+    "rmse": 2.737,
+    "r2": 0.901,
+    "p10_p90_coverage": 0.787,
+    "mean_band_width_mins": 7.11
+  },
+  "conformal_scale": 1.504,
+  "permutation_importance": [
+    {
+      "feature": "congestion_km",
+      "importance": 0.587
+    },
+    {
+      "feature": "is_peak",
+      "importance": 0.581
+    },
+    {
+      "feature": "rainfall_mm",
+      "importance": 0.08
+    },
+    {
+      "feature": "traffic_speed_factor",
+      "importance": 0.07
+    },
+    {
+      "feature": "distance_km",
+      "importance": 0.007
+    },
+    {
+      "feature": "weight_kg",
+      "importance": 0.004
+    },
+    {
+      "feature": "hour_of_day",
+      "importance": 0.002
+    },
+    {
+      "feature": "vehicle_type",
+      "importance": 0.001
+    },
+    {
+      "feature": "pickup_zone",
+      "importance": 0.001
+    },
+    {
+      "feature": "dropoff_zone",
+      "importance": 0.001
+    },
+    {
+      "feature": "is_two_wheeler",
+      "importance": 0.0
+    }
+  ]
+}

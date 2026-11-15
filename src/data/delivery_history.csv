@@ -1,0 +1,1501 @@
+trip_id,pickup_zone,dropoff_zone,distance_km,traffic_speed_factor,rainfall_mm,hour_of_day,vehicle_type,weight_kg,delay_minutes
+TRIP-1000,Zone D,Zone A,32.3,0.56,5.3,8,Electric Scooter,8.7,46.7
+TRIP-1001,Zone A,Zone D,34.0,0.5,0.0,16,Electric Van,12.4,22.9
+TRIP-1002,Zone A,Zone B,17.9,0.63,0.0,8,Van,22.2,28.0
+TRIP-1003,Zone A,Zone A,5.0,0.92,8.8,17,Electric Scooter,17.0,20.9
+TRIP-1004,Zone D,Zone C,21.1,0.92,0.0,7,Electric Scooter,12.8,3.5
+TRIP-1005,Zone B,Zone A,19.5,0.63,0.0,17,Bike,2.7,32.1
+TRIP-1006,Zone C,Zone B,16.8,0.75,0.0,19,Van,30.9,16.6
+TRIP-1007,Zone B,Zone D,23.4,0.8,1.5,18,Electric Van,25.3,19.8
+TRIP-1008,Zone D,Zone C,19.5,1.0,0.0,11,Bike,3.2,2.6
+TRIP-1009,Zone D,Zone C,21.4,0.95,15.0,11,Truck,66.6,17.4
+TRIP-1010,Zone D,Zone D,3.2,0.94,2.1,18,Truck,93.9,4.1
+TRIP-1011,Zone C,Zone D,22.3,1.0,2.8,7,Electric Van,30.3,7.4
+TRIP-1012,Zone D,Zone C,19.9,0.96,0.0,22,Electric Van,60.9,6.9
+TRIP-1013,Zone A,Zone A,5.3,0.97,0.0,11,Van,51.0,6.3
+TRIP-1014,Zone B,Zone D,24.3,0.84,0.0,18,Electric Van,7.6,14.0
+TRIP-1015,Zone C,Zone B,14.6,0.82,0.0,12,Truck,19.8,6.3
+TRIP-1016,Zone B,Zone B,4.9,0.89,5.3,17,Electric Van,17.2,6.8
+TRIP-1017,Zone B,Zone B,3.2,0.97,0.0,11,Electric Scooter,3.0,1.3
+TRIP-1018,Zone C,Zone D,24.1,0.96,6.0,20,Truck,185.6,3.7
+TRIP-1019,Zone A,Zone D,30.2,0.5,2.7,14,Electric Van,11.2,23.8
+TRIP-1020,Zone C,Zone C,5.2,0.92,0.0,13,Truck,116.4,2.7
+TRIP-1021,Zone D,Zone C,23.1,0.96,10.1,15,Bike,6.2,21.8
+TRIP-1022,Zone C,Zone A,21.7,0.96,0.0,13,Truck,50.7,5.3
+TRIP-1023,Zone A,Zone C,23.2,0.82,0.0,13,Electric Scooter,7.3,6.3
+TRIP-1024,Zone D,Zone D,4.8,0.92,2.9,15,Electric Scooter,9.1,2.2
+TRIP-1025,Zone D,Zone D,4.4,0.87,0.0,12,Bike,15.1,8.1
+TRIP-1026,Zone C,Zone D,19.5,1.0,0.0,7,Truck,280.0,12.7
+TRIP-1027,Zone B,Zone D,26.4,0.89,5.2,20,Van,47.9,7.5
+TRIP-1028,Zone D,Zone D,4.7,0.86,0.0,7,Truck,188.7,3.8
+TRIP-1029,Zone A,Zone A,2.5,0.9,0.0,21,Van,13.9,0.7
+TRIP-1030,Zone A,Zone D,33.8,0.53,0.0,11,Truck,109.6,19.3
+TRIP-1031,Zone B,Zone D,25.6,0.8,0.0,19,Van,6.4,22.1
+TRIP-1032,Zone D,Zone A,31.7,0.59,0.0,11,Electric Scooter,8.6,18.3
+TRIP-1033,Zone B,Zone A,21.6,0.59,0.0,14,Truck,137.0,12.7
+TRIP-1034,Zone A,Zone A,6.2,0.97,0.0,11,Electric Scooter,6.4,1.9
+TRIP-1035,Zone C,Zone B,19.4,0.81,0.0,13,Electric Scooter,8.1,5.2
+TRIP-1036,Zone D,Zone B,28.0,0.79,0.0,20,Truck,96.6,8.8
+TRIP-1037,Zone A,Zone C,24.4,0.79,0.0,19,Van,33.1,17.5
+TRIP-1038,Zone C,Zone B,14.1,0.75,0.0,17,Electric Scooter,5.0,16.6
+TRIP-1039,Zone A,Zone A,5.9,0.97,8.7,13,Truck,29.2,11.3
+TRIP-1040,Zone B,Zone A,21.5,0.69,9.9,11,Truck,272.8,19.5
+TRIP-1041,Zone A,Zone C,22.8,0.77,0.0,10,Van,12.0,8.5
+TRIP-1042,Zone A,Zone B,20.1,0.65,0.0,8,Electric Van,28.5,28.0
+TRIP-1043,Zone C,Zone C,3.1,0.89,0.0,15,Electric Scooter,10.4,6.0
+TRIP-1044,Zone B,Zone C,15.3,0.87,0.0,8,Truck,61.8,11.7
+TRIP-1045,Zone D,Zone C,19.0,0.89,0.0,14,Bike,16.1,6.5
+TRIP-1046,Zone D,Zone A,30.5,0.6,0.0,7,Truck,274.4,27.0
+TRIP-1047,Zone A,Zone D,29.2,0.49,0.4,21,Electric Van,11.6,22.6
+TRIP-1048,Zone A,Zone B,18.2,0.6,2.0,7,Electric Van,54.7,10.1
+TRIP-1049,Zone B,Zone C,16.0,0.8,0.0,15,Truck,36.8,10.4
+TRIP-1050,Zone B,Zone C,19.6,0.79,0.4,13,Electric Scooter,7.2,7.1
+TRIP-1051,Zone B,Zone C,15.2,0.8,0.0,21,Electric Scooter,4.0,6.0
+TRIP-1052,Zone B,Zone D,24.4,0.87,0.0,8,Bike,4.8,15.1
+TRIP-1053,Zone A,Zone B,21.5,0.66,0.0,7,Van,28.0,13.7
+TRIP-1054,Zone A,Zone D,32.0,0.45,8.6,12,Bike,7.0,28.8
+TRIP-1055,Zone D,Zone B,25.3,0.89,0.0,16,Van,36.0,3.4
+TRIP-1056,Zone B,Zone A,19.8,0.44,0.0,18,Van,39.7,40.3
+TRIP-1057,Zone D,Zone D,6.6,0.94,0.0,11,Electric Scooter,16.2,4.9
+TRIP-1058,Zone C,Zone D,22.9,1.0,0.0,17,Truck,120.7,3.8
+TRIP-1059,Zone A,Zone C,23.6,0.79,0.0,12,Truck,223.3,14.6
+TRIP-1060,Zone A,Zone A,3.7,0.93,0.0,13,Truck,196.6,3.0
+TRIP-1061,Zone A,Zone C,25.1,0.81,0.0,12,Electric Scooter,6.6,7.3
+TRIP-1062,Zone C,Zone A,24.5,1.0,0.0,18,Van,49.9,8.5
+TRIP-1063,Zone A,Zone C,25.7,0.8,0.0,15,Van,13.1,7.4
+TRIP-1064,Zone B,Zone C,14.2,0.8,0.0,10,Van,26.8,6.4
+TRIP-1065,Zone B,Zone B,4.2,0.94,0.0,12,Truck,62.2,4.1
+TRIP-1066,Zone B,Zone A,19.7,0.6,6.0,15,Van,18.4,11.5
+TRIP-1067,Zone A,Zone C,25.4,0.7,0.0,16,Truck,35.1,13.8
+TRIP-1068,Zone C,Zone D,20.2,0.94,0.0,10,Electric Van,36.9,3.5
+TRIP-1069,Zone B,Zone C,15.7,0.79,0.0,8,Truck,77.2,15.5
+TRIP-1070,Zone B,Zone D,27.3,0.84,5.9,16,Bike,8.9,11.8
+TRIP-1071,Zone B,Zone D,25.3,0.87,0.0,14,Bike,3.5,5.4
+TRIP-1072,Zone C,Zone D,19.9,1.0,0.0,22,Truck,86.4,1.5
+TRIP-1073,Zone C,Zone C,3.5,1.0,13.2,20,Bike,4.8,11.3
+TRIP-1074,Zone B,Zone D,26.4,0.86,0.2,11,Bike,2.8,0.0
+TRIP-1075,Zone D,Zone D,4.9,0.93,0.0,19,Electric Van,32.7,8.0
+TRIP-1076,Zone A,Zone A,5.0,0.97,0.0,17,Van,11.2,6.0
+TRIP-1077,Zone D,Zone C,22.8,0.95,0.0,21,Bike,1.2,4.2
+TRIP-1078,Zone D,Zone B,26.5,0.84,1.0,14,Electric Scooter,9.2,5.5
+TRIP-1079,Zone C,Zone D,22.4,1.0,0.0,12,Truck,32.6,4.9
+TRIP-1080,Zone A,Zone C,23.2,0.8,0.0,8,Electric Van,20.6,17.9
+TRIP-1081,Zone A,Zone B,20.5,0.69,0.0,17,Electric Scooter,25.0,26.3
+TRIP-1082,Zone C,Zone C,4.6,0.97,0.0,22,Bike,14.6,4.3
+TRIP-1083,Zone C,Zone D,19.9,1.0,0.0,22,Bike,19.1,3.5
+TRIP-1084,Zone A,Zone D,34.1,0.46,0.0,18,Electric Van,16.1,54.8
+TRIP-1085,Zone C,Zone A,23.5,0.97,0.0,10,Electric Van,49.0,5.9
+TRIP-1086,Zone D,Zone C,21.9,0.96,0.0,14,Truck,32.6,4.7
+TRIP-1087,Zone D,Zone B,27.8,0.77,0.9,21,Truck,11.5,7.7
+TRIP-1088,Zone B,Zone A,18.2,0.59,0.0,8,Electric Van,17.1,24.9
+TRIP-1089,Zone D,Zone C,23.6,0.93,0.0,21,Truck,46.4,6.9
+TRIP-1090,Zone B,Zone A,20.9,0.59,1.8,16,Electric Van,30.4,15.7
+TRIP-1091,Zone B,Zone D,25.7,0.84,0.0,19,Electric Scooter,7.2,18.4
+TRIP-1092,Zone D,Zone C,21.3,0.92,0.0,19,Bike,4.7,10.6
+TRIP-1093,Zone C,Zone D,18.7,0.93,0.0,14,Truck,18.4,1.0
+TRIP-1094,Zone B,Zone B,3.9,0.95,1.6,22,Electric Van,21.2,3.1
+TRIP-1095,Zone D,Zone A,31.8,0.66,0.0,19,Electric Van,11.9,36.0
+TRIP-1096,Zone A,Zone A,5.8,0.88,0.0,11,Van,57.8,5.3
+TRIP-1097,Zone D,Zone A,29.9,0.6,0.0,20,Electric Scooter,4.5,14.8
+TRIP-1098,Zone A,Zone B,21.6,0.59,0.0,9,Electric Van,47.2,31.5
+TRIP-1099,Zone A,Zone C,25.7,0.82,11.3,15,Electric Scooter,25.0,23.5
+TRIP-1100,Zone C,Zone D,20.8,1.0,7.9,16,Electric Scooter,10.5,6.9
+TRIP-1101,Zone B,Zone D,28.4,0.92,0.0,9,Electric Van,43.6,9.8
+TRIP-1102,Zone B,Zone A,22.0,0.67,0.0,15,Electric Van,2.5,12.0
+TRIP-1103,Zone A,Zone C,25.8,0.86,0.0,10,Bike,3.6,7.9
+TRIP-1104,Zone A,Zone B,17.3,0.64,0.0,16,Van,57.2,11.6
+TRIP-1105,Zone A,Zone D,31.2,0.53,0.0,19,Bike,0.5,45.3
+TRIP-1106,Zone C,Zone D,20.8,0.96,0.0,17,Electric Van,19.0,4.6
+TRIP-1107,Zone C,Zone D,20.4,0.97,0.0,9,Electric Van,20.0,2.4
+TRIP-1108,Zone A,Zone B,21.3,0.64,0.0,22,Truck,75.0,12.9
+TRIP-1109,Zone D,Zone D,5.7,0.87,0.0,19,Electric Van,73.0,12.7
+TRIP-1110,Zone C,Zone D,19.1,1.0,0.0,9,Van,38.2,7.0
+TRIP-1111,Zone A,Zone D,28.6,0.57,9.1,13,Electric Scooter,9.6,26.2
+TRIP-1112,Zone A,Zone C,25.7,0.79,1.3,10,Truck,20.6,6.7
+TRIP-1113,Zone C,Zone D,22.7,1.0,2.7,17,Electric Van,27.7,8.1
+TRIP-1114,Zone B,Zone C,15.7,0.83,0.0,7,Van,22.9,8.5
+TRIP-1115,Zone D,Zone C,19.0,0.88,0.1,9,Truck,3.2,13.4
+TRIP-1116,Zone C,Zone C,5.4,0.87,0.0,8,Van,67.2,10.0
+TRIP-1117,Zone A,Zone C,25.0,0.75,7.1,16,Bike,10.6,16.0
+TRIP-1118,Zone D,Zone B,23.1,0.86,0.0,7,Bike,11.0,5.1
+TRIP-1119,Zone A,Zone A,5.0,0.9,4.5,15,Electric Scooter,1.2,6.0
+TRIP-1120,Zone D,Zone A,30.4,0.59,0.0,17,Bike,8.3,40.5
+TRIP-1121,Zone A,Zone B,21.8,0.66,0.0,12,Electric Van,13.9,11.1
+TRIP-1122,Zone D,Zone B,27.1,0.75,0.5,22,Electric Scooter,11.8,9.3
+TRIP-1123,Zone D,Zone D,3.0,0.89,0.0,19,Bike,3.0,4.3
+TRIP-1124,Zone C,Zone D,24.2,0.94,0.0,17,Electric Van,24.9,11.1
+TRIP-1125,Zone C,Zone C,3.5,0.89,0.0,14,Truck,85.5,6.9
+TRIP-1126,Zone A,Zone B,18.9,0.69,0.0,16,Electric Van,5.1,4.7
+TRIP-1127,Zone D,Zone C,19.0,0.91,0.0,19,Van,22.3,11.9
+TRIP-1128,Zone D,Zone B,28.6,0.76,0.0,7,Electric Van,18.3,10.0
+TRIP-1129,Zone C,Zone C,3.1,0.97,0.3,9,Van,9.6,9.6
+TRIP-1130,Zone B,Zone D,26.9,0.87,3.3,20,Electric Scooter,7.7,8.3
+TRIP-1131,Zone C,Zone B,14.6,0.73,0.0,22,Van,5.0,8.1
+TRIP-1132,Zone A,Zone C,20.1,0.7,0.0,18,Electric Scooter,9.3,23.3
+TRIP-1133,Zone C,Zone B,14.6,0.8,0.0,22,Truck,72.1,6.3
+TRIP-1134,Zone D,Zone C,22.8,0.95,1.7,12,Electric Van,10.4,5.5
+TRIP-1135,Zone C,Zone A,23.1,0.96,0.0,19,Van,32.1,8.4
+TRIP-1136,Zone A,Zone B,22.0,0.67,0.1,20,Van,45.2,6.0
+TRIP-1137,Zone B,Zone C,14.8,0.83,1.1,21,Van,52.6,7.5
+TRIP-1138,Zone A,Zone B,17.2,0.72,5.9,22,Truck,183.1,12.3
+TRIP-1139,Zone B,Zone B,6.6,0.96,0.0,9,Electric Scooter,9.8,6.7
+TRIP-1140,Zone D,Zone B,27.7,0.88,3.4,13,Electric Van,2.9,6.3
+TRIP-1141,Zone B,Zone A,20.1,0.62,0.0,13,Electric Scooter,8.3,8.4
+TRIP-1142,Zone C,Zone D,24.0,1.0,0.0,17,Truck,280.0,15.3
+TRIP-1143,Zone C,Zone B,19.2,0.86,2.7,9,Electric Van,11.8,10.2
+TRIP-1144,Zone D,Zone D,3.7,0.99,0.0,20,Bike,10.9,2.7
+TRIP-1145,Zone B,Zone D,26.5,0.86,0.0,7,Truck,38.9,1.2
+TRIP-1146,Zone B,Zone C,17.0,0.79,0.2,12,Bike,3.1,7.6
+TRIP-1147,Zone C,Zone A,21.4,0.88,0.3,9,Bike,5.6,18.6
+TRIP-1148,Zone A,Zone B,21.2,0.66,0.0,15,Electric Van,30.1,10.9
+TRIP-1149,Zone A,Zone D,29.6,0.59,0.0,9,Truck,19.6,39.8
+TRIP-1150,Zone C,Zone C,3.4,0.85,0.0,14,Van,33.5,1.7
+TRIP-1151,Zone D,Zone D,3.3,0.95,0.0,16,Truck,188.3,6.9
+TRIP-1152,Zone A,Zone B,21.8,0.67,0.0,13,Electric Scooter,14.5,12.4
+TRIP-1153,Zone A,Zone D,32.9,0.43,0.0,22,Van,12.1,19.5
+TRIP-1154,Zone A,Zone D,28.8,0.54,0.6,18,Electric Van,52.7,40.6
+TRIP-1155,Zone B,Zone B,5.5,0.98,0.0,8,Van,33.5,7.8
+TRIP-1156,Zone A,Zone D,28.7,0.5,0.0,13,Electric Van,75.0,19.4
+TRIP-1157,Zone D,Zone A,28.8,0.58,0.0,14,Bike,3.4,13.3
+TRIP-1158,Zone C,Zone C,6.7,0.95,0.0,10,Van,15.0,4.7
+TRIP-1159,Zone A,Zone D,30.7,0.54,3.8,14,Van,40.6,19.5
+TRIP-1160,Zone A,Zone A,6.7,0.89,0.0,19,Van,10.2,9.4
+TRIP-1161,Zone D,Zone D,6.1,0.86,7.4,9,Van,43.1,8.7
+TRIP-1162,Zone C,Zone D,21.9,0.95,0.0,13,Electric Van,23.3,5.5
+TRIP-1163,Zone C,Zone B,16.2,0.8,0.0,7,Electric Scooter,20.7,4.7
+TRIP-1164,Zone B,Zone A,21.3,0.59,0.0,17,Electric Van,9.7,33.5
+TRIP-1165,Zone C,Zone A,21.7,0.9,0.0,13,Bike,9.3,5.8
+TRIP-1166,Zone A,Zone C,21.9,0.78,0.0,21,Truck,129.7,5.4
+TRIP-1167,Zone D,Zone A,31.9,0.62,0.0,17,Electric Scooter,7.2,41.2
+TRIP-1168,Zone C,Zone B,15.4,0.72,0.0,14,Electric Scooter,11.4,5.9
+TRIP-1169,Zone B,Zone A,18.1,0.54,0.0,15,Electric Scooter,3.7,13.9
+TRIP-1170,Zone A,Zone A,5.9,0.87,0.0,19,Bike,3.7,9.3
+TRIP-1171,Zone C,Zone C,3.7,0.86,4.3,10,Electric Van,41.7,1.2
+TRIP-1172,Zone C,Zone B,17.6,0.79,2.8,13,Electric Scooter,10.5,10.9
+TRIP-1173,Zone A,Zone A,5.2,0.9,0.0,17,Electric Scooter,9.7,10.1
+TRIP-1174,Zone B,Zone C,19.2,0.76,0.0,17,Electric Van,14.3,17.6
+TRIP-1175,Zone D,Zone D,2.7,0.96,0.0,16,Van,15.8,6.3
+TRIP-1176,Zone B,Zone C,16.2,0.84,0.0,20,Truck,71.5,7.0
+TRIP-1177,Zone C,Zone C,3.9,1.0,0.0,13,Bike,15.1,1.1
+TRIP-1178,Zone B,Zone A,18.1,0.55,5.2,8,Bike,1.6,28.6
+TRIP-1179,Zone D,Zone A,32.3,0.71,0.0,8,Bike,2.5,29.3
+TRIP-1180,Zone C,Zone D,19.0,0.94,0.0,21,Electric Van,11.8,0.0
+TRIP-1181,Zone A,Zone D,30.3,0.42,0.0,11,Van,15.6,23.9
+TRIP-1182,Zone A,Zone C,22.9,0.84,0.0,11,Electric Scooter,10.8,8.3
+TRIP-1183,Zone B,Zone B,3.3,0.94,6.0,11,Bike,8.6,10.6
+TRIP-1184,Zone A,Zone C,24.9,0.79,0.0,12,Electric Scooter,13.7,11.1
+TRIP-1185,Zone D,Zone B,28.6,0.83,0.0,20,Bike,7.5,7.5
+TRIP-1186,Zone B,Zone A,21.9,0.57,1.7,8,Electric Van,9.9,33.2
+TRIP-1187,Zone B,Zone A,20.1,0.48,0.0,7,Van,62.4,12.6
+TRIP-1188,Zone B,Zone A,19.9,0.61,2.5,8,Bike,6.9,31.6
+TRIP-1189,Zone B,Zone B,5.2,0.91,0.5,17,Van,13.2,4.9
+TRIP-1190,Zone A,Zone D,32.5,0.46,12.4,13,Bike,2.0,38.8
+TRIP-1191,Zone D,Zone D,4.3,0.88,10.8,17,Van,24.8,14.5
+TRIP-1192,Zone C,Zone A,20.0,0.92,0.0,12,Truck,29.5,4.9
+TRIP-1193,Zone C,Zone C,3.0,0.94,0.0,19,Truck,20.7,7.3
+TRIP-1194,Zone A,Zone B,17.8,0.65,0.0,7,Electric Van,0.8,13.7
+TRIP-1195,Zone B,Zone C,16.5,0.81,0.0,19,Truck,87.7,17.0
+TRIP-1196,Zone D,Zone B,28.1,0.95,0.0,18,Bike,3.4,7.4
+TRIP-1197,Zone D,Zone B,26.0,0.81,0.0,18,Bike,4.3,21.9
+TRIP-1198,Zone D,Zone B,27.8,0.89,0.4,14,Truck,34.4,10.7
+TRIP-1199,Zone C,Zone A,23.5,0.99,0.0,22,Electric Scooter,4.5,0.0
+TRIP-1200,Zone A,Zone A,4.4,0.92,0.0,21,Van,5.7,7.3
+TRIP-1201,Zone C,Zone C,2.2,0.96,0.0,11,Truck,84.4,3.0
+TRIP-1202,Zone B,Zone C,16.3,0.84,0.0,21,Electric Van,7.6,4.9
+TRIP-1203,Zone B,Zone B,4.4,0.92,0.0,7,Bike,1.3,1.6
+TRIP-1204,Zone A,Zone B,20.8,0.6,5.6,11,Electric Van,19.5,12.5
+TRIP-1205,Zone D,Zone B,27.5,0.77,0.0,13,Bike,6.7,9.1
+TRIP-1206,Zone C,Zone C,3.2,0.86,0.0,12,Truck,81.1,3.8
+TRIP-1207,Zone B,Zone D,28.1,0.83,0.0,12,Van,46.4,7.7
+TRIP-1208,Zone A,Zone D,29.3,0.43,1.7,13,Electric Van,10.0,21.8
+TRIP-1209,Zone D,Zone C,23.9,0.93,0.0,18,Truck,37.3,9.8
+TRIP-1210,Zone B,Zone A,17.8,0.67,0.0,18,Van,20.5,19.3
+TRIP-1211,Zone C,Zone A,22.2,0.92,0.6,22,Van,8.9,5.7
+TRIP-1212,Zone C,Zone B,15.1,0.84,3.2,13,Electric Van,24.2,6.2
+TRIP-1213,Zone B,Zone A,21.9,0.66,0.0,9,Van,17.1,26.7
+TRIP-1214,Zone A,Zone D,32.9,0.45,1.7,22,Electric Scooter,12.0,24.6
+TRIP-1215,Zone A,Zone C,23.4,0.7,0.0,20,Electric Van,25.6,14.2
+TRIP-1216,Zone D,Zone C,19.6,0.85,14.7,8,Electric Scooter,10.0,34.0
+TRIP-1217,Zone A,Zone A,5.4,0.86,0.0,8,Van,31.3,6.4
+TRIP-1218,Zone B,Zone D,26.9,0.9,0.0,15,Bike,3.7,7.0
+TRIP-1219,Zone C,Zone D,21.4,0.96,0.0,11,Electric Scooter,3.4,5.1
+TRIP-1220,Zone C,Zone A,21.7,0.91,0.0,14,Electric Van,24.4,4.3
+TRIP-1221,Zone A,Zone C,20.1,0.78,0.0,20,Truck,128.6,9.0
+TRIP-1222,Zone C,Zone C,5.9,0.88,2.8,13,Electric Scooter,0.9,6.0
+TRIP-1223,Zone B,Zone B,2.2,0.93,0.0,7,Van,40.0,0.0
+TRIP-1224,Zone A,Zone A,5.0,0.95,0.0,17,Van,27.4,8.9
+TRIP-1225,Zone B,Zone C,15.0,0.83,0.0,11,Electric Van,16.3,7.2
+TRIP-1226,Zone C,Zone A,22.1,0.93,0.0,14,Bike,18.1,5.5
+TRIP-1227,Zone D,Zone D,4.0,0.91,0.0,9,Bike,2.2,10.6
+TRIP-1228,Zone C,Zone A,23.5,0.99,0.0,9,Electric Van,17.7,4.7
+TRIP-1229,Zone D,Zone B,24.0,0.88,9.5,7,Bike,9.6,18.1
+TRIP-1230,Zone C,Zone D,23.2,0.99,0.0,14,Van,56.0,2.2
+TRIP-1231,Zone D,Zone A,30.7,0.62,0.0,19,Truck,26.3,36.5
+TRIP-1232,Zone D,Zone C,19.0,0.98,0.0,17,Truck,69.3,11.4
+TRIP-1233,Zone B,Zone B,4.8,0.87,0.0,17,Van,53.6,10.6
+TRIP-1234,Zone D,Zone D,2.6,1.0,1.6,11,Truck,108.9,4.1
+TRIP-1235,Zone D,Zone A,34.4,0.67,0.0,22,Electric Scooter,7.2,14.9
+TRIP-1236,Zone A,Zone A,5.2,0.98,0.0,9,Bike,0.6,9.9
+TRIP-1237,Zone B,Zone C,15.7,0.77,0.0,18,Electric Van,7.5,15.1
+TRIP-1238,Zone D,Zone A,29.9,0.66,0.0,21,Electric Scooter,6.6,14.7
+TRIP-1239,Zone B,Zone C,17.8,0.85,0.0,14,Truck,86.9,6.2
+TRIP-1240,Zone B,Zone C,19.0,0.79,0.0,18,Bike,4.4,16.0
+TRIP-1241,Zone C,Zone B,17.5,0.71,0.0,9,Electric Scooter,3.2,20.1
+TRIP-1242,Zone C,Zone A,20.7,0.95,0.0,17,Electric Van,5.0,10.1
+TRIP-1243,Zone A,Zone A,6.6,0.9,0.0,18,Bike,2.6,5.5
+TRIP-1244,Zone A,Zone A,4.9,0.89,0.0,7,Electric Scooter,10.0,6.4
+TRIP-1245,Zone B,Zone A,17.1,0.62,0.0,15,Truck,45.8,13.7
+TRIP-1246,Zone A,Zone C,21.1,0.81,4.0,16,Electric Van,18.7,4.8
+TRIP-1247,Zone C,Zone B,15.5,0.81,4.2,16,Bike,6.1,8.8
+TRIP-1248,Zone D,Zone B,26.7,0.74,0.0,19,Van,56.7,29.4
+TRIP-1249,Zone A,Zone C,22.2,0.79,0.0,9,Truck,52.9,20.6
+TRIP-1250,Zone A,Zone B,20.6,0.67,3.6,22,Electric Van,5.8,19.8
+TRIP-1251,Zone B,Zone B,3.9,0.98,0.0,10,Electric Van,20.5,3.7
+TRIP-1252,Zone B,Zone C,19.7,0.79,0.0,11,Electric Scooter,2.1,8.5
+TRIP-1253,Zone A,Zone D,31.8,0.54,0.0,16,Van,3.3,19.2
+TRIP-1254,Zone C,Zone A,24.6,0.92,0.0,21,Bike,7.0,3.9
+TRIP-1255,Zone C,Zone A,20.9,0.93,0.0,9,Electric Van,13.9,7.1
+TRIP-1256,Zone B,Zone C,14.1,0.9,2.1,21,Electric Scooter,7.3,6.4
+TRIP-1257,Zone B,Zone C,14.1,0.76,0.0,21,Bike,4.6,9.4
+TRIP-1258,Zone C,Zone D,22.7,0.99,4.6,15,Van,32.1,3.7
+TRIP-1259,Zone A,Zone A,2.3,0.94,0.0,12,Electric Scooter,6.8,0.4
+TRIP-1260,Zone B,Zone D,24.7,0.79,0.0,17,Electric Van,47.6,19.7
+TRIP-1261,Zone B,Zone C,18.7,0.76,0.4,13,Truck,25.2,10.3
+TRIP-1262,Zone D,Zone D,3.4,0.96,1.1,21,Bike,2.0,6.8
+TRIP-1263,Zone D,Zone A,33.5,0.64,8.3,18,Electric Van,20.2,37.8
+TRIP-1264,Zone D,Zone C,19.7,0.94,0.4,22,Electric Van,12.7,0.8
+TRIP-1265,Zone C,Zone B,18.8,0.79,0.0,7,Electric Van,3.2,10.9
+TRIP-1266,Zone B,Zone B,2.9,0.87,0.0,20,Van,18.5,3.9
+TRIP-1267,Zone C,Zone A,21.8,0.9,0.0,14,Electric Van,6.0,3.4
+TRIP-1268,Zone A,Zone C,21.0,0.79,0.0,16,Electric Scooter,4.7,8.7
+TRIP-1269,Zone B,Zone B,6.3,0.85,0.0,16,Electric Scooter,4.6,1.5
+TRIP-1270,Zone C,Zone B,15.6,0.75,2.5,11,Electric Scooter,14.0,10.5
+TRIP-1271,Zone A,Zone D,32.9,0.47,0.0,15,Electric Van,4.9,20.6
+TRIP-1272,Zone C,Zone B,15.4,0.69,0.0,19,Bike,4.2,22.8
+TRIP-1273,Zone B,Zone B,6.3,0.89,2.7,19,Truck,35.2,2.4
+TRIP-1274,Zone D,Zone C,21.9,0.92,15.3,19,Electric Scooter,4.8,24.4
+TRIP-1275,Zone B,Zone A,22.4,0.64,0.5,18,Electric Van,8.1,26.1
+TRIP-1276,Zone D,Zone C,19.0,0.95,0.0,22,Bike,0.7,0.9
+TRIP-1277,Zone A,Zone B,21.6,0.63,0.0,19,Truck,206.7,30.9
+TRIP-1278,Zone A,Zone C,24.5,0.77,0.0,11,Electric Scooter,2.9,8.4
+TRIP-1279,Zone B,Zone B,3.5,0.96,13.6,14,Bike,9.6,15.0
+TRIP-1280,Zone A,Zone C,21.8,0.81,3.6,18,Van,17.3,16.1
+TRIP-1281,Zone B,Zone A,19.8,0.67,0.0,7,Electric Scooter,21.3,9.5
+TRIP-1282,Zone D,Zone A,31.9,0.61,0.0,12,Van,34.0,14.5
+TRIP-1283,Zone A,Zone A,6.1,0.88,0.0,8,Electric Van,21.9,7.8
+TRIP-1284,Zone B,Zone A,18.8,0.65,0.0,13,Van,2.0,8.0
+TRIP-1285,Zone D,Zone C,21.1,1.0,0.0,9,Electric Scooter,8.0,7.9
+TRIP-1286,Zone C,Zone C,3.8,0.87,1.0,7,Van,36.0,1.9
+TRIP-1287,Zone D,Zone B,26.9,0.88,0.0,19,Van,35.6,14.0
+TRIP-1288,Zone B,Zone A,19.3,0.63,0.0,16,Electric Van,29.5,13.1
+TRIP-1289,Zone C,Zone B,14.9,0.81,0.0,7,Van,11.2,3.4
+TRIP-1290,Zone B,Zone B,4.1,0.94,0.0,14,Van,48.1,3.7
+TRIP-1291,Zone A,Zone B,18.5,0.53,0.0,10,Electric Van,31.2,13.1
+TRIP-1292,Zone C,Zone C,4.6,0.94,0.0,12,Electric Scooter,9.9,0.2
+TRIP-1293,Zone D,Zone D,2.9,0.87,0.0,19,Bike,6.8,4.1
+TRIP-1294,Zone D,Zone D,5.2,0.89,0.0,16,Bike,5.6,2.5
+TRIP-1295,Zone A,Zone C,22.9,0.73,0.0,20,Truck,5.6,12.0
+TRIP-1296,Zone B,Zone B,3.2,0.93,6.0,12,Bike,20.0,12.9
+TRIP-1297,Zone C,Zone A,23.6,0.92,0.6,17,Truck,102.6,12.9
+TRIP-1298,Zone D,Zone B,23.9,0.85,7.2,12,Truck,55.6,11.8
+TRIP-1299,Zone A,Zone C,22.6,0.8,0.6,19,Electric Van,38.8,18.7
+TRIP-1300,Zone B,Zone A,21.7,0.59,0.0,8,Electric Van,11.5,27.0
+TRIP-1301,Zone B,Zone B,6.3,0.98,0.9,11,Electric Van,11.3,2.0
+TRIP-1302,Zone B,Zone B,6.8,1.0,0.0,14,Bike,4.1,3.9
+TRIP-1303,Zone A,Zone D,31.2,0.49,0.0,18,Truck,55.7,55.1
+TRIP-1304,Zone A,Zone B,22.3,0.59,0.0,12,Van,24.0,12.0
+TRIP-1305,Zone D,Zone B,27.8,0.86,0.0,12,Electric Scooter,1.8,5.4
+TRIP-1306,Zone B,Zone A,16.7,0.64,0.0,8,Van,19.6,23.9
+TRIP-1307,Zone B,Zone D,23.6,0.91,7.3,16,Electric Scooter,9.2,18.4
+TRIP-1308,Zone C,Zone B,19.0,0.7,0.0,22,Van,41.4,7.5
+TRIP-1309,Zone A,Zone B,17.8,0.61,0.0,18,Truck,76.5,22.1
+TRIP-1310,Zone B,Zone B,3.9,1.0,1.5,10,Electric Van,26.9,5.7
+TRIP-1311,Zone B,Zone D,27.0,0.93,1.9,22,Van,36.9,6.7
+TRIP-1312,Zone B,Zone D,23.6,0.89,0.0,12,Van,29.3,7.9
+TRIP-1313,Zone A,Zone A,2.1,0.9,0.4,14,Electric Scooter,16.0,0.0
+TRIP-1314,Zone C,Zone D,19.5,1.0,0.0,14,Bike,2.5,4.7
+TRIP-1315,Zone A,Zone B,21.4,0.7,1.3,19,Electric Scooter,15.3,26.0
+TRIP-1316,Zone B,Zone C,15.1,0.81,6.1,7,Truck,90.9,8.4
+TRIP-1317,Zone A,Zone A,5.6,0.9,0.0,18,Bike,3.6,9.8
+TRIP-1318,Zone B,Zone B,6.4,0.98,0.0,20,Van,19.4,0.0
+TRIP-1319,Zone B,Zone C,14.5,0.7,0.0,18,Truck,130.6,15.7
+TRIP-1320,Zone D,Zone B,24.2,0.94,0.0,11,Truck,173.0,11.1
+TRIP-1321,Zone A,Zone B,19.0,0.68,3.1,17,Electric Scooter,9.7,24.1
+TRIP-1322,Zone D,Zone B,25.9,0.82,0.0,16,Van,0.6,3.8
+TRIP-1323,Zone D,Zone C,22.9,0.96,0.0,21,Electric Van,63.9,8.8
+TRIP-1324,Zone B,Zone B,4.3,0.94,0.0,20,Electric Van,6.5,6.1
+TRIP-1325,Zone D,Zone C,19.4,0.97,0.0,19,Electric Scooter,11.4,7.2
+TRIP-1326,Zone B,Zone B,5.7,0.86,2.3,17,Electric Scooter,5.3,14.4
+TRIP-1327,Zone B,Zone D,26.0,0.92,0.0,13,Bike,3.0,7.1
+TRIP-1328,Zone A,Zone A,6.5,0.9,0.1,17,Bike,6.3,9.2
+TRIP-1329,Zone D,Zone B,25.1,0.85,0.0,20,Electric Van,41.7,6.0
+TRIP-1330,Zone B,Zone D,23.8,0.89,0.0,9,Electric Scooter,9.0,15.1
+TRIP-1331,Zone A,Zone D,30.4,0.44,0.0,9,Truck,30.0,53.6
+TRIP-1332,Zone D,Zone D,5.7,1.0,0.0,13,Truck,16.5,0.7
+TRIP-1333,Zone D,Zone A,32.2,0.72,0.0,10,Bike,3.2,12.2
+TRIP-1334,Zone A,Zone B,17.8,0.72,0.0,9,Bike,2.0,21.0
+TRIP-1335,Zone D,Zone A,31.5,0.73,15.5,22,Electric Scooter,2.7,25.3
+TRIP-1336,Zone A,Zone A,6.8,0.91,0.1,11,Van,8.0,5.1
+TRIP-1337,Zone B,Zone B,4.7,0.91,0.0,14,Electric Van,15.6,3.5
+TRIP-1338,Zone C,Zone C,3.6,0.86,0.0,17,Van,26.6,5.1
+TRIP-1339,Zone B,Zone B,4.8,0.99,7.5,12,Truck,126.0,1.8
+TRIP-1340,Zone B,Zone B,6.1,0.94,0.0,15,Truck,155.0,2.8
+TRIP-1341,Zone D,Zone D,6.3,0.89,0.0,21,Electric Scooter,4.1,8.1
+TRIP-1342,Zone B,Zone C,15.3,0.82,3.5,7,Truck,36.6,9.6
+TRIP-1343,Zone D,Zone A,30.5,0.75,0.0,8,Electric Scooter,0.8,28.8
+TRIP-1344,Zone C,Zone B,18.6,0.85,0.0,16,Van,18.8,4.9
+TRIP-1345,Zone A,Zone A,5.5,0.87,0.0,17,Electric Van,12.4,10.4
+TRIP-1346,Zone C,Zone D,20.8,1.0,0.0,17,Van,3.2,3.3
+TRIP-1347,Zone B,Zone A,19.7,0.61,2.5,14,Electric Scooter,1.2,5.8
+TRIP-1348,Zone C,Zone A,23.6,0.92,0.0,18,Bike,3.5,12.5
+TRIP-1349,Zone B,Zone D,28.9,0.87,5.3,10,Electric Scooter,4.0,12.2
+TRIP-1350,Zone C,Zone C,2.4,0.87,0.0,11,Truck,196.2,8.5
+TRIP-1351,Zone D,Zone B,23.8,0.8,0.0,7,Bike,0.3,8.7
+TRIP-1352,Zone D,Zone A,33.2,0.61,4.9,20,Electric Van,14.3,20.8
+TRIP-1353,Zone D,Zone C,18.7,0.93,3.8,7,Electric Van,45.7,6.8
+TRIP-1354,Zone A,Zone D,33.8,0.49,0.0,21,Bike,8.6,20.9
+TRIP-1355,Zone D,Zone B,23.4,0.77,0.0,11,Bike,1.5,8.9
+TRIP-1356,Zone C,Zone A,20.8,0.81,0.0,19,Bike,9.2,18.1
+TRIP-1357,Zone C,Zone D,24.4,1.0,1.1,7,Electric Van,22.1,3.7
+TRIP-1358,Zone A,Zone C,24.6,0.89,0.0,15,Truck,76.0,7.8
+TRIP-1359,Zone C,Zone A,23.2,0.93,6.9,13,Bike,20.0,12.2
+TRIP-1360,Zone A,Zone C,20.8,0.74,0.0,22,Van,20.1,7.7
+TRIP-1361,Zone A,Zone D,33.9,0.58,0.0,7,Electric Scooter,14.7,15.4
+TRIP-1362,Zone A,Zone B,22.3,0.57,6.5,19,Van,86.6,37.2
+TRIP-1363,Zone A,Zone D,33.5,0.53,0.9,22,Van,12.6,28.5
+TRIP-1364,Zone C,Zone D,21.2,0.99,0.0,11,Bike,2.3,7.2
+TRIP-1365,Zone B,Zone C,17.9,0.83,0.0,19,Van,29.2,17.7
+TRIP-1366,Zone C,Zone C,4.8,0.99,0.0,11,Electric Scooter,2.5,8.5
+TRIP-1367,Zone D,Zone D,5.0,0.99,1.7,14,Electric Scooter,3.0,1.8
+TRIP-1368,Zone C,Zone A,25.2,1.0,0.0,17,Electric Van,16.6,7.2
+TRIP-1369,Zone A,Zone A,2.1,0.93,0.0,22,Van,24.9,1.1
+TRIP-1370,Zone A,Zone D,30.7,0.54,6.7,12,Bike,9.0,26.7
+TRIP-1371,Zone D,Zone D,5.2,0.88,0.0,8,Van,26.0,12.5
+TRIP-1372,Zone C,Zone A,23.2,1.0,0.0,21,Bike,9.2,3.7
+TRIP-1373,Zone D,Zone A,31.4,0.72,0.0,8,Electric Scooter,6.8,28.5
+TRIP-1374,Zone C,Zone C,3.1,0.95,0.0,18,Electric Scooter,7.8,6.9
+TRIP-1375,Zone C,Zone A,25.6,0.94,3.7,11,Bike,5.2,8.1
+TRIP-1376,Zone A,Zone D,28.7,0.48,0.0,19,Bike,4.3,47.3
+TRIP-1377,Zone D,Zone D,2.8,0.95,0.0,12,Truck,242.9,9.3
+TRIP-1378,Zone C,Zone A,20.1,0.98,0.0,17,Electric Scooter,4.3,8.4
+TRIP-1379,Zone A,Zone D,29.7,0.46,0.0,11,Truck,84.6,18.0
+TRIP-1380,Zone A,Zone A,6.0,0.92,3.1,21,Electric Van,16.0,2.0
+TRIP-1381,Zone C,Zone D,22.6,0.96,0.0,21,Van,16.7,3.3
+TRIP-1382,Zone A,Zone B,18.1,0.62,0.0,20,Electric Van,21.1,11.9
+TRIP-1383,Zone C,Zone A,20.8,0.88,0.0,22,Van,42.2,5.0
+TRIP-1384,Zone C,Zone B,18.7,0.77,0.6,18,Van,51.6,16.3
+TRIP-1385,Zone D,Zone C,20.9,0.94,0.0,7,Truck,29.9,4.6
+TRIP-1386,Zone A,Zone C,23.2,0.83,0.0,12,Electric Scooter,11.6,9.0
+TRIP-1387,Zone B,Zone D,28.8,0.9,0.0,7,Truck,47.4,5.7
+TRIP-1388,Zone D,Zone A,29.6,0.67,0.0,20,Electric Van,29.5,12.7
+TRIP-1389,Zone D,Zone A,30.7,0.6,4.1,14,Van,38.0,15.1
+TRIP-1390,Zone C,Zone D,18.9,1.0,2.7,16,Electric Scooter,6.2,0.0
+TRIP-1391,Zone C,Zone D,21.2,1.0,0.0,10,Bike,3.9,4.4
+TRIP-1392,Zone B,Zone B,4.3,0.97,0.0,17,Electric Van,28.7,3.8
+TRIP-1393,Zone D,Zone B,26.9,0.88,0.0,8,Van,40.0,13.7
+TRIP-1394,Zone C,Zone A,21.6,0.91,0.0,21,Electric Van,17.5,5.6
+TRIP-1395,Zone D,Zone C,21.1,0.92,1.5,9,Electric Scooter,12.0,7.3
+TRIP-1396,Zone B,Zone D,23.2,0.78,0.0,15,Bike,15.0,8.4
+TRIP-1397,Zone A,Zone D,31.3,0.51,0.0,10,Bike,6.7,22.0
+TRIP-1398,Zone D,Zone A,31.1,0.72,0.0,13,Electric Van,35.2,13.8
+TRIP-1399,Zone A,Zone D,30.6,0.45,0.0,20,Bike,11.0,22.4
+TRIP-1400,Zone C,Zone C,5.2,0.98,0.0,20,Van,39.4,5.5
+TRIP-1401,Zone D,Zone B,26.3,0.91,0.0,13,Bike,5.9,6.0
+TRIP-1402,Zone B,Zone D,28.1,0.85,1.2,17,Electric Van,40.4,14.3
+TRIP-1403,Zone B,Zone C,19.4,0.84,1.1,10,Electric Van,32.4,0.5
+TRIP-1404,Zone D,Zone B,25.6,0.87,16.7,7,Electric Van,14.3,15.8
+TRIP-1405,Zone A,Zone D,32.5,0.48,0.0,19,Van,32.8,49.9
+TRIP-1406,Zone A,Zone A,5.4,0.98,0.0,9,Van,3.5,6.1
+TRIP-1407,Zone D,Zone D,5.2,0.94,1.4,18,Truck,22.7,9.2
+TRIP-1408,Zone D,Zone B,25.3,0.87,0.0,12,Electric Van,5.5,5.7
+TRIP-1409,Zone A,Zone D,30.7,0.47,0.0,15,Electric Scooter,23.6,20.3
+TRIP-1410,Zone A,Zone A,6.9,0.99,2.0,12,Van,20.5,2.5
+TRIP-1411,Zone C,Zone A,22.9,1.0,20.0,15,Bike,6.3,17.6
+TRIP-1412,Zone A,Zone B,19.1,0.68,0.0,17,Van,47.6,17.0
+TRIP-1413,Zone D,Zone D,4.5,0.95,16.4,22,Electric Van,45.1,15.2
+TRIP-1414,Zone D,Zone B,24.3,0.79,0.0,20,Van,9.3,8.7
+TRIP-1415,Zone D,Zone A,32.1,0.68,0.0,18,Bike,4.3,35.4
+TRIP-1416,Zone D,Zone A,33.3,0.61,8.6,21,Electric Van,18.8,19.7
+TRIP-1417,Zone C,Zone D,19.8,1.0,0.0,8,Electric Scooter,4.6,5.6
+TRIP-1418,Zone B,Zone B,2.3,0.91,0.0,13,Van,65.0,3.2
+TRIP-1419,Zone C,Zone C,5.6,0.94,0.7,11,Electric Van,15.3,3.9
+TRIP-1420,Zone D,Zone C,20.4,0.96,0.0,13,Truck,64.8,3.3
+TRIP-1421,Zone A,Zone D,34.1,0.56,0.0,14,Van,63.3,20.4
+TRIP-1422,Zone B,Zone D,25.9,0.86,0.0,21,Bike,4.1,6.0
+TRIP-1423,Zone A,Zone D,31.8,0.51,2.3,16,Van,79.6,23.1
+TRIP-1424,Zone C,Zone A,23.3,0.9,0.0,14,Electric Scooter,3.0,6.2
+TRIP-1425,Zone D,Zone C,23.5,0.92,0.0,16,Van,24.0,8.0
+TRIP-1426,Zone D,Zone D,7.0,0.99,0.0,22,Bike,3.1,2.8
+TRIP-1427,Zone B,Zone D,24.7,0.82,0.0,21,Truck,58.2,8.9
+TRIP-1428,Zone C,Zone A,21.7,1.0,0.0,11,Electric Van,25.5,1.0
+TRIP-1429,Zone D,Zone A,32.3,0.63,0.0,14,Electric Scooter,8.9,13.8
+TRIP-1430,Zone D,Zone D,5.3,0.88,0.0,8,Electric Scooter,8.5,3.9
+TRIP-1431,Zone B,Zone A,19.2,0.6,0.0,12,Electric Scooter,4.6,13.1
+TRIP-1432,Zone C,Zone B,18.8,0.77,0.0,20,Bike,10.2,5.1
+TRIP-1433,Zone C,Zone D,23.7,0.99,3.8,16,Electric Scooter,7.9,7.8
+TRIP-1434,Zone B,Zone D,23.6,0.85,0.0,9,Electric Van,7.5,17.0
+TRIP-1435,Zone D,Zone B,24.9,0.82,0.0,16,Bike,12.2,6.8
+TRIP-1436,Zone B,Zone B,4.9,0.92,6.9,21,Electric Scooter,8.6,17.5
+TRIP-1437,Zone D,Zone B,26.8,0.88,1.8,22,Electric Van,26.2,10.6
+TRIP-1438,Zone D,Zone D,2.1,0.97,0.0,16,Truck,28.0,0.0
+TRIP-1439,Zone B,Zone C,18.9,0.79,0.0,13,Electric Van,29.5,9.3
+TRIP-1440,Zone A,Zone C,23.5,0.78,0.0,9,Truck,34.8,17.7
+TRIP-1441,Zone A,Zone B,16.9,0.61,0.0,18,Electric Scooter,7.7,28.2
+TRIP-1442,Zone B,Zone A,20.7,0.6,0.0,17,Electric Scooter,11.5,32.7
+TRIP-1443,Zone B,Zone C,15.9,0.8,3.8,9,Truck,16.5,14.8
+TRIP-1444,Zone C,Zone D,20.4,0.95,8.7,19,Van,22.4,5.4
+TRIP-1445,Zone C,Zone C,6.8,0.97,0.0,16,Electric Van,11.2,0.0
+TRIP-1446,Zone D,Zone C,24.0,1.0,11.1,9,Electric Scooter,2.2,29.1
+TRIP-1447,Zone A,Zone D,32.2,0.46,0.0,9,Electric Van,48.8,52.8
+TRIP-1448,Zone A,Zone A,6.3,0.91,6.5,22,Electric Scooter,5.4,10.2
+TRIP-1449,Zone D,Zone A,31.8,0.68,0.0,9,Truck,87.4,36.8
+TRIP-1450,Zone D,Zone A,30.0,0.6,0.6,17,Truck,27.6,36.6
+TRIP-1451,Zone B,Zone D,23.4,0.9,3.7,18,Electric Scooter,12.4,11.7
+TRIP-1452,Zone D,Zone D,3.7,0.97,0.0,20,Van,10.2,1.8
+TRIP-1453,Zone D,Zone B,24.3,0.83,0.2,17,Electric Scooter,8.4,18.8
+TRIP-1454,Zone A,Zone B,19.4,0.74,0.0,7,Van,23.8,10.2
+TRIP-1455,Zone D,Zone C,23.3,0.93,0.0,8,Van,36.8,13.5
+TRIP-1456,Zone C,Zone D,22.6,1.0,0.0,19,Electric Scooter,7.9,5.0
+TRIP-1457,Zone D,Zone A,29.5,0.71,2.2,9,Bike,4.1,29.5
+TRIP-1458,Zone B,Zone A,20.6,0.58,0.0,17,Electric Van,12.5,33.3
+TRIP-1459,Zone B,Zone C,20.0,0.78,0.0,17,Truck,37.8,17.0
+TRIP-1460,Zone D,Zone B,28.6,0.82,0.0,8,Van,48.4,20.4
+TRIP-1461,Zone A,Zone D,29.3,0.59,0.0,15,Electric Scooter,3.3,18.4
+TRIP-1462,Zone A,Zone D,29.5,0.59,0.0,16,Van,21.1,16.8
+TRIP-1463,Zone B,Zone A,16.6,0.66,0.0,10,Electric Scooter,6.2,8.9
+TRIP-1464,Zone B,Zone C,18.9,0.8,0.0,15,Electric Van,29.0,10.5
+TRIP-1465,Zone B,Zone B,6.9,0.87,0.0,20,Van,8.6,2.3
+TRIP-1466,Zone C,Zone A,20.7,0.98,1.8,11,Truck,121.7,0.3
+TRIP-1467,Zone C,Zone B,19.5,0.79,0.0,21,Bike,10.3,9.3
+TRIP-1468,Zone B,Zone A,19.4,0.69,2.6,19,Truck,32.9,24.2
+TRIP-1469,Zone B,Zone A,19.0,0.56,0.0,21,Van,21.7,11.9
+TRIP-1470,Zone A,Zone A,5.9,0.95,0.0,8,Truck,43.9,7.9
+TRIP-1471,Zone D,Zone C,23.1,0.98,0.0,12,Bike,10.8,1.7
+TRIP-1472,Zone D,Zone A,30.2,0.55,0.0,20,Electric Scooter,7.1,19.1
+TRIP-1473,Zone A,Zone C,21.9,0.75,0.0,22,Bike,11.4,5.6
+TRIP-1474,Zone C,Zone D,21.7,1.0,0.0,17,Bike,5.1,3.9
+TRIP-1475,Zone A,Zone C,22.4,0.81,0.0,16,Bike,4.4,9.2
+TRIP-1476,Zone B,Zone C,14.3,0.83,0.0,17,Electric Van,8.9,12.2
+TRIP-1477,Zone A,Zone D,30.1,0.54,0.7,18,Bike,4.6,46.7
+TRIP-1478,Zone A,Zone A,6.1,0.87,0.0,19,Electric Scooter,5.6,10.6
+TRIP-1479,Zone B,Zone D,23.7,0.86,0.0,7,Truck,83.0,6.8
+TRIP-1480,Zone A,Zone A,4.4,0.88,1.3,7,Electric Scooter,0.1,4.7
+TRIP-1481,Zone C,Zone A,25.4,1.0,0.0,17,Truck,97.7,6.7
+TRIP-1482,Zone B,Zone B,2.7,0.99,0.0,21,Electric Van,6.4,0.0
+TRIP-1483,Zone C,Zone C,6.3,0.95,0.0,19,Bike,10.3,3.7
+TRIP-1484,Zone C,Zone B,17.2,0.71,0.0,20,Truck,46.3,11.0
+TRIP-1485,Zone D,Zone C,20.3,0.9,0.0,17,Bike,9.7,9.1
+TRIP-1486,Zone C,Zone D,22.5,1.0,0.0,20,Truck,52.9,1.5
+TRIP-1487,Zone A,Zone D,31.5,0.53,0.9,15,Electric Van,3.3,22.0
+TRIP-1488,Zone B,Zone C,17.6,0.79,0.0,20,Electric Scooter,8.8,8.4
+TRIP-1489,Zone D,Zone B,24.4,0.81,0.0,16,Electric Scooter,7.1,8.0
+TRIP-1490,Zone B,Zone B,2.6,0.98,0.4,20,Truck,100.8,9.2
+TRIP-1491,Zone D,Zone B,27.3,0.78,0.0,8,Truck,51.7,24.7
+TRIP-1492,Zone B,Zone C,18.7,0.71,0.0,7,Electric Van,20.2,10.2
+TRIP-1493,Zone C,Zone B,16.9,0.75,0.0,9,Bike,15.4,15.1
+TRIP-1494,Zone B,Zone B,4.9,0.88,0.0,11,Bike,3.4,3.1
+TRIP-1495,Zone B,Zone D,25.1,0.82,0.0,17,Electric Van,61.5,18.5
+TRIP-1496,Zone A,Zone D,31.8,0.46,0.0,7,Electric Scooter,6.9,23.5
+TRIP-1497,Zone D,Zone D,3.6,0.92,0.0,15,Bike,9.9,1.9
+TRIP-1498,Zone D,Zone B,26.2,0.87,0.0,17,Truck,72.5,17.2
+TRIP-1499,Zone A,Zone B,21.6,0.61,13.6,21,Truck,116.1,20.3
+TRIP-1500,Zone D,Zone A,29.9,0.72,0.0,17,Electric Van,25.7,26.6
+TRIP-1501,Zone D,Zone D,2.6,0.96,5.9,9,Van,41.0,11.8
+TRIP-1502,Zone D,Zone C,23.1,0.96,1.1,22,Truck,227.7,6.2
+TRIP-1503,Zone A,Zone C,23.9,0.84,0.0,18,Van,36.8,16.9
+TRIP-1504,Zone A,Zone A,4.8,0.98,0.8,20,Truck,64.9,5.6
+TRIP-1505,Zone D,Zone D,5.2,0.96,0.0,15,Truck,103.3,0.2
+TRIP-1506,Zone A,Zone D,33.7,0.46,7.2,20,Van,21.1,26.0
+TRIP-1507,Zone D,Zone A,32.4,0.65,0.0,16,Van,46.4,17.4
+TRIP-1508,Zone D,Zone A,30.9,0.67,0.0,17,Truck,47.1,34.1
+TRIP-1509,Zone C,Zone D,20.5,1.0,0.0,7,Electric Van,16.4,3.9
+TRIP-1510,Zone D,Zone C,22.6,0.95,3.4,9,Electric Scooter,2.6,10.6
+TRIP-1511,Zone D,Zone D,6.9,0.86,0.0,18,Electric Scooter,10.5,12.7
+TRIP-1512,Zone A,Zone D,30.9,0.47,0.0,15,Bike,5.9,22.0
+TRIP-1513,Zone C,Zone B,16.4,0.78,0.0,18,Van,46.3,15.8
+TRIP-1514,Zone B,Zone D,26.9,0.83,5.5,9,Van,17.7,20.0
+TRIP-1515,Zone B,Zone B,5.7,0.93,0.0,7,Electric Scooter,4.7,1.9
+TRIP-1516,Zone A,Zone D,32.4,0.52,0.0,8,Truck,62.1,48.1
+TRIP-1517,Zone B,Zone D,24.2,0.77,1.2,22,Electric Van,45.6,17.0
+TRIP-1518,Zone C,Zone D,18.7,1.0,0.0,18,Electric Scooter,19.7,5.0
+TRIP-1519,Zone A,Zone C,24.2,0.83,0.0,9,Electric Scooter,3.6,17.9
+TRIP-1520,Zone A,Zone C,20.2,0.81,0.0,17,Electric Scooter,5.0,14.8
+TRIP-1521,Zone D,Zone B,25.8,0.79,0.0,16,Bike,9.9,5.7
+TRIP-1522,Zone C,Zone C,5.9,0.93,2.1,20,Electric Van,15.3,1.5
+TRIP-1523,Zone B,Zone C,19.7,0.84,2.1,18,Electric Scooter,10.0,13.1
+TRIP-1524,Zone C,Zone D,18.9,1.0,0.0,18,Electric Scooter,11.2,4.5
+TRIP-1525,Zone C,Zone D,21.4,0.97,0.0,19,Bike,6.5,9.9
+TRIP-1526,Zone A,Zone A,6.2,0.93,0.0,15,Bike,2.1,1.2
+TRIP-1527,Zone A,Zone B,21.2,0.68,0.0,10,Electric Van,72.3,12.9
+TRIP-1528,Zone C,Zone C,6.8,0.9,0.0,16,Bike,3.6,8.0
+TRIP-1529,Zone A,Zone D,32.0,0.48,0.0,20,Van,30.3,21.0
+TRIP-1530,Zone B,Zone A,17.6,0.58,0.0,13,Bike,3.4,13.7
+TRIP-1531,Zone D,Zone A,31.4,0.65,0.0,16,Bike,12.5,15.4
+TRIP-1532,Zone A,Zone D,32.9,0.48,0.0,13,Electric Van,22.6,22.7
+TRIP-1533,Zone C,Zone C,6.6,0.97,0.0,16,Van,17.2,1.9
+TRIP-1534,Zone B,Zone C,18.1,0.67,0.9,15,Electric Scooter,23.0,12.6
+TRIP-1535,Zone B,Zone C,14.2,0.86,0.0,16,Van,17.8,1.6
+TRIP-1536,Zone C,Zone D,20.3,0.96,0.0,21,Bike,3.0,3.3
+TRIP-1537,Zone C,Zone B,19.7,0.8,0.0,18,Bike,11.1,18.3
+TRIP-1538,Zone B,Zone D,25.7,0.85,0.0,12,Truck,280.0,15.6
+TRIP-1539,Zone B,Zone C,18.1,0.79,0.0,17,Electric Scooter,16.5,18.3
+TRIP-1540,Zone D,Zone B,26.8,0.84,3.8,19,Truck,125.6,17.7
+TRIP-1541,Zone C,Zone B,15.6,0.78,0.0,9,Electric Scooter,8.6,15.5
+TRIP-1542,Zone B,Zone A,18.9,0.65,0.0,22,Electric Van,34.7,11.2
+TRIP-1543,Zone A,Zone B,17.5,0.66,0.0,18,Electric Scooter,9.3,23.2
+TRIP-1544,Zone B,Zone C,16.8,0.7,0.0,9,Truck,111.5,17.1
+TRIP-1545,Zone A,Zone D,30.9,0.49,0.0,7,Electric Scooter,4.5,17.1
+TRIP-1546,Zone A,Zone D,31.3,0.51,0.0,22,Van,26.6,18.1
+TRIP-1547,Zone D,Zone B,23.9,0.8,5.1,17,Truck,60.5,21.3
+TRIP-1548,Zone B,Zone A,19.9,0.65,2.3,21,Electric Van,22.4,12.4
+TRIP-1549,Zone D,Zone C,21.0,0.88,9.4,10,Electric Scooter,1.9,18.2
+TRIP-1550,Zone B,Zone B,6.0,0.93,0.0,21,Bike,5.0,1.1
+TRIP-1551,Zone B,Zone D,23.9,0.84,0.0,17,Bike,3.9,17.1
+TRIP-1552,Zone D,Zone A,32.7,0.63,2.9,14,Truck,142.8,24.2
+TRIP-1553,Zone B,Zone A,16.8,0.6,7.1,9,Truck,19.6,25.7
+TRIP-1554,Zone D,Zone C,23.9,0.91,0.0,13,Van,8.6,5.2
+TRIP-1555,Zone B,Zone D,23.7,0.8,12.8,8,Electric Van,22.5,33.3
+TRIP-1556,Zone C,Zone B,14.4,0.75,0.0,9,Electric Scooter,10.8,19.0
+TRIP-1557,Zone B,Zone B,5.1,0.89,0.0,8,Bike,8.1,8.0
+TRIP-1558,Zone D,Zone C,21.6,1.0,0.0,22,Electric Scooter,4.3,1.7
+TRIP-1559,Zone A,Zone D,30.9,0.58,0.0,20,Truck,198.8,22.6
+TRIP-1560,Zone B,Zone B,2.0,0.96,4.3,10,Bike,11.2,4.0
+TRIP-1561,Zone A,Zone B,18.2,0.68,0.4,17,Bike,3.1,24.0
+TRIP-1562,Zone B,Zone D,24.1,0.85,0.0,15,Electric Van,21.0,6.0
+TRIP-1563,Zone C,Zone D,20.1,1.0,0.0,13,Truck,65.1,1.8
+TRIP-1564,Zone D,Zone A,32.8,0.66,0.0,8,Van,31.3,37.7
+TRIP-1565,Zone B,Zone D,24.8,0.88,21.0,14,Bike,2.5,29.6
+TRIP-1566,Zone D,Zone D,6.7,0.94,0.0,21,Electric Scooter,4.4,0.9
+TRIP-1567,Zone A,Zone B,16.7,0.7,0.0,22,Van,56.2,13.0
+TRIP-1568,Zone B,Zone D,26.1,0.88,0.0,17,Bike,6.4,18.1
+TRIP-1569,Zone D,Zone C,23.4,0.99,2.5,21,Truck,132.7,3.1
+TRIP-1570,Zone C,Zone B,17.2,0.8,8.6,18,Truck,184.6,23.1
+TRIP-1571,Zone D,Zone C,21.7,0.94,2.8,15,Van,15.4,4.6
+TRIP-1572,Zone C,Zone A,25.6,0.96,0.0,22,Van,16.5,4.9
+TRIP-1573,Zone B,Zone C,17.7,0.77,0.0,8,Van,15.6,15.1
+TRIP-1574,Zone C,Zone B,17.1,0.82,15.7,8,Electric Van,17.1,19.7
+TRIP-1575,Zone B,Zone C,18.6,0.89,0.0,19,Truck,53.3,10.7
+TRIP-1576,Zone D,Zone D,5.5,0.92,0.0,11,Electric Van,32.6,2.0
+TRIP-1577,Zone A,Zone B,19.1,0.7,4.5,11,Electric Van,12.3,13.5
+TRIP-1578,Zone B,Zone D,23.5,0.9,0.0,10,Truck,24.7,5.1
+TRIP-1579,Zone C,Zone A,24.5,0.95,0.0,21,Bike,7.0,4.2
+TRIP-1580,Zone D,Zone D,6.0,0.93,0.0,18,Van,34.1,8.6
+TRIP-1581,Zone B,Zone D,27.0,0.74,0.0,16,Electric Van,1.5,11.5
+TRIP-1582,Zone A,Zone A,4.7,0.89,0.0,21,Electric Van,17.8,8.4
+TRIP-1583,Zone A,Zone C,21.6,0.78,0.4,19,Van,30.7,20.6
+TRIP-1584,Zone B,Zone D,28.0,0.83,4.6,9,Truck,159.0,27.9
+TRIP-1585,Zone B,Zone B,3.7,0.96,1.3,15,Electric Scooter,5.9,2.3
+TRIP-1586,Zone A,Zone B,17.4,0.69,5.5,13,Electric Van,35.4,10.9
+TRIP-1587,Zone B,Zone C,19.8,0.76,0.0,19,Electric Scooter,0.6,20.5
+TRIP-1588,Zone D,Zone C,24.0,0.96,0.0,8,Truck,93.8,7.0
+TRIP-1589,Zone A,Zone D,30.8,0.45,1.6,14,Electric Scooter,14.6,27.4
+TRIP-1590,Zone C,Zone D,22.9,1.0,0.0,17,Bike,6.9,3.6
+TRIP-1591,Zone B,Zone D,24.8,0.9,0.0,19,Van,12.0,13.3
+TRIP-1592,Zone B,Zone C,19.1,0.84,0.0,19,Electric Scooter,8.1,11.7
+TRIP-1593,Zone D,Zone C,19.4,0.92,0.0,8,Truck,194.3,12.8
+TRIP-1594,Zone B,Zone B,5.1,0.9,0.0,21,Electric Scooter,17.5,2.2
+TRIP-1595,Zone D,Zone D,3.6,0.95,1.4,18,Electric Van,19.4,5.5
+TRIP-1596,Zone B,Zone A,21.7,0.46,0.0,8,Bike,4.7,38.5
+TRIP-1597,Zone D,Zone D,5.1,0.88,0.0,13,Truck,32.3,5.7
+TRIP-1598,Zone C,Zone D,20.5,0.99,0.0,10,Truck,70.4,5.7
+TRIP-1599,Zone C,Zone D,24.0,1.0,0.0,7,Electric Scooter,4.0,3.3
+TRIP-1600,Zone C,Zone C,2.5,0.9,0.0,22,Bike,5.4,3.1
+TRIP-1601,Zone B,Zone A,20.8,0.53,0.0,22,Bike,6.6,14.0
+TRIP-1602,Zone D,Zone D,7.0,0.88,0.0,7,Truck,102.1,4.3
+TRIP-1603,Zone B,Zone A,18.1,0.56,0.0,12,Bike,5.3,13.9
+TRIP-1604,Zone D,Zone C,22.0,0.99,0.0,19,Electric Scooter,7.4,7.9
+TRIP-1605,Zone D,Zone D,6.0,1.0,2.0,10,Van,22.2,5.7
+TRIP-1606,Zone D,Zone D,2.4,0.99,0.0,13,Van,18.0,4.1
+TRIP-1607,Zone A,Zone C,21.4,0.78,5.8,13,Truck,180.0,14.7
+TRIP-1608,Zone D,Zone C,19.1,0.97,2.2,11,Van,64.8,1.9
+TRIP-1609,Zone A,Zone B,20.9,0.63,0.0,10,Electric Scooter,3.2,10.7
+TRIP-1610,Zone B,Zone A,22.2,0.6,0.0,8,Electric Scooter,9.1,29.5
+TRIP-1611,Zone A,Zone A,5.0,0.97,0.0,15,Truck,38.9,3.3
+TRIP-1612,Zone C,Zone D,23.5,1.0,3.3,8,Van,6.3,8.7
+TRIP-1613,Zone C,Zone B,15.4,0.76,0.8,18,Electric Van,26.7,16.1
+TRIP-1614,Zone C,Zone D,23.5,0.95,0.0,15,Bike,9.1,3.1
+TRIP-1615,Zone C,Zone C,2.5,0.9,0.0,22,Electric Scooter,13.3,3.5
+TRIP-1616,Zone A,Zone B,18.9,0.68,2.2,17,Truck,28.0,13.3
+TRIP-1617,Zone D,Zone C,20.5,0.93,0.0,11,Electric Van,8.5,6.2
+TRIP-1618,Zone D,Zone B,26.8,0.72,0.0,8,Electric Scooter,23.0,26.2
+TRIP-1619,Zone C,Zone A,21.6,0.9,0.0,21,Bike,18.8,2.9
+TRIP-1620,Zone A,Zone B,17.4,0.65,0.0,7,Van,72.9,11.5
+TRIP-1621,Zone B,Zone B,3.0,0.91,0.0,10,Electric Scooter,18.7,4.9
+TRIP-1622,Zone D,Zone A,31.0,0.73,0.0,10,Van,60.3,15.2
+TRIP-1623,Zone A,Zone D,30.0,0.55,0.0,13,Electric Van,39.4,20.9
+TRIP-1624,Zone D,Zone D,5.5,0.92,0.0,8,Electric Scooter,6.2,8.6
+TRIP-1625,Zone C,Zone B,14.7,0.75,0.0,19,Electric Van,4.2,16.3
+TRIP-1626,Zone C,Zone D,20.2,0.99,0.0,18,Electric Van,11.6,6.9
+TRIP-1627,Zone A,Zone D,31.9,0.53,0.0,22,Bike,3.7,23.4
+TRIP-1628,Zone B,Zone C,15.5,0.74,14.0,10,Electric Van,29.9,18.1
+TRIP-1629,Zone A,Zone A,5.5,0.96,0.0,22,Bike,8.1,1.8
+TRIP-1630,Zone D,Zone C,21.8,0.97,6.2,21,Van,18.1,7.6
+TRIP-1631,Zone D,Zone C,21.1,1.0,0.0,22,Truck,87.5,3.2
+TRIP-1632,Zone B,Zone A,22.4,0.54,2.9,12,Van,16.4,16.1
+TRIP-1633,Zone C,Zone D,18.9,0.93,0.0,11,Electric Scooter,6.1,4.4
+TRIP-1634,Zone C,Zone B,17.4,0.79,0.0,15,Electric Scooter,5.4,4.9
+TRIP-1635,Zone A,Zone D,30.3,0.47,0.0,10,Bike,15.5,21.4
+TRIP-1636,Zone B,Zone D,25.8,0.87,0.0,17,Van,21.4,17.2
+TRIP-1637,Zone A,Zone A,5.1,0.96,0.0,13,Truck,64.8,3.5
+TRIP-1638,Zone C,Zone C,2.2,0.9,0.0,9,Bike,6.1,7.3
+TRIP-1639,Zone B,Zone B,3.7,0.95,1.1,20,Electric Scooter,21.0,1.1
+TRIP-1640,Zone D,Zone D,2.6,0.96,10.8,9,Electric Scooter,3.6,24.1
+TRIP-1641,Zone B,Zone C,19.5,0.78,0.0,19,Electric Van,32.9,19.5
+TRIP-1642,Zone A,Zone B,17.2,0.68,0.0,11,Truck,182.0,10.0
+TRIP-1643,Zone B,Zone A,19.5,0.61,2.2,22,Bike,7.1,8.1
+TRIP-1644,Zone C,Zone B,18.0,0.71,7.3,21,Electric Scooter,17.2,15.4
+TRIP-1645,Zone C,Zone A,22.5,0.94,0.0,9,Truck,33.7,5.9
+TRIP-1646,Zone A,Zone A,6.6,1.0,2.6,19,Van,18.0,7.5
+TRIP-1647,Zone A,Zone A,5.0,0.9,0.0,10,Truck,143.2,2.5
+TRIP-1648,Zone B,Zone D,27.5,0.83,0.0,14,Bike,1.6,6.7
+TRIP-1649,Zone A,Zone A,6.3,0.97,0.0,16,Truck,101.2,4.1
+TRIP-1650,Zone D,Zone A,31.0,0.68,3.1,22,Electric Scooter,3.8,18.0
+TRIP-1651,Zone A,Zone D,34.3,0.53,0.0,17,Van,22.6,45.3
+TRIP-1652,Zone D,Zone D,2.1,0.99,0.0,10,Bike,9.3,3.2
+TRIP-1653,Zone B,Zone C,18.7,0.78,0.0,21,Electric Van,6.7,8.6
+TRIP-1654,Zone C,Zone C,4.9,0.9,13.9,8,Electric Scooter,16.2,18.0
+TRIP-1655,Zone A,Zone D,29.4,0.48,0.0,20,Electric Scooter,0.4,24.4
+TRIP-1656,Zone D,Zone B,28.9,0.87,6.4,14,Electric Scooter,18.6,15.8
+TRIP-1657,Zone B,Zone D,28.9,0.85,2.0,7,Electric Van,17.5,9.0
+TRIP-1658,Zone B,Zone B,2.2,0.93,5.6,7,Bike,2.1,6.4
+TRIP-1659,Zone C,Zone A,21.4,0.89,0.0,21,Van,57.4,1.5
+TRIP-1660,Zone C,Zone B,14.2,0.71,0.0,12,Electric Van,27.8,9.6
+TRIP-1661,Zone D,Zone C,23.1,0.85,4.6,7,Van,12.2,8.9
+TRIP-1662,Zone C,Zone D,19.9,0.98,6.5,10,Bike,7.1,11.2
+TRIP-1663,Zone D,Zone D,6.8,0.94,0.0,8,Electric Van,49.1,4.0
+TRIP-1664,Zone D,Zone C,23.6,1.0,0.0,13,Electric Van,7.3,0.9
+TRIP-1665,Zone C,Zone D,23.9,1.0,0.0,17,Truck,59.3,5.8
+TRIP-1666,Zone A,Zone B,20.1,0.69,0.0,11,Bike,5.0,9.0
+TRIP-1667,Zone B,Zone C,18.7,0.87,0.0,19,Van,10.8,11.6
+TRIP-1668,Zone B,Zone C,16.6,0.77,0.0,21,Electric Scooter,1.8,3.2
+TRIP-1669,Zone B,Zone B,5.0,0.93,0.0,8,Bike,9.7,5.8
+TRIP-1670,Zone D,Zone C,22.7,0.99,1.5,18,Electric Van,74.5,10.3
+TRIP-1671,Zone A,Zone A,4.2,0.96,0.0,17,Electric Van,6.0,7.0
+TRIP-1672,Zone A,Zone C,22.6,0.81,0.0,18,Electric Scooter,4.9,19.2
+TRIP-1673,Zone D,Zone D,5.0,0.85,0.0,20,Electric Scooter,1.5,0.0
+TRIP-1674,Zone A,Zone A,3.8,0.88,0.0,8,Bike,9.3,7.6
+TRIP-1675,Zone A,Zone D,32.4,0.56,0.0,14,Electric Scooter,10.3,21.4
+TRIP-1676,Zone C,Zone B,19.2,0.73,0.0,21,Truck,96.2,12.0
+TRIP-1677,Zone D,Zone D,6.7,0.94,0.0,16,Electric Van,10.7,1.3
+TRIP-1678,Zone C,Zone A,24.1,0.92,1.8,13,Electric Scooter,12.2,12.6
+TRIP-1679,Zone B,Zone A,19.7,0.69,2.0,7,Van,42.0,10.1
+TRIP-1680,Zone C,Zone D,21.3,1.0,13.9,15,Truck,54.2,17.8
+TRIP-1681,Zone B,Zone C,15.3,0.71,0.0,15,Electric Scooter,0.9,8.2
+TRIP-1682,Zone D,Zone D,4.5,0.86,0.0,15,Electric Scooter,12.4,2.9
+TRIP-1683,Zone D,Zone D,6.9,0.86,0.0,10,Bike,2.6,6.5
+TRIP-1684,Zone B,Zone A,20.3,0.55,1.3,16,Truck,69.4,13.3
+TRIP-1685,Zone B,Zone D,28.9,0.86,0.0,8,Electric Van,35.7,17.3
+TRIP-1686,Zone A,Zone C,23.7,0.85,2.5,17,Electric Scooter,7.8,19.0
+TRIP-1687,Zone D,Zone A,29.0,0.71,0.0,10,Electric Van,19.4,8.6
+TRIP-1688,Zone B,Zone A,17.9,0.56,0.0,12,Bike,5.9,10.2
+TRIP-1689,Zone A,Zone C,23.7,0.83,0.0,8,Electric Van,33.4,21.3
+TRIP-1690,Zone D,Zone A,29.8,0.57,5.3,12,Electric Scooter,0.6,20.2
+TRIP-1691,Zone C,Zone A,22.7,0.99,0.0,11,Electric Scooter,3.9,3.9
+TRIP-1692,Zone D,Zone B,23.7,0.88,0.0,9,Bike,5.8,13.9
+TRIP-1693,Zone B,Zone B,5.6,0.92,0.0,22,Electric Scooter,15.0,1.6
+TRIP-1694,Zone A,Zone C,23.7,0.84,0.0,16,Electric Van,15.7,8.9
+TRIP-1695,Zone A,Zone C,20.4,0.87,0.0,20,Bike,12.1,7.9
+TRIP-1696,Zone B,Zone A,19.9,0.59,0.0,9,Electric Van,10.0,28.5
+TRIP-1697,Zone A,Zone B,21.6,0.75,0.0,11,Van,18.3,9.8
+TRIP-1698,Zone A,Zone A,5.6,0.88,0.0,14,Van,25.7,5.0
+TRIP-1699,Zone A,Zone B,22.1,0.64,0.0,19,Van,21.7,27.8
+TRIP-1700,Zone B,Zone A,20.5,0.61,6.0,8,Bike,4.6,30.0
+TRIP-1701,Zone D,Zone D,5.2,0.97,0.9,14,Bike,17.1,0.0
+TRIP-1702,Zone A,Zone B,19.8,0.69,3.0,14,Bike,12.7,10.9
+TRIP-1703,Zone D,Zone D,5.5,0.97,0.3,18,Bike,9.0,6.6
+TRIP-1704,Zone A,Zone B,17.8,0.64,0.0,20,Van,56.7,10.6
+TRIP-1705,Zone B,Zone C,17.6,0.73,0.0,15,Van,78.2,11.9
+TRIP-1706,Zone D,Zone C,18.8,0.99,0.0,13,Bike,16.0,2.3
+TRIP-1707,Zone A,Zone B,18.1,0.63,0.2,22,Van,11.3,11.7
+TRIP-1708,Zone A,Zone A,6.5,0.88,0.0,19,Electric Van,19.7,6.2
+TRIP-1709,Zone D,Zone D,3.7,0.87,0.0,9,Electric Van,5.6,5.9
+TRIP-1710,Zone D,Zone D,3.8,0.96,0.0,21,Electric Scooter,10.6,3.6
+TRIP-1711,Zone A,Zone B,21.9,0.6,0.0,12,Electric Van,24.3,13.5
+TRIP-1712,Zone A,Zone A,4.5,0.88,0.0,21,Van,23.4,1.1
+TRIP-1713,Zone B,Zone A,17.5,0.56,0.0,11,Truck,170.5,11.6
+TRIP-1714,Zone C,Zone D,24.2,0.99,0.0,16,Bike,2.9,0.2
+TRIP-1715,Zone B,Zone D,26.3,0.78,0.0,17,Van,21.8,19.7
+TRIP-1716,Zone D,Zone A,33.0,0.61,0.9,21,Van,2.0,13.4
+TRIP-1717,Zone B,Zone C,18.1,0.84,0.0,19,Electric Van,16.1,12.6
+TRIP-1718,Zone C,Zone D,21.1,0.93,0.0,10,Truck,178.5,7.0
+TRIP-1719,Zone D,Zone D,2.3,0.93,0.0,21,Truck,96.3,1.8
+TRIP-1720,Zone C,Zone D,21.3,0.97,0.0,20,Electric Scooter,24.0,4.9
+TRIP-1721,Zone D,Zone D,5.5,0.86,0.0,22,Electric Van,7.7,4.1
+TRIP-1722,Zone A,Zone D,29.4,0.44,3.0,8,Van,14.8,51.6
+TRIP-1723,Zone B,Zone D,23.8,0.82,7.0,19,Truck,25.4,14.8
+TRIP-1724,Zone B,Zone A,18.1,0.6,0.0,7,Bike,4.0,13.1
+TRIP-1725,Zone C,Zone A,24.8,0.98,0.0,13,Van,14.2,6.2
+TRIP-1726,Zone D,Zone D,6.7,0.97,0.0,21,Van,44.8,0.5
+TRIP-1727,Zone D,Zone B,24.1,0.79,0.0,8,Electric Scooter,13.0,20.7
+TRIP-1728,Zone B,Zone A,19.0,0.59,1.3,11,Van,29.2,11.6
+TRIP-1729,Zone C,Zone D,21.3,0.95,0.0,15,Electric Scooter,1.0,1.0
+TRIP-1730,Zone A,Zone C,25.0,0.76,0.0,8,Electric Van,2.3,19.2
+TRIP-1731,Zone D,Zone D,3.0,0.86,0.0,13,Bike,3.9,3.7
+TRIP-1732,Zone B,Zone D,23.6,0.81,8.7,11,Electric Van,29.7,10.6
+TRIP-1733,Zone C,Zone B,14.9,0.69,3.8,22,Van,37.3,8.0
+TRIP-1734,Zone C,Zone A,25.0,1.0,0.0,15,Bike,0.6,3.5
+TRIP-1735,Zone C,Zone B,17.2,0.77,0.0,20,Electric Van,34.9,7.2
+TRIP-1736,Zone A,Zone D,32.5,0.54,0.0,15,Truck,86.7,19.7
+TRIP-1737,Zone C,Zone D,19.8,1.0,0.0,12,Bike,0.1,0.6
+TRIP-1738,Zone C,Zone C,4.0,0.97,0.0,20,Truck,123.3,0.3
+TRIP-1739,Zone C,Zone C,6.8,0.87,0.0,14,Electric Van,37.3,4.4
+TRIP-1740,Zone C,Zone A,21.7,0.95,0.0,18,Van,15.3,9.5
+TRIP-1741,Zone B,Zone B,6.5,0.91,0.0,19,Truck,110.9,10.2
+TRIP-1742,Zone B,Zone C,16.7,0.76,9.9,17,Truck,127.8,21.9
+TRIP-1743,Zone D,Zone C,21.7,0.98,0.0,11,Bike,0.3,5.2
+TRIP-1744,Zone B,Zone B,2.2,0.89,0.0,10,Truck,44.5,0.7
+TRIP-1745,Zone C,Zone C,2.9,0.94,1.5,9,Electric Van,28.5,2.9
+TRIP-1746,Zone A,Zone B,21.3,0.66,7.8,20,Electric Van,63.5,18.0
+TRIP-1747,Zone D,Zone A,33.4,0.72,0.0,15,Electric Scooter,22.2,13.6
+TRIP-1748,Zone B,Zone B,6.0,0.98,0.0,9,Electric Van,7.6,4.6
+TRIP-1749,Zone C,Zone C,3.4,0.88,4.8,15,Van,19.0,8.4
+TRIP-1750,Zone A,Zone B,20.8,0.74,0.0,18,Electric Scooter,22.5,21.8
+TRIP-1751,Zone B,Zone D,26.0,0.88,0.0,14,Electric Van,23.5,7.7
+TRIP-1752,Zone C,Zone D,21.0,1.0,0.0,22,Van,7.0,3.5
+TRIP-1753,Zone D,Zone D,2.9,0.89,0.0,8,Van,9.3,5.0
+TRIP-1754,Zone A,Zone C,21.1,0.64,0.1,14,Truck,53.2,6.9
+TRIP-1755,Zone C,Zone D,20.2,1.0,0.0,22,Bike,6.5,6.4
+TRIP-1756,Zone D,Zone B,28.7,0.79,0.0,12,Van,14.7,12.6
+TRIP-1757,Zone D,Zone A,29.2,0.59,0.0,7,Van,22.7,17.0
+TRIP-1758,Zone D,Zone C,24.1,0.89,3.6,8,Van,5.3,16.4
+TRIP-1759,Zone B,Zone A,19.3,0.52,0.0,9,Truck,40.0,32.3
+TRIP-1760,Zone D,Zone D,5.8,0.85,4.7,13,Van,39.1,5.1
+TRIP-1761,Zone C,Zone A,23.1,0.99,0.0,19,Electric Van,17.5,3.9
+TRIP-1762,Zone D,Zone A,30.2,0.66,0.0,11,Bike,15.1,16.5
+TRIP-1763,Zone D,Zone B,27.8,0.86,12.3,8,Bike,6.9,34.2
+TRIP-1764,Zone C,Zone B,15.5,0.74,0.0,17,Electric Scooter,0.8,17.2
+TRIP-1765,Zone B,Zone A,22.3,0.6,0.9,10,Truck,177.4,12.4
+TRIP-1766,Zone C,Zone A,20.7,1.0,0.0,20,Bike,4.9,3.7
+TRIP-1767,Zone D,Zone B,25.5,0.81,0.0,15,Truck,78.9,12.2
+TRIP-1768,Zone A,Zone D,30.5,0.48,0.0,17,Electric Scooter,14.9,49.0
+TRIP-1769,Zone C,Zone C,5.4,0.86,0.0,17,Electric Scooter,10.3,8.7
+TRIP-1770,Zone A,Zone D,31.9,0.5,0.0,13,Truck,14.5,21.4
+TRIP-1771,Zone D,Zone A,33.9,0.6,5.7,13,Bike,0.9,21.1
+TRIP-1772,Zone C,Zone B,19.8,0.79,0.0,18,Electric Scooter,10.9,17.4
+TRIP-1773,Zone C,Zone D,23.1,1.0,0.0,12,Truck,9.0,0.3
+TRIP-1774,Zone D,Zone B,28.5,0.8,0.0,9,Bike,5.0,20.4
+TRIP-1775,Zone A,Zone B,17.4,0.75,0.0,16,Electric Van,13.5,6.7
+TRIP-1776,Zone D,Zone D,3.1,0.9,1.8,9,Van,42.8,8.2
+TRIP-1777,Zone B,Zone D,25.1,0.9,0.0,21,Electric Van,25.4,7.0
+TRIP-1778,Zone D,Zone A,31.7,0.6,0.0,22,Electric Scooter,18.7,14.7
+TRIP-1779,Zone B,Zone D,23.5,0.79,5.2,16,Electric Scooter,7.6,7.1
+TRIP-1780,Zone A,Zone A,6.7,0.87,1.5,13,Electric Van,18.8,7.2
+TRIP-1781,Zone C,Zone A,24.3,0.89,6.7,16,Electric Van,36.3,8.2
+TRIP-1782,Zone C,Zone A,21.1,0.92,0.0,13,Electric Van,47.2,6.8
+TRIP-1783,Zone C,Zone B,16.5,0.8,0.0,15,Electric Van,15.3,4.2
+TRIP-1784,Zone D,Zone D,2.5,0.94,0.0,12,Bike,2.1,0.0
+TRIP-1785,Zone B,Zone C,19.5,0.84,0.0,15,Electric Scooter,11.0,4.0
+TRIP-1786,Zone B,Zone C,18.3,0.88,0.0,7,Bike,6.1,3.9
+TRIP-1787,Zone D,Zone B,24.8,0.8,0.0,7,Truck,136.9,8.8
+TRIP-1788,Zone C,Zone A,25.7,0.94,0.0,9,Truck,280.0,18.8
+TRIP-1789,Zone C,Zone C,2.1,0.87,0.0,12,Truck,61.5,3.8
+TRIP-1790,Zone B,Zone D,24.9,0.8,0.0,14,Bike,11.1,10.9
+TRIP-1791,Zone A,Zone D,30.7,0.42,1.7,8,Electric Van,12.0,44.0
+TRIP-1792,Zone A,Zone A,2.7,0.94,13.9,7,Truck,43.6,9.5
+TRIP-1793,Zone D,Zone A,33.8,0.58,7.2,12,Truck,145.7,21.7
+TRIP-1794,Zone A,Zone C,24.7,0.85,1.4,18,Electric Scooter,8.3,15.3
+TRIP-1795,Zone C,Zone D,24.0,1.0,0.0,22,Van,50.8,3.1
+TRIP-1796,Zone C,Zone A,21.3,0.92,4.7,12,Van,14.2,5.3
+TRIP-1797,Zone A,Zone A,4.5,0.93,0.0,20,Van,79.7,8.0
+TRIP-1798,Zone B,Zone D,26.9,0.81,2.4,14,Electric Scooter,6.6,8.2
+TRIP-1799,Zone A,Zone C,21.0,0.77,0.0,15,Bike,20.0,8.5
+TRIP-1800,Zone D,Zone D,2.1,0.93,2.8,14,Bike,10.1,1.9
+TRIP-1801,Zone C,Zone B,19.7,0.76,0.0,16,Electric Scooter,5.6,7.1
+TRIP-1802,Zone B,Zone B,3.7,0.92,0.0,12,Electric Scooter,15.4,6.1
+TRIP-1803,Zone D,Zone A,29.8,0.6,0.0,11,Truck,123.9,18.4
+TRIP-1804,Zone C,Zone D,19.6,1.0,1.3,18,Van,8.0,4.4
+TRIP-1805,Zone B,Zone A,20.0,0.6,0.0,20,Truck,126.6,15.2
+TRIP-1806,Zone A,Zone B,17.7,0.65,0.0,8,Bike,3.2,22.6
+TRIP-1807,Zone B,Zone A,19.4,0.57,0.0,20,Van,48.5,16.2
+TRIP-1808,Zone D,Zone B,25.4,0.78,0.0,7,Truck,147.1,7.2
+TRIP-1809,Zone C,Zone B,15.4,0.78,0.0,10,Electric Van,20.5,10.5
+TRIP-1810,Zone D,Zone D,2.7,0.92,7.4,10,Truck,147.9,11.5
+TRIP-1811,Zone A,Zone B,19.3,0.62,0.0,19,Bike,16.3,30.2
+TRIP-1812,Zone A,Zone A,2.5,0.95,1.6,18,Electric Van,29.0,6.2
+TRIP-1813,Zone D,Zone B,27.2,0.84,7.0,9,Electric Scooter,2.6,26.4
+TRIP-1814,Zone D,Zone A,29.0,0.65,0.0,15,Bike,17.3,19.1
+TRIP-1815,Zone D,Zone D,6.5,0.89,0.0,18,Electric Scooter,15.7,10.7
+TRIP-1816,Zone B,Zone C,16.6,0.85,0.0,16,Electric Van,75.0,5.1
+TRIP-1817,Zone C,Zone B,14.2,0.75,0.0,21,Bike,13.6,5.9
+TRIP-1818,Zone D,Zone C,21.6,0.97,1.9,16,Electric Scooter,2.4,0.0
+TRIP-1819,Zone B,Zone A,19.0,0.53,0.0,21,Van,9.1,14.7
+TRIP-1820,Zone B,Zone B,4.0,0.88,0.0,11,Bike,0.2,4.1
+TRIP-1821,Zone B,Zone A,21.0,0.63,0.0,14,Truck,174.6,11.7
+TRIP-1822,Zone A,Zone A,2.7,0.92,0.9,9,Electric Van,33.1,7.2
+TRIP-1823,Zone A,Zone C,23.2,0.89,0.0,16,Electric Scooter,3.9,7.2
+TRIP-1824,Zone C,Zone B,17.5,0.71,0.0,15,Electric Scooter,15.3,7.8
+TRIP-1825,Zone A,Zone A,6.6,0.89,4.7,21,Bike,2.1,2.7
+TRIP-1826,Zone A,Zone B,17.6,0.61,0.0,7,Van,59.7,13.5
+TRIP-1827,Zone D,Zone C,19.4,0.93,0.0,15,Truck,215.3,11.4
+TRIP-1828,Zone B,Zone D,26.6,0.79,0.0,21,Van,55.4,11.3
+TRIP-1829,Zone B,Zone A,17.5,0.57,0.0,14,Bike,3.9,14.6
+TRIP-1830,Zone D,Zone B,27.8,0.82,2.5,11,Electric Van,21.5,9.3
+TRIP-1831,Zone D,Zone B,27.7,0.87,5.0,12,Electric Scooter,3.2,7.8
+TRIP-1832,Zone B,Zone B,6.1,0.94,0.0,8,Electric Van,26.0,9.1
+TRIP-1833,Zone B,Zone D,28.3,0.89,0.0,7,Truck,23.4,7.5
+TRIP-1834,Zone A,Zone B,17.2,0.65,0.7,14,Electric Scooter,3.7,8.0
+TRIP-1835,Zone B,Zone A,17.1,0.59,3.4,18,Electric Van,7.5,24.9
+TRIP-1836,Zone A,Zone A,3.4,0.92,0.0,22,Electric Van,18.1,5.2
+TRIP-1837,Zone B,Zone C,14.6,0.76,0.0,9,Truck,107.1,13.9
+TRIP-1838,Zone D,Zone B,23.3,0.83,1.4,22,Electric Van,31.8,9.1
+TRIP-1839,Zone A,Zone C,22.3,0.74,0.0,19,Van,37.3,19.3
+TRIP-1840,Zone B,Zone D,24.6,0.91,0.0,14,Electric Scooter,3.2,8.2
+TRIP-1841,Zone C,Zone C,4.5,0.88,0.0,13,Electric Van,7.5,3.1
+TRIP-1842,Zone A,Zone B,22.5,0.62,0.0,22,Van,36.6,14.1
+TRIP-1843,Zone A,Zone A,6.8,0.93,0.0,13,Bike,4.1,2.3
+TRIP-1844,Zone A,Zone C,20.5,0.73,0.0,20,Bike,20.0,8.1
+TRIP-1845,Zone C,Zone C,5.9,0.95,0.0,13,Electric Van,30.5,0.7
+TRIP-1846,Zone A,Zone C,20.3,0.76,0.7,19,Truck,45.9,25.2
+TRIP-1847,Zone D,Zone A,29.2,0.65,0.0,10,Truck,64.4,14.0
+TRIP-1848,Zone A,Zone B,18.3,0.56,0.0,19,Truck,255.3,37.4
+TRIP-1849,Zone D,Zone C,19.2,0.95,0.0,22,Van,6.9,6.1
+TRIP-1850,Zone B,Zone C,17.7,0.75,0.0,22,Electric Van,26.8,6.7
+TRIP-1851,Zone D,Zone A,34.2,0.71,0.0,15,Truck,8.7,13.7
+TRIP-1852,Zone C,Zone D,20.4,1.0,0.0,7,Van,41.7,7.6
+TRIP-1853,Zone C,Zone B,16.8,0.77,0.0,13,Van,3.9,9.0
+TRIP-1854,Zone B,Zone B,5.8,0.95,0.0,16,Bike,7.3,3.2
+TRIP-1855,Zone C,Zone B,15.2,0.8,0.0,21,Truck,134.4,4.6
+TRIP-1856,Zone A,Zone B,16.7,0.64,0.0,16,Bike,3.6,11.1
+TRIP-1857,Zone A,Zone B,20.3,0.66,0.0,18,Bike,19.3,21.7
+TRIP-1858,Zone A,Zone B,21.8,0.71,29.8,17,Electric Van,4.6,36.1
+TRIP-1859,Zone D,Zone B,25.6,0.83,0.2,17,Van,25.1,18.2
+TRIP-1860,Zone B,Zone C,17.3,0.73,0.0,18,Van,21.2,18.0
+TRIP-1861,Zone C,Zone C,5.3,0.93,3.7,17,Truck,115.6,14.0
+TRIP-1862,Zone A,Zone D,34.1,0.55,0.4,13,Van,73.7,27.1
+TRIP-1863,Zone A,Zone B,18.2,0.68,0.0,18,Bike,12.1,22.2
+TRIP-1864,Zone C,Zone C,5.6,0.94,2.8,14,Electric Van,23.0,6.1
+TRIP-1865,Zone A,Zone D,32.7,0.6,20.0,22,Electric Scooter,5.3,40.4
+TRIP-1866,Zone D,Zone A,30.6,0.57,0.0,17,Electric Van,23.7,43.9
+TRIP-1867,Zone C,Zone D,21.3,0.95,0.0,19,Electric Van,17.3,9.8
+TRIP-1868,Zone D,Zone D,3.7,0.96,10.2,15,Bike,9.9,25.2
+TRIP-1869,Zone D,Zone B,26.2,0.92,0.0,11,Electric Van,3.0,8.7
+TRIP-1870,Zone A,Zone B,17.9,0.66,0.0,9,Electric Scooter,16.8,24.4
+TRIP-1871,Zone B,Zone C,19.1,0.83,0.0,9,Electric Van,38.1,14.2
+TRIP-1872,Zone A,Zone B,18.5,0.65,19.6,13,Bike,6.7,23.9
+TRIP-1873,Zone B,Zone B,4.3,0.89,0.0,21,Bike,5.9,2.1
+TRIP-1874,Zone A,Zone B,18.2,0.61,2.5,16,Truck,25.4,8.9
+TRIP-1875,Zone A,Zone A,2.5,0.94,0.0,19,Van,17.5,7.8
+TRIP-1876,Zone B,Zone B,3.7,0.91,0.0,12,Bike,4.0,1.5
+TRIP-1877,Zone A,Zone C,24.7,0.81,0.0,20,Bike,3.6,5.4
+TRIP-1878,Zone B,Zone A,17.2,0.62,0.0,7,Truck,13.0,6.8
+TRIP-1879,Zone A,Zone D,30.1,0.4,0.0,14,Electric Scooter,9.2,25.6
+TRIP-1880,Zone B,Zone C,19.3,0.82,6.8,12,Electric Scooter,9.9,15.9
+TRIP-1881,Zone B,Zone A,21.3,0.63,0.0,12,Truck,130.7,11.1
+TRIP-1882,Zone A,Zone D,33.1,0.44,0.0,20,Van,12.6,24.9
+TRIP-1883,Zone C,Zone D,21.5,1.0,0.0,20,Bike,10.9,2.6
+TRIP-1884,Zone B,Zone B,4.3,0.92,0.0,15,Electric Van,5.6,4.0
+TRIP-1885,Zone C,Zone C,7.0,0.88,0.0,18,Truck,113.3,6.4
+TRIP-1886,Zone C,Zone C,5.5,0.97,1.8,21,Electric Van,42.0,3.5
+TRIP-1887,Zone B,Zone A,17.7,0.63,0.0,7,Van,23.4,11.0
+TRIP-1888,Zone D,Zone A,32.5,0.57,0.0,16,Electric Scooter,1.3,13.7
+TRIP-1889,Zone D,Zone D,5.3,0.95,0.0,18,Electric Van,12.7,9.1
+TRIP-1890,Zone C,Zone D,19.2,1.0,0.0,11,Bike,3.6,2.5
+TRIP-1891,Zone D,Zone D,3.5,0.94,1.5,16,Electric Scooter,0.2,3.9
+TRIP-1892,Zone A,Zone B,16.6,0.67,0.0,14,Truck,99.8,8.3
+TRIP-1893,Zone A,Zone C,22.0,0.82,0.3,18,Electric Scooter,18.9,19.8
+TRIP-1894,Zone B,Zone B,4.7,0.95,0.0,8,Truck,111.4,9.5
+TRIP-1895,Zone A,Zone A,6.9,0.95,9.6,19,Van,44.7,14.3
+TRIP-1896,Zone A,Zone D,32.9,0.46,0.0,11,Van,21.8,23.8
+TRIP-1897,Zone C,Zone A,22.3,0.95,0.9,11,Bike,2.8,0.0
+TRIP-1898,Zone A,Zone C,23.9,0.8,1.7,15,Truck,159.9,10.2
+TRIP-1899,Zone C,Zone A,25.1,0.99,0.0,18,Truck,70.8,7.2
+TRIP-1900,Zone B,Zone A,18.2,0.5,0.0,7,Electric Van,44.7,13.0
+TRIP-1901,Zone A,Zone C,21.7,0.84,0.0,13,Truck,51.2,9.4
+TRIP-1902,Zone B,Zone B,4.8,1.0,8.9,11,Truck,45.7,11.3
+TRIP-1903,Zone B,Zone C,17.5,0.78,0.0,16,Electric Scooter,8.4,4.7
+TRIP-1904,Zone A,Zone C,25.8,0.77,9.7,15,Van,57.2,8.1
+TRIP-1905,Zone A,Zone A,6.8,0.99,6.4,20,Bike,9.0,9.1
+TRIP-1906,Zone C,Zone D,21.9,1.0,0.0,19,Electric Van,47.3,6.6
+TRIP-1907,Zone A,Zone D,33.5,0.4,0.4,11,Electric Van,39.6,23.8
+TRIP-1908,Zone B,Zone C,17.2,0.81,18.0,14,Bike,16.1,21.7
+TRIP-1909,Zone C,Zone A,20.5,0.96,0.0,16,Electric Scooter,0.3,5.8
+TRIP-1910,Zone C,Zone C,5.1,0.99,0.0,9,Bike,1.5,7.1
+TRIP-1911,Zone C,Zone A,24.9,0.97,4.8,19,Electric Scooter,15.0,14.4
+TRIP-1912,Zone B,Zone C,18.9,0.8,2.4,15,Van,36.4,6.9
+TRIP-1913,Zone B,Zone D,26.6,0.88,0.0,8,Bike,12.8,12.9
+TRIP-1914,Zone D,Zone B,23.3,0.84,0.0,18,Van,20.6,16.6
+TRIP-1915,Zone D,Zone B,26.3,0.88,0.0,18,Electric Scooter,11.3,17.2
+TRIP-1916,Zone C,Zone D,18.9,1.0,0.0,19,Bike,16.1,6.1
+TRIP-1917,Zone A,Zone C,23.6,0.84,1.2,11,Electric Van,13.7,11.0
+TRIP-1918,Zone B,Zone C,18.8,0.74,0.7,8,Van,25.2,20.0
+TRIP-1919,Zone B,Zone C,17.6,0.85,0.0,17,Electric Van,39.0,10.5
+TRIP-1920,Zone A,Zone C,22.9,0.77,0.0,18,Truck,280.0,28.7
+TRIP-1921,Zone C,Zone C,3.7,0.96,0.0,13,Truck,41.0,2.9
+TRIP-1922,Zone B,Zone B,5.9,0.97,0.0,12,Van,14.2,2.3
+TRIP-1923,Zone B,Zone B,5.3,0.99,0.0,16,Electric Van,58.4,5.0
+TRIP-1924,Zone A,Zone C,25.3,0.74,0.0,22,Electric Van,24.7,10.6
+TRIP-1925,Zone C,Zone B,18.7,0.73,0.0,15,Electric Van,68.1,8.6
+TRIP-1926,Zone B,Zone B,3.9,0.89,0.0,19,Truck,121.6,7.2
+TRIP-1927,Zone D,Zone A,32.1,0.62,2.6,17,Truck,14.3,40.3
+TRIP-1928,Zone A,Zone A,3.6,0.9,0.9,13,Truck,123.2,3.9
+TRIP-1929,Zone D,Zone B,23.3,0.78,2.7,22,Truck,36.6,12.0
+TRIP-1930,Zone A,Zone A,4.1,0.94,0.0,13,Truck,121.5,1.6
+TRIP-1931,Zone B,Zone D,27.8,0.9,0.0,21,Electric Scooter,7.7,6.9
+TRIP-1932,Zone C,Zone C,4.7,0.87,0.0,14,Truck,113.0,1.9
+TRIP-1933,Zone B,Zone A,16.7,0.55,0.0,7,Bike,2.4,11.9
+TRIP-1934,Zone D,Zone B,28.5,0.76,0.0,10,Van,6.4,7.0
+TRIP-1935,Zone C,Zone C,3.3,0.87,0.0,8,Van,38.9,8.7
+TRIP-1936,Zone D,Zone C,22.8,0.95,2.0,18,Van,4.6,8.5
+TRIP-1937,Zone D,Zone B,25.2,0.86,0.0,18,Electric Scooter,14.1,14.6
+TRIP-1938,Zone D,Zone C,19.4,0.95,0.0,14,Bike,7.6,7.6
+TRIP-1939,Zone C,Zone B,15.6,0.8,0.0,21,Truck,22.2,4.2
+TRIP-1940,Zone A,Zone D,29.1,0.46,0.0,19,Van,12.5,51.9
+TRIP-1941,Zone A,Zone C,20.7,0.73,0.0,20,Electric Van,29.6,11.5
+TRIP-1942,Zone B,Zone A,18.7,0.6,0.9,8,Truck,252.5,28.3
+TRIP-1943,Zone D,Zone A,31.0,0.73,1.1,9,Bike,11.4,29.9
+TRIP-1944,Zone A,Zone C,25.3,0.85,0.0,12,Electric Scooter,2.1,4.8
+TRIP-1945,Zone D,Zone C,20.6,0.91,0.0,20,Van,28.3,6.2
+TRIP-1946,Zone C,Zone A,25.2,0.98,26.4,12,Van,19.7,10.0
+TRIP-1947,Zone A,Zone C,24.5,0.74,0.0,16,Electric Van,75.0,10.1
+TRIP-1948,Zone C,Zone D,19.2,0.95,0.7,13,Bike,2.3,3.7
+TRIP-1949,Zone A,Zone A,3.2,0.86,0.0,12,Bike,3.7,2.7
+TRIP-1950,Zone C,Zone C,3.5,0.99,9.6,14,Truck,15.3,9.4
+TRIP-1951,Zone C,Zone A,20.7,0.88,0.0,16,Bike,8.5,2.9
+TRIP-1952,Zone D,Zone B,25.5,0.8,0.0,11,Electric Scooter,21.4,14.4
+TRIP-1953,Zone B,Zone B,3.3,0.86,7.3,11,Bike,5.7,10.7
+TRIP-1954,Zone A,Zone C,23.9,0.86,3.5,8,Electric Van,29.1,17.4
+TRIP-1955,Zone A,Zone B,18.5,0.67,0.0,8,Bike,3.8,19.7
+TRIP-1956,Zone A,Zone B,21.3,0.61,6.4,20,Van,61.2,17.9
+TRIP-1957,Zone B,Zone D,29.0,0.89,0.0,17,Truck,61.7,20.9
+TRIP-1958,Zone B,Zone C,19.7,0.81,0.0,19,Truck,209.2,19.8
+TRIP-1959,Zone C,Zone C,4.2,0.85,0.0,21,Truck,35.6,4.0
+TRIP-1960,Zone D,Zone C,20.6,0.88,4.5,21,Bike,7.2,8.1
+TRIP-1961,Zone B,Zone D,24.1,0.84,0.0,22,Van,13.8,8.6
+TRIP-1962,Zone B,Zone A,21.4,0.66,0.0,15,Electric Van,32.2,13.1
+TRIP-1963,Zone D,Zone B,26.3,0.85,0.0,19,Electric Van,23.0,17.0
+TRIP-1964,Zone A,Zone B,17.9,0.77,0.0,15,Van,13.9,6.6
+TRIP-1965,Zone B,Zone B,4.6,0.98,0.9,8,Van,12.2,8.8
+TRIP-1966,Zone C,Zone C,2.1,0.88,0.0,7,Van,26.4,4.8
+TRIP-1967,Zone A,Zone B,16.6,0.72,0.0,15,Bike,11.4,6.7
+TRIP-1968,Zone B,Zone C,17.0,0.84,3.7,18,Electric Scooter,3.9,9.9
+TRIP-1969,Zone B,Zone C,16.1,0.81,0.0,19,Bike,0.4,15.9
+TRIP-1970,Zone B,Zone D,27.7,0.89,0.0,14,Electric Van,12.6,6.9
+TRIP-1971,Zone A,Zone B,20.0,0.68,0.0,14,Van,26.9,9.4
+TRIP-1972,Zone A,Zone D,29.7,0.51,0.0,22,Electric Van,10.1,20.6
+TRIP-1973,Zone C,Zone A,24.2,0.89,0.2,16,Electric Van,43.6,6.5
+TRIP-1974,Zone C,Zone D,23.3,1.0,3.5,19,Bike,5.3,4.1
+TRIP-1975,Zone C,Zone C,6.7,0.88,0.0,21,Electric Scooter,3.2,3.1
+TRIP-1976,Zone A,Zone B,22.3,0.69,0.0,12,Van,33.9,11.1
+TRIP-1977,Zone D,Zone D,5.2,0.89,0.0,11,Electric Scooter,5.6,2.7
+TRIP-1978,Zone A,Zone D,32.0,0.49,0.3,18,Electric Van,14.8,46.8
+TRIP-1979,Zone D,Zone D,2.6,0.92,0.0,11,Bike,4.6,5.1
+TRIP-1980,Zone D,Zone B,26.7,0.83,0.0,9,Electric Van,18.6,18.3
+TRIP-1981,Zone B,Zone B,3.5,0.87,0.6,8,Van,21.3,10.3
+TRIP-1982,Zone B,Zone A,21.6,0.61,1.3,17,Electric Scooter,4.8,26.4
+TRIP-1983,Zone C,Zone D,23.0,1.0,0.0,10,Bike,7.9,5.9
+TRIP-1984,Zone D,Zone C,23.8,0.97,0.0,12,Bike,4.0,5.5
+TRIP-1985,Zone B,Zone C,18.8,0.82,0.0,11,Truck,104.4,7.4
+TRIP-1986,Zone B,Zone A,18.1,0.56,0.0,19,Bike,7.0,30.2
+TRIP-1987,Zone A,Zone A,3.1,0.96,0.0,8,Electric Scooter,4.8,7.6
+TRIP-1988,Zone D,Zone C,23.5,0.95,0.0,18,Truck,124.8,13.1
+TRIP-1989,Zone C,Zone D,23.5,0.98,0.0,19,Truck,55.7,4.3
+TRIP-1990,Zone B,Zone B,3.5,0.88,0.9,9,Electric Van,24.1,9.6
+TRIP-1991,Zone A,Zone B,16.6,0.59,0.0,22,Electric Scooter,12.4,11.3
+TRIP-1992,Zone A,Zone D,30.8,0.46,12.1,20,Electric Van,13.0,32.3
+TRIP-1993,Zone A,Zone C,20.8,0.8,0.0,22,Electric Van,2.6,3.8
+TRIP-1994,Zone D,Zone A,28.8,0.6,0.0,14,Bike,9.7,19.1
+TRIP-1995,Zone A,Zone C,20.6,0.75,0.0,7,Truck,91.2,6.2
+TRIP-1996,Zone D,Zone D,5.4,0.99,0.5,16,Van,20.0,2.3
+TRIP-1997,Zone D,Zone B,24.3,0.85,0.0,13,Van,5.9,5.6
+TRIP-1998,Zone C,Zone A,24.9,0.95,0.0,12,Electric Scooter,3.2,0.0
+TRIP-1999,Zone C,Zone C,5.7,0.91,0.0,10,Bike,2.3,0.0
+TRIP-2000,Zone D,Zone C,20.9,0.93,0.0,21,Van,9.2,5.1
+TRIP-2001,Zone C,Zone A,22.8,0.94,4.7,7,Van,10.3,4.2
+TRIP-2002,Zone A,Zone D,30.9,0.46,0.0,14,Truck,117.1,19.0
+TRIP-2003,Zone A,Zone A,4.9,0.99,1.3,17,Electric Van,6.6,9.8
+TRIP-2004,Zone B,Zone D,27.8,0.91,0.0,9,Van,3.5,11.7
+TRIP-2005,Zone A,Zone D,31.4,0.43,0.0,16,Van,15.5,21.0
+TRIP-2006,Zone D,Zone A,33.2,0.71,0.0,8,Bike,2.6,33.2
+TRIP-2007,Zone C,Zone C,6.0,0.87,0.0,18,Truck,48.6,7.3
+TRIP-2008,Zone D,Zone D,4.9,0.96,0.0,10,Electric Scooter,8.3,5.7
+TRIP-2009,Zone D,Zone B,27.0,0.76,0.0,17,Van,43.9,25.3
+TRIP-2010,Zone B,Zone A,21.8,0.67,0.0,14,Electric Scooter,10.9,9.4
+TRIP-2011,Zone A,Zone B,22.2,0.62,0.0,21,Electric Scooter,7.4,15.2
+TRIP-2012,Zone A,Zone B,17.8,0.67,7.8,9,Van,12.7,26.7
+TRIP-2013,Zone A,Zone C,21.3,0.77,0.0,15,Electric Scooter,19.0,8.8
+TRIP-2014,Zone C,Zone D,23.9,1.0,0.0,13,Van,64.6,5.9
+TRIP-2015,Zone D,Zone B,25.7,0.9,0.0,8,Truck,190.6,18.1
+TRIP-2016,Zone D,Zone D,3.1,0.88,0.0,9,Electric Van,64.0,6.1
+TRIP-2017,Zone B,Zone C,17.7,0.83,0.0,21,Electric Van,7.2,8.4
+TRIP-2018,Zone D,Zone C,24.5,0.97,0.0,18,Bike,4.1,9.9
+TRIP-2019,Zone B,Zone A,19.7,0.64,4.3,20,Bike,6.2,11.6
+TRIP-2020,Zone D,Zone B,27.2,0.85,0.0,7,Electric Scooter,7.3,9.2
+TRIP-2021,Zone D,Zone B,25.0,0.78,0.0,20,Electric Van,3.1,13.2
+TRIP-2022,Zone C,Zone C,2.1,0.96,0.0,14,Bike,6.2,1.4
+TRIP-2023,Zone A,Zone B,21.7,0.58,0.0,17,Van,20.4,31.0
+TRIP-2024,Zone B,Zone B,4.8,0.97,0.0,15,Electric Van,56.2,5.4
+TRIP-2025,Zone D,Zone A,30.1,0.7,0.0,22,Truck,104.2,10.9
+TRIP-2026,Zone B,Zone C,15.2,0.74,9.8,10,Van,2.5,10.1
+TRIP-2027,Zone A,Zone C,20.4,0.84,3.4,13,Truck,112.6,2.4
+TRIP-2028,Zone D,Zone C,21.8,0.97,0.0,10,Electric Van,13.2,2.6
+TRIP-2029,Zone C,Zone D,21.5,0.99,0.0,8,Electric Van,22.8,4.2
+TRIP-2030,Zone D,Zone B,24.9,0.84,3.5,9,Truck,77.6,17.7
+TRIP-2031,Zone C,Zone D,20.3,1.0,0.0,15,Electric Van,1.1,2.8
+TRIP-2032,Zone A,Zone C,26.0,0.81,0.0,17,Bike,6.8,20.8
+TRIP-2033,Zone D,Zone A,33.5,0.64,0.0,18,Electric Van,6.0,39.2
+TRIP-2034,Zone B,Zone C,17.6,0.8,0.0,8,Electric Scooter,8.7,13.8
+TRIP-2035,Zone A,Zone C,25.9,0.7,2.7,21,Electric Scooter,17.5,14.7
+TRIP-2036,Zone C,Zone D,22.5,1.0,0.0,11,Truck,39.2,1.3
+TRIP-2037,Zone C,Zone C,4.0,0.96,0.0,18,Bike,7.0,4.6
+TRIP-2038,Zone C,Zone A,24.8,0.97,0.0,12,Van,51.4,4.7
+TRIP-2039,Zone B,Zone B,2.1,0.96,0.0,22,Truck,149.5,3.6
+TRIP-2040,Zone D,Zone C,18.8,0.88,2.4,13,Van,47.1,8.0
+TRIP-2041,Zone D,Zone C,20.0,1.0,0.0,15,Truck,43.7,1.0
+TRIP-2042,Zone A,Zone C,20.8,0.85,3.7,8,Van,23.8,18.2
+TRIP-2043,Zone A,Zone D,32.4,0.56,2.6,20,Electric Van,18.4,19.2
+TRIP-2044,Zone C,Zone C,3.6,0.99,3.9,7,Truck,77.1,8.4
+TRIP-2045,Zone B,Zone D,26.0,0.89,0.0,13,Electric Van,47.1,5.1
+TRIP-2046,Zone D,Zone D,5.1,0.97,4.4,15,Truck,92.6,5.1
+TRIP-2047,Zone B,Zone A,17.5,0.59,0.0,21,Bike,4.6,8.7
+TRIP-2048,Zone D,Zone D,4.0,1.0,0.0,14,Van,1.3,3.6
+TRIP-2049,Zone D,Zone C,19.0,0.93,0.4,12,Truck,20.2,1.4
+TRIP-2050,Zone A,Zone B,17.5,0.63,0.0,19,Electric Van,20.9,26.5
+TRIP-2051,Zone A,Zone C,20.3,0.75,0.0,12,Truck,234.6,11.1
+TRIP-2052,Zone C,Zone D,23.1,1.0,0.0,12,Van,27.6,2.5
+TRIP-2053,Zone B,Zone C,15.4,0.77,0.0,21,Electric Van,15.3,5.5
+TRIP-2054,Zone B,Zone B,6.0,0.95,2.4,15,Electric Van,18.3,5.5
+TRIP-2055,Zone A,Zone D,29.2,0.51,0.0,18,Electric Van,20.6,40.7
+TRIP-2056,Zone D,Zone C,20.1,1.0,5.9,18,Van,43.6,3.5
+TRIP-2057,Zone B,Zone A,21.4,0.53,0.0,7,Bike,13.6,16.0
+TRIP-2058,Zone A,Zone D,34.4,0.59,0.0,13,Electric Van,10.9,19.5
+TRIP-2059,Zone B,Zone C,16.3,0.82,0.0,9,Van,9.4,13.6
+TRIP-2060,Zone B,Zone B,6.4,0.95,0.0,16,Truck,45.8,3.7
+TRIP-2061,Zone C,Zone B,18.1,0.73,0.0,12,Electric Van,7.2,8.5
+TRIP-2062,Zone A,Zone A,4.0,0.96,0.0,19,Electric Van,8.2,3.6
+TRIP-2063,Zone A,Zone C,21.1,0.84,0.0,17,Van,16.3,17.5
+TRIP-2064,Zone B,Zone B,4.8,0.91,0.0,7,Electric Van,18.2,2.7
+TRIP-2065,Zone D,Zone A,32.0,0.6,0.3,21,Electric Scooter,4.2,20.2
+TRIP-2066,Zone D,Zone B,23.3,0.78,8.2,10,Truck,63.2,7.5
+TRIP-2067,Zone D,Zone B,28.3,0.8,0.0,21,Electric Scooter,12.9,7.0
+TRIP-2068,Zone A,Zone A,6.2,0.86,0.0,19,Bike,7.5,7.2
+TRIP-2069,Zone A,Zone A,6.6,0.96,0.0,8,Electric Van,13.9,6.6
+TRIP-2070,Zone B,Zone B,3.3,0.98,0.0,17,Truck,53.2,4.6
+TRIP-2071,Zone B,Zone C,14.6,0.85,0.0,9,Bike,0.9,15.2
+TRIP-2072,Zone D,Zone C,18.7,0.96,4.0,21,Truck,9.1,5.2
+TRIP-2073,Zone B,Zone B,5.6,0.95,1.4,14,Van,38.6,13.1
+TRIP-2074,Zone C,Zone A,21.3,0.98,0.0,13,Bike,4.6,5.3
+TRIP-2075,Zone A,Zone B,16.6,0.66,0.0,16,Truck,51.0,10.1
+TRIP-2076,Zone C,Zone D,22.1,1.0,0.0,21,Bike,4.6,7.0
+TRIP-2077,Zone A,Zone C,20.8,0.81,0.0,18,Truck,102.9,16.4
+TRIP-2078,Zone D,Zone A,28.9,0.68,0.0,17,Van,22.9,33.7
+TRIP-2079,Zone A,Zone B,22.0,0.58,0.0,8,Electric Van,30.5,32.5
+TRIP-2080,Zone B,Zone B,3.8,0.93,0.0,7,Electric Scooter,15.5,4.4
+TRIP-2081,Zone D,Zone B,27.2,0.87,0.0,14,Truck,25.6,8.5
+TRIP-2082,Zone D,Zone C,20.5,0.96,11.4,21,Electric Van,53.1,17.3
+TRIP-2083,Zone A,Zone B,19.7,0.71,0.0,18,Van,32.1,23.6
+TRIP-2084,Zone C,Zone A,22.2,0.95,0.0,21,Electric Van,24.9,4.1
+TRIP-2085,Zone A,Zone A,3.5,0.94,0.0,16,Truck,53.2,4.7
+TRIP-2086,Zone B,Zone C,14.8,0.79,0.0,18,Truck,47.2,17.2
+TRIP-2087,Zone D,Zone A,33.4,0.68,1.0,10,Van,17.2,16.7
+TRIP-2088,Zone C,Zone B,18.7,0.76,0.0,22,Bike,4.0,8.9
+TRIP-2089,Zone D,Zone B,23.2,0.81,1.3,21,Bike,11.4,11.3
+TRIP-2090,Zone B,Zone A,22.1,0.58,0.0,22,Truck,57.1,13.6
+TRIP-2091,Zone D,Zone C,21.5,1.0,10.5,17,Electric Van,14.5,19.9
+TRIP-2092,Zone C,Zone A,21.7,0.97,0.0,16,Bike,3.9,1.4
+TRIP-2093,Zone B,Zone D,26.1,0.9,2.3,17,Truck,124.9,11.9
+TRIP-2094,Zone C,Zone A,20.9,0.83,0.0,20,Truck,117.0,8.1
+TRIP-2095,Zone B,Zone D,26.1,0.93,0.0,10,Bike,1.6,7.8
+TRIP-2096,Zone B,Zone D,25.6,0.83,0.0,13,Electric Van,4.3,8.3
+TRIP-2097,Zone D,Zone C,23.9,0.95,5.7,10,Electric Scooter,25.0,8.0
+TRIP-2098,Zone C,Zone A,20.8,0.94,4.9,9,Electric Van,30.7,9.0
+TRIP-2099,Zone C,Zone B,19.6,0.76,0.0,21,Van,1.3,9.1
+TRIP-2100,Zone B,Zone A,21.8,0.64,4.5,20,Bike,2.4,15.7
+TRIP-2101,Zone A,Zone B,17.4,0.66,0.0,18,Truck,39.6,24.1
+TRIP-2102,Zone D,Zone D,2.4,0.89,0.0,11,Electric Scooter,16.8,1.8
+TRIP-2103,Zone D,Zone D,3.2,0.98,0.0,19,Bike,1.4,4.7
+TRIP-2104,Zone B,Zone B,3.6,0.99,3.8,22,Van,23.5,2.2
+TRIP-2105,Zone A,Zone B,20.6,0.71,0.0,9,Electric Scooter,5.8,25.2
+TRIP-2106,Zone A,Zone C,20.7,0.83,2.4,14,Van,49.6,9.2
+TRIP-2107,Zone A,Zone C,22.1,0.77,0.0,18,Truck,135.0,20.2
+TRIP-2108,Zone D,Zone C,20.9,1.0,8.3,10,Electric Van,31.4,6.5
+TRIP-2109,Zone C,Zone B,17.4,0.82,0.0,15,Van,61.7,10.2
+TRIP-2110,Zone B,Zone A,17.8,0.63,0.0,22,Electric Van,16.7,9.6
+TRIP-2111,Zone D,Zone B,23.6,0.85,0.0,16,Electric Van,34.3,9.2
+TRIP-2112,Zone A,Zone C,23.8,0.72,0.0,8,Electric Van,6.3,24.4
+TRIP-2113,Zone C,Zone B,18.1,0.77,0.0,15,Truck,42.1,7.5
+TRIP-2114,Zone C,Zone A,23.2,1.0,0.0,21,Electric Scooter,13.5,3.4
+TRIP-2115,Zone D,Zone B,24.7,0.85,0.0,8,Van,16.3,16.6
+TRIP-2116,Zone C,Zone D,22.3,0.92,0.0,16,Electric Van,2.2,6.1
+TRIP-2117,Zone B,Zone D,25.2,0.91,0.0,12,Van,56.3,10.3
+TRIP-2118,Zone D,Zone C,20.5,0.92,0.0,10,Electric Van,11.9,4.5
+TRIP-2119,Zone B,Zone C,14.6,0.79,0.0,18,Bike,5.7,17.5
+TRIP-2120,Zone C,Zone B,17.3,0.74,0.0,22,Electric Van,65.8,9.3
+TRIP-2121,Zone C,Zone D,23.8,0.94,0.0,15,Van,35.6,6.6
+TRIP-2122,Zone C,Zone C,2.5,0.88,6.3,20,Bike,5.0,7.8
+TRIP-2123,Zone A,Zone A,6.9,0.94,0.0,12,Van,30.2,5.3
+TRIP-2124,Zone D,Zone C,21.5,0.98,0.0,14,Electric Scooter,5.3,3.5
+TRIP-2125,Zone B,Zone B,3.7,0.96,0.0,19,Truck,155.3,8.6
+TRIP-2126,Zone D,Zone D,6.6,0.93,0.0,12,Electric Scooter,10.5,3.6
+TRIP-2127,Zone C,Zone B,15.6,0.87,0.0,11,Electric Van,28.9,4.6
+TRIP-2128,Zone B,Zone B,5.6,0.98,1.3,21,Electric Scooter,11.9,3.7
+TRIP-2129,Zone B,Zone A,17.6,0.64,0.0,13,Electric Van,6.1,9.0
+TRIP-2130,Zone B,Zone B,6.7,0.88,0.0,13,Truck,99.6,4.2
+TRIP-2131,Zone C,Zone B,17.8,0.85,5.3,20,Electric Scooter,10.0,10.9
+TRIP-2132,Zone A,Zone D,33.7,0.56,0.0,14,Van,10.4,20.8
+TRIP-2133,Zone C,Zone D,22.2,1.0,0.0,13,Bike,1.3,6.4
+TRIP-2134,Zone A,Zone C,22.8,0.79,0.0,18,Bike,7.0,22.2
+TRIP-2135,Zone B,Zone B,5.5,0.93,0.0,18,Electric Van,15.8,8.4
+TRIP-2136,Zone C,Zone B,15.9,0.87,0.0,19,Electric Scooter,8.3,12.8
+TRIP-2137,Zone A,Zone C,21.3,0.8,0.0,16,Bike,5.2,2.7
+TRIP-2138,Zone B,Zone C,19.6,0.74,0.0,19,Electric Van,3.4,20.4
+TRIP-2139,Zone A,Zone C,24.0,0.77,0.0,21,Electric Van,6.9,12.1
+TRIP-2140,Zone D,Zone C,19.5,0.98,5.5,15,Truck,20.9,5.1
+TRIP-2141,Zone B,Zone B,5.2,0.87,0.0,12,Truck,216.0,7.4
+TRIP-2142,Zone B,Zone D,24.5,0.88,0.0,17,Bike,6.6,13.5
+TRIP-2143,Zone D,Zone B,23.8,0.77,0.0,22,Van,46.6,10.2
+TRIP-2144,Zone C,Zone D,21.5,1.0,0.0,11,Electric Scooter,7.5,2.0
+TRIP-2145,Zone A,Zone D,34.0,0.5,0.0,21,Truck,264.2,27.5
+TRIP-2146,Zone D,Zone A,31.9,0.65,0.0,17,Truck,92.4,36.3
+TRIP-2147,Zone B,Zone C,19.1,0.83,0.0,8,Van,4.1,14.7
+TRIP-2148,Zone B,Zone B,6.5,0.95,2.0,16,Bike,5.6,0.8
+TRIP-2149,Zone A,Zone D,29.4,0.48,0.0,10,Bike,5.7,19.5
+TRIP-2150,Zone C,Zone A,25.8,0.91,5.1,12,Electric Van,24.7,7.4
+TRIP-2151,Zone B,Zone D,29.0,1.0,0.0,13,Bike,2.7,3.5
+TRIP-2152,Zone A,Zone A,4.6,0.87,8.5,22,Truck,37.9,9.3
+TRIP-2153,Zone A,Zone B,19.5,0.65,0.0,16,Electric Van,10.1,11.9
+TRIP-2154,Zone A,Zone D,32.0,0.53,0.0,17,Van,38.1,45.7
+TRIP-2155,Zone B,Zone D,28.5,0.89,0.3,12,Electric Van,41.5,5.2
+TRIP-2156,Zone B,Zone B,3.5,0.9,0.0,10,Electric Scooter,2.2,4.7
+TRIP-2157,Zone C,Zone B,19.1,0.71,2.5,15,Bike,12.8,6.6
+TRIP-2158,Zone A,Zone D,32.2,0.44,9.3,16,Electric Scooter,16.1,33.2
+TRIP-2159,Zone B,Zone D,26.1,0.87,0.0,12,Truck,69.0,5.7
+TRIP-2160,Zone A,Zone D,28.6,0.48,0.0,18,Electric Scooter,10.9,48.5
+TRIP-2161,Zone A,Zone A,3.3,1.0,4.4,21,Electric Van,52.6,3.4
+TRIP-2162,Zone D,Zone D,5.3,0.87,0.0,16,Van,17.2,0.3
+TRIP-2163,Zone A,Zone C,22.6,0.79,1.9,21,Truck,85.5,7.9
+TRIP-2164,Zone B,Zone B,3.1,0.88,0.0,19,Truck,35.8,4.7
+TRIP-2165,Zone C,Zone C,3.9,0.93,6.5,14,Electric Van,21.4,8.4
+TRIP-2166,Zone B,Zone C,14.1,0.74,0.0,11,Electric Scooter,4.0,7.8
+TRIP-2167,Zone B,Zone D,25.5,0.86,9.5,12,Bike,15.8,19.2
+TRIP-2168,Zone D,Zone A,33.2,0.51,0.0,7,Electric Scooter,12.1,19.8
+TRIP-2169,Zone A,Zone B,17.3,0.64,0.0,11,Van,90.0,14.5
+TRIP-2170,Zone A,Zone B,20.6,0.61,1.9,9,Truck,33.5,26.2
+TRIP-2171,Zone B,Zone A,18.7,0.54,0.0,16,Truck,156.8,13.4
+TRIP-2172,Zone A,Zone B,21.4,0.72,0.4,9,Bike,12.9,25.6
+TRIP-2173,Zone C,Zone D,20.8,0.96,0.0,17,Truck,140.2,5.6
+TRIP-2174,Zone A,Zone A,6.5,0.92,0.0,12,Truck,211.4,9.3
+TRIP-2175,Zone D,Zone A,32.4,0.6,10.6,20,Van,11.6,31.3
+TRIP-2176,Zone D,Zone B,26.3,0.83,0.9,16,Truck,192.7,7.6
+TRIP-2177,Zone A,Zone C,21.0,0.77,11.5,8,Electric Van,4.1,23.5
+TRIP-2178,Zone C,Zone C,5.6,0.89,2.0,20,Truck,126.2,4.7
+TRIP-2179,Zone A,Zone B,18.8,0.63,0.0,10,Van,14.6,7.5
+TRIP-2180,Zone A,Zone A,3.8,0.97,0.0,19,Electric Van,14.4,6.3
+TRIP-2181,Zone B,Zone A,19.2,0.65,0.4,13,Electric Van,36.2,17.2
+TRIP-2182,Zone B,Zone A,16.6,0.53,2.4,14,Bike,11.2,13.7
+TRIP-2183,Zone D,Zone C,20.2,0.87,0.2,8,Truck,52.5,9.0
+TRIP-2184,Zone B,Zone D,23.5,0.91,20.6,22,Electric Scooter,5.0,28.4
+TRIP-2185,Zone B,Zone B,2.2,0.99,0.0,12,Electric Van,12.9,2.6
+TRIP-2186,Zone A,Zone A,2.1,0.87,0.0,12,Bike,6.2,0.0
+TRIP-2187,Zone D,Zone C,23.5,0.95,6.5,16,Electric Van,4.3,9.3
+TRIP-2188,Zone D,Zone A,33.5,0.55,11.1,7,Bike,1.8,29.9
+TRIP-2189,Zone C,Zone C,6.8,0.98,2.2,17,Truck,150.5,3.9
+TRIP-2190,Zone D,Zone A,30.4,0.62,0.0,11,Electric Scooter,15.2,15.1
+TRIP-2191,Zone D,Zone B,25.9,0.8,0.0,11,Electric Scooter,3.5,6.6
+TRIP-2192,Zone A,Zone B,18.3,0.65,5.2,21,Electric Van,38.0,13.1
+TRIP-2193,Zone A,Zone B,20.7,0.69,0.0,8,Van,39.1,21.0
+TRIP-2194,Zone C,Zone B,14.2,0.85,0.0,18,Bike,2.4,13.6
+TRIP-2195,Zone B,Zone D,28.5,0.75,0.0,13,Van,31.0,9.2
+TRIP-2196,Zone A,Zone A,2.4,0.86,0.0,10,Van,1.4,0.3
+TRIP-2197,Zone C,Zone B,15.9,0.72,0.0,18,Van,4.2,19.5
+TRIP-2198,Zone D,Zone B,24.2,0.82,0.0,22,Van,56.2,7.0
+TRIP-2199,Zone D,Zone A,28.5,0.66,3.1,18,Van,50.1,29.6
+TRIP-2200,Zone C,Zone D,22.4,1.0,0.0,12,Electric Scooter,14.6,1.2
+TRIP-2201,Zone A,Zone C,24.8,0.72,2.2,22,Truck,221.8,13.7
+TRIP-2202,Zone B,Zone D,27.4,0.87,0.0,10,Bike,7.5,8.2
+TRIP-2203,Zone A,Zone C,21.2,0.82,0.0,16,Van,38.5,5.6
+TRIP-2204,Zone B,Zone B,4.6,0.91,0.0,9,Electric Scooter,4.7,0.0
+TRIP-2205,Zone A,Zone A,2.8,0.99,0.0,9,Electric Scooter,6.5,4.4
+TRIP-2206,Zone D,Zone C,19.2,0.97,0.0,12,Electric Scooter,11.1,5.3
+TRIP-2207,Zone D,Zone C,19.1,0.91,0.2,12,Electric Scooter,6.9,1.8
+TRIP-2208,Zone D,Zone C,19.2,0.95,11.3,16,Electric Scooter,2.2,22.2
+TRIP-2209,Zone A,Zone C,23.1,0.77,5.8,20,Van,14.0,11.8
+TRIP-2210,Zone A,Zone B,19.7,0.61,5.1,21,Truck,97.8,16.3
+TRIP-2211,Zone A,Zone C,22.3,0.82,0.0,14,Electric Scooter,2.6,8.3
+TRIP-2212,Zone A,Zone C,21.4,0.76,5.9,18,Van,78.5,28.8
+TRIP-2213,Zone C,Zone C,3.3,0.85,0.0,19,Electric Scooter,9.1,7.8
+TRIP-2214,Zone C,Zone C,3.2,0.9,0.0,11,Truck,76.8,3.2
+TRIP-2215,Zone D,Zone A,32.8,0.7,4.4,16,Van,38.6,19.1
+TRIP-2216,Zone D,Zone A,30.5,0.69,0.0,10,Electric Scooter,4.2,9.8
+TRIP-2217,Zone D,Zone B,27.9,0.78,1.2,14,Van,13.3,13.2
+TRIP-2218,Zone C,Zone A,24.3,0.92,0.0,18,Truck,178.6,14.2
+TRIP-2219,Zone B,Zone D,26.4,0.88,0.0,8,Electric Van,26.9,12.0
+TRIP-2220,Zone C,Zone B,19.8,0.75,0.0,17,Electric Scooter,9.8,19.6
+TRIP-2221,Zone A,Zone C,21.9,0.8,11.8,8,Truck,152.1,17.3
+TRIP-2222,Zone C,Zone C,6.4,0.94,18.9,9,Electric Van,8.3,13.3
+TRIP-2223,Zone A,Zone A,2.3,0.97,0.0,10,Electric Van,23.0,4.5
+TRIP-2224,Zone C,Zone A,24.5,0.94,3.2,13,Electric Scooter,3.2,3.9
+TRIP-2225,Zone D,Zone D,5.7,0.87,0.0,21,Truck,49.1,4.3
+TRIP-2226,Zone D,Zone B,26.8,0.91,0.0,21,Van,41.7,3.9
+TRIP-2227,Zone D,Zone D,4.5,0.95,0.0,17,Van,49.0,5.1
+TRIP-2228,Zone D,Zone A,33.5,0.69,6.0,10,Van,41.9,14.4
+TRIP-2229,Zone B,Zone D,24.1,0.87,0.7,20,Truck,185.7,5.3
+TRIP-2230,Zone A,Zone A,6.9,0.91,0.0,8,Bike,11.3,8.7
+TRIP-2231,Zone B,Zone C,16.3,0.83,0.0,22,Electric Scooter,1.7,2.3
+TRIP-2232,Zone B,Zone A,22.3,0.62,0.0,13,Bike,5.2,11.3
+TRIP-2233,Zone A,Zone A,5.8,0.86,0.0,8,Bike,4.8,7.8
+TRIP-2234,Zone C,Zone B,19.6,0.79,0.0,20,Electric Van,14.0,7.6
+TRIP-2235,Zone D,Zone A,32.5,0.7,0.0,12,Bike,5.5,13.6
+TRIP-2236,Zone D,Zone D,5.1,0.95,4.4,13,Electric Van,13.8,3.0
+TRIP-2237,Zone A,Zone B,20.1,0.63,6.0,14,Electric Van,14.7,10.7
+TRIP-2238,Zone D,Zone D,6.1,0.9,0.0,17,Bike,14.3,9.3
+TRIP-2239,Zone C,Zone C,5.4,0.9,0.0,17,Truck,29.9,7.2
+TRIP-2240,Zone C,Zone B,16.0,0.76,0.0,10,Electric Scooter,4.2,5.8
+TRIP-2241,Zone C,Zone D,21.3,1.0,0.0,21,Electric Van,2.0,3.7
+TRIP-2242,Zone B,Zone B,2.3,0.96,0.0,14,Bike,4.6,4.9
+TRIP-2243,Zone B,Zone C,20.0,0.76,4.7,17,Van,37.5,20.3
+TRIP-2244,Zone B,Zone A,19.9,0.6,12.2,15,Truck,130.4,9.9
+TRIP-2245,Zone B,Zone D,24.8,0.85,0.0,18,Van,32.4,19.0
+TRIP-2246,Zone B,Zone C,15.4,0.84,0.0,9,Bike,7.2,11.7
+TRIP-2247,Zone D,Zone D,2.2,0.91,0.0,11,Truck,280.0,7.3
+TRIP-2248,Zone B,Zone B,6.6,0.88,0.0,14,Electric Scooter,1.3,4.2
+TRIP-2249,Zone B,Zone D,24.3,0.85,1.0,14,Electric Scooter,6.4,4.2
+TRIP-2250,Zone B,Zone D,27.9,0.82,0.0,21,Electric Scooter,3.2,8.7
+TRIP-2251,Zone A,Zone A,2.5,0.95,11.2,21,Bike,8.2,12.1
+TRIP-2252,Zone B,Zone A,18.3,0.66,0.0,11,Electric Van,18.3,6.3
+TRIP-2253,Zone D,Zone B,23.8,0.87,2.9,13,Electric Scooter,11.2,7.9
+TRIP-2254,Zone D,Zone D,5.1,0.86,0.0,13,Electric Van,30.8,3.5
+TRIP-2255,Zone B,Zone B,2.8,0.89,1.0,17,Electric Van,9.9,13.1
+TRIP-2256,Zone B,Zone B,2.2,0.88,0.4,20,Electric Scooter,12.8,0.9
+TRIP-2257,Zone B,Zone C,15.5,0.77,0.0,7,Bike,1.4,5.6
+TRIP-2258,Zone C,Zone D,19.2,1.0,7.3,21,Electric Scooter,24.0,13.7
+TRIP-2259,Zone C,Zone C,4.0,0.96,0.4,18,Electric Van,23.1,4.3
+TRIP-2260,Zone A,Zone D,28.8,0.52,0.0,14,Electric Scooter,9.4,16.6
+TRIP-2261,Zone A,Zone B,17.7,0.61,0.0,10,Electric Scooter,6.7,12.1
+TRIP-2262,Zone C,Zone D,21.1,0.95,1.3,13,Truck,42.4,5.0
+TRIP-2263,Zone C,Zone A,20.7,0.88,0.0,16,Van,41.0,5.4
+TRIP-2264,Zone B,Zone D,28.8,0.89,0.0,21,Bike,2.9,8.8
+TRIP-2265,Zone C,Zone D,22.3,1.0,0.0,17,Electric Van,37.2,3.6
+TRIP-2266,Zone A,Zone B,22.1,0.73,0.0,13,Bike,8.0,7.5
+TRIP-2267,Zone B,Zone C,19.8,0.84,0.6,11,Van,21.2,7.5
+TRIP-2268,Zone A,Zone B,21.1,0.64,0.0,7,Truck,31.1,10.3
+TRIP-2269,Zone D,Zone A,29.9,0.59,0.0,13,Van,31.7,16.3
+TRIP-2270,Zone B,Zone C,16.5,0.76,0.0,13,Van,10.9,9.0
+TRIP-2271,Zone C,Zone B,17.5,0.88,0.0,18,Van,56.1,12.6
+TRIP-2272,Zone D,Zone C,19.4,1.0,5.7,17,Van,60.7,10.0
+TRIP-2273,Zone C,Zone C,3.5,0.89,0.0,19,Van,31.3,10.0
+TRIP-2274,Zone A,Zone D,29.2,0.4,0.0,8,Van,2.4,55.8
+TRIP-2275,Zone A,Zone C,25.0,0.78,0.5,12,Truck,62.3,10.4
+TRIP-2276,Zone D,Zone C,21.1,1.0,0.0,11,Electric Scooter,6.3,1.3
+TRIP-2277,Zone A,Zone A,4.8,0.9,0.0,7,Electric Van,9.8,6.5
+TRIP-2278,Zone A,Zone B,17.3,0.65,0.0,10,Electric Scooter,4.9,12.2
+TRIP-2279,Zone C,Zone D,19.3,1.0,0.0,20,Electric Scooter,10.5,3.3
+TRIP-2280,Zone D,Zone D,5.4,0.95,0.0,22,Truck,35.9,8.9
+TRIP-2281,Zone A,Zone B,19.1,0.64,0.0,9,Van,90.0,23.5
+TRIP-2282,Zone A,Zone B,21.0,0.74,0.0,14,Truck,102.6,6.1
+TRIP-2283,Zone B,Zone D,24.0,0.86,0.0,10,Van,52.7,6.8
+TRIP-2284,Zone B,Zone C,15.5,0.83,0.0,14,Truck,83.0,5.9
+TRIP-2285,Zone D,Zone B,27.1,0.76,9.3,15,Van,10.2,16.9
+TRIP-2286,Zone C,Zone B,19.9,0.7,0.1,18,Bike,2.2,21.8
+TRIP-2287,Zone A,Zone D,33.4,0.51,0.0,13,Truck,46.1,21.4
+TRIP-2288,Zone C,Zone C,4.9,0.91,0.0,12,Truck,48.5,5.2
+TRIP-2289,Zone A,Zone C,23.3,0.86,0.0,22,Truck,34.4,7.5
+TRIP-2290,Zone A,Zone A,4.2,0.95,0.0,7,Bike,1.5,2.0
+TRIP-2291,Zone B,Zone C,14.3,0.77,0.4,10,Bike,3.1,1.5
+TRIP-2292,Zone A,Zone C,22.0,0.84,0.0,13,Electric Scooter,5.2,6.2
+TRIP-2293,Zone B,Zone D,26.3,0.87,0.0,22,Truck,10.0,6.2
+TRIP-2294,Zone C,Zone B,19.8,0.8,0.0,19,Truck,16.3,16.7
+TRIP-2295,Zone B,Zone A,21.8,0.57,0.0,20,Electric Scooter,14.4,12.3
+TRIP-2296,Zone C,Zone D,20.6,0.97,0.0,20,Electric Scooter,4.0,0.2
+TRIP-2297,Zone B,Zone D,28.7,0.84,0.0,14,Truck,280.0,16.0
+TRIP-2298,Zone D,Zone B,26.3,0.8,0.0,17,Truck,39.7,18.6
+TRIP-2299,Zone C,Zone D,20.2,0.91,0.0,20,Truck,77.4,5.6
+TRIP-2300,Zone D,Zone A,34.1,0.61,9.0,14,Truck,27.1,15.7
+TRIP-2301,Zone A,Zone A,3.7,0.89,0.0,19,Van,21.2,7.8
+TRIP-2302,Zone C,Zone C,5.5,0.96,0.6,9,Truck,139.0,1.5
+TRIP-2303,Zone C,Zone D,22.9,0.96,0.0,15,Bike,4.8,5.2
+TRIP-2304,Zone D,Zone D,5.5,0.89,0.0,7,Electric Van,29.8,4.4
+TRIP-2305,Zone C,Zone C,4.6,0.87,0.0,22,Truck,105.8,4.9
+TRIP-2306,Zone A,Zone A,6.9,0.89,0.0,10,Van,14.8,5.3
+TRIP-2307,Zone A,Zone D,34.1,0.47,0.0,21,Van,24.9,22.8
+TRIP-2308,Zone A,Zone B,19.2,0.62,0.0,7,Electric Van,13.1,14.1
+TRIP-2309,Zone A,Zone C,23.7,0.82,11.3,22,Bike,3.3,19.0
+TRIP-2310,Zone A,Zone B,21.2,0.75,0.0,13,Electric Van,24.8,9.0
+TRIP-2311,Zone A,Zone B,21.4,0.67,0.0,8,Truck,116.3,25.7
+TRIP-2312,Zone B,Zone B,2.2,0.96,0.0,11,Van,14.3,4.5
+TRIP-2313,Zone A,Zone A,7.0,0.92,3.7,9,Electric Van,26.1,6.6
+TRIP-2314,Zone C,Zone C,6.7,0.9,2.1,20,Truck,84.6,2.9
+TRIP-2315,Zone D,Zone D,5.1,0.95,0.0,13,Van,8.5,4.0
+TRIP-2316,Zone D,Zone C,23.7,0.93,0.0,18,Bike,10.8,6.0
+TRIP-2317,Zone A,Zone D,31.6,0.47,0.7,22,Truck,31.8,22.8
+TRIP-2318,Zone C,Zone C,2.5,0.86,0.0,19,Bike,1.9,8.5
+TRIP-2319,Zone D,Zone C,20.5,0.89,0.0,13,Truck,77.6,4.5
+TRIP-2320,Zone D,Zone A,29.3,0.67,0.0,21,Bike,5.2,14.7
+TRIP-2321,Zone C,Zone B,16.5,0.82,0.0,14,Van,18.5,3.4
+TRIP-2322,Zone C,Zone A,25.3,0.98,0.0,17,Electric Van,21.1,5.0
+TRIP-2323,Zone B,Zone D,28.9,0.86,0.0,18,Bike,7.2,15.6
+TRIP-2324,Zone B,Zone B,5.0,0.97,0.0,16,Bike,5.2,3.1
+TRIP-2325,Zone A,Zone A,6.0,0.96,11.2,8,Van,54.2,10.5
+TRIP-2326,Zone C,Zone B,17.6,0.79,0.0,16,Van,90.0,9.3
+TRIP-2327,Zone A,Zone B,17.4,0.68,0.0,17,Bike,12.7,18.2
+TRIP-2328,Zone D,Zone D,2.7,0.97,0.0,7,Van,50.8,1.0
+TRIP-2329,Zone A,Zone C,20.9,0.71,0.0,20,Truck,89.7,10.1
+TRIP-2330,Zone B,Zone D,24.6,0.95,0.0,15,Truck,29.4,6.8
+TRIP-2331,Zone B,Zone C,16.9,0.78,0.0,21,Electric Van,26.4,2.3
+TRIP-2332,Zone D,Zone A,32.2,0.66,2.6,10,Truck,50.4,13.2
+TRIP-2333,Zone D,Zone B,24.2,0.84,0.0,13,Bike,12.3,10.8
+TRIP-2334,Zone C,Zone A,21.2,0.92,0.6,16,Van,11.7,7.5
+TRIP-2335,Zone B,Zone B,5.1,0.95,0.0,12,Truck,170.4,6.9
+TRIP-2336,Zone A,Zone C,24.7,0.77,0.0,18,Truck,73.5,22.5
+TRIP-2337,Zone D,Zone A,32.7,0.63,0.0,14,Electric Van,75.0,17.6
+TRIP-2338,Zone B,Zone D,28.9,0.79,0.0,12,Electric Scooter,7.2,10.4
+TRIP-2339,Zone B,Zone C,14.3,0.78,0.0,15,Van,12.7,5.2
+TRIP-2340,Zone B,Zone C,16.9,0.8,0.0,10,Bike,6.2,6.4
+TRIP-2341,Zone A,Zone B,19.2,0.58,0.0,15,Bike,7.2,12.8
+TRIP-2342,Zone D,Zone B,23.8,0.83,2.7,19,Van,15.2,18.7
+TRIP-2343,Zone A,Zone B,20.0,0.66,0.0,15,Electric Van,3.0,12.6
+TRIP-2344,Zone C,Zone A,24.4,1.0,0.1,16,Electric Scooter,5.5,3.4
+TRIP-2345,Zone C,Zone A,23.2,0.95,0.0,15,Electric Van,13.4,5.4
+TRIP-2346,Zone B,Zone C,17.6,0.75,0.0,18,Electric Scooter,9.7,18.4
+TRIP-2347,Zone A,Zone A,4.8,0.97,0.0,12,Bike,9.7,1.6
+TRIP-2348,Zone B,Zone C,15.0,0.83,0.0,8,Bike,6.0,16.1
+TRIP-2349,Zone D,Zone B,27.6,0.83,0.0,13,Electric Scooter,6.0,10.5
+TRIP-2350,Zone C,Zone C,4.6,0.95,0.7,14,Bike,3.2,0.0
+TRIP-2351,Zone C,Zone C,5.9,0.94,2.7,18,Electric Scooter,5.8,2.9
+TRIP-2352,Zone A,Zone A,2.6,0.89,0.0,8,Truck,40.4,7.5
+TRIP-2353,Zone D,Zone C,22.7,0.95,0.0,10,Bike,1.9,4.2
+TRIP-2354,Zone B,Zone C,15.2,0.69,0.0,18,Electric Van,10.4,19.2
+TRIP-2355,Zone C,Zone A,21.8,1.0,0.0,21,Truck,32.1,0.0
+TRIP-2356,Zone B,Zone C,19.0,0.85,0.0,11,Bike,15.3,2.4
+TRIP-2357,Zone C,Zone C,3.9,0.89,0.0,21,Bike,9.3,6.5
+TRIP-2358,Zone D,Zone B,24.9,0.79,0.0,13,Bike,6.8,8.6
+TRIP-2359,Zone A,Zone D,30.3,0.44,0.0,22,Electric Van,7.3,19.5
+TRIP-2360,Zone D,Zone D,3.5,0.86,0.0,15,Van,11.5,4.5
+TRIP-2361,Zone B,Zone D,28.1,0.85,2.4,9,Van,35.3,12.7
+TRIP-2362,Zone D,Zone C,21.8,0.82,2.4,13,Van,37.5,7.2
+TRIP-2363,Zone D,Zone A,32.8,0.72,0.0,22,Truck,192.4,18.4
+TRIP-2364,Zone A,Zone B,17.1,0.63,2.2,16,Electric Van,3.1,11.7
+TRIP-2365,Zone A,Zone A,3.9,0.93,0.0,7,Electric Scooter,7.2,7.4
+TRIP-2366,Zone B,Zone B,5.4,0.98,0.0,18,Bike,2.2,7.3
+TRIP-2367,Zone C,Zone A,20.0,0.97,0.5,17,Truck,74.9,5.5
+TRIP-2368,Zone C,Zone C,5.3,0.87,0.0,14,Truck,60.8,4.8
+TRIP-2369,Zone D,Zone C,20.7,0.99,0.0,10,Truck,21.9,1.6
+TRIP-2370,Zone A,Zone C,21.9,0.89,0.0,16,Electric Van,23.2,3.8
+TRIP-2371,Zone B,Zone B,6.7,0.99,0.0,12,Electric Scooter,5.3,6.4
+TRIP-2372,Zone B,Zone D,23.5,0.89,4.2,20,Electric Van,21.6,7.1
+TRIP-2373,Zone B,Zone C,15.2,0.88,0.0,16,Electric Van,17.0,7.3
+TRIP-2374,Zone B,Zone D,28.5,0.84,0.0,8,Electric Van,7.8,18.9
+TRIP-2375,Zone A,Zone A,4.5,0.86,0.0,13,Bike,13.7,4.5
+TRIP-2376,Zone C,Zone B,15.5,0.83,0.0,21,Bike,7.1,8.0
+TRIP-2377,Zone A,Zone A,6.4,0.93,2.4,17,Truck,12.9,11.5
+TRIP-2378,Zone A,Zone C,21.7,0.78,0.0,21,Electric Scooter,7.7,12.5
+TRIP-2379,Zone C,Zone D,23.3,1.0,0.0,8,Electric Van,25.4,6.4
+TRIP-2380,Zone B,Zone A,18.6,0.65,0.0,7,Bike,7.0,13.6
+TRIP-2381,Zone B,Zone A,19.5,0.54,0.2,7,Van,15.3,9.5
+TRIP-2382,Zone C,Zone A,21.5,0.93,0.0,15,Truck,67.8,6.0
+TRIP-2383,Zone D,Zone D,2.4,0.96,0.0,10,Electric Scooter,6.2,3.5
+TRIP-2384,Zone D,Zone B,26.9,0.77,22.3,7,Van,16.0,27.7
+TRIP-2385,Zone B,Zone C,15.8,0.89,0.0,15,Van,46.9,4.5
+TRIP-2386,Zone D,Zone B,24.7,0.84,0.0,13,Truck,134.4,8.2
+TRIP-2387,Zone C,Zone C,3.0,0.92,0.6,16,Bike,4.7,8.0
+TRIP-2388,Zone C,Zone A,22.7,0.91,0.0,19,Van,7.0,9.8
+TRIP-2389,Zone D,Zone C,18.8,1.0,0.0,9,Van,39.5,5.6
+TRIP-2390,Zone A,Zone D,34.3,0.46,0.6,15,Van,2.4,26.1
+TRIP-2391,Zone A,Zone C,22.0,0.79,0.0,9,Van,24.1,18.3
+TRIP-2392,Zone D,Zone A,31.4,0.61,0.0,11,Electric Scooter,10.3,16.1
+TRIP-2393,Zone A,Zone B,22.2,0.69,0.0,19,Truck,17.3,22.5
+TRIP-2394,Zone D,Zone D,2.5,0.85,2.2,22,Electric Scooter,20.4,5.3
+TRIP-2395,Zone B,Zone C,16.9,0.82,0.0,13,Bike,2.9,5.3
+TRIP-2396,Zone C,Zone D,21.2,1.0,0.0,15,Electric Scooter,3.3,7.4
+TRIP-2397,Zone D,Zone B,23.6,0.89,0.1,21,Electric Scooter,4.5,1.6
+TRIP-2398,Zone D,Zone D,4.3,0.91,0.0,8,Electric Van,27.6,8.1
+TRIP-2399,Zone D,Zone C,20.6,1.0,8.2,15,Electric Van,75.0,13.4
+TRIP-2400,Zone C,Zone A,24.7,0.94,0.6,9,Van,31.9,15.9
+TRIP-2401,Zone A,Zone B,22.1,0.66,0.0,17,Van,20.1,27.8
+TRIP-2402,Zone D,Zone C,20.2,0.98,0.0,17,Electric Scooter,14.8,8.1
+TRIP-2403,Zone A,Zone A,6.1,0.88,0.0,10,Electric Scooter,7.7,1.8
+TRIP-2404,Zone D,Zone B,25.0,0.82,16.3,13,Truck,20.6,21.1
+TRIP-2405,Zone D,Zone B,23.8,0.92,0.0,10,Electric Scooter,2.5,4.6
+TRIP-2406,Zone B,Zone B,4.4,0.98,0.0,16,Truck,172.2,4.8
+TRIP-2407,Zone B,Zone C,18.7,0.82,0.0,22,Van,16.8,4.2
+TRIP-2408,Zone C,Zone C,6.0,0.98,0.0,22,Van,33.2,4.9
+TRIP-2409,Zone C,Zone C,3.2,0.9,0.0,14,Electric Scooter,2.1,4.6
+TRIP-2410,Zone B,Zone A,19.0,0.53,0.0,21,Truck,18.8,8.9
+TRIP-2411,Zone B,Zone D,23.8,0.82,0.0,10,Truck,30.5,8.5
+TRIP-2412,Zone C,Zone A,23.6,0.91,0.0,17,Electric Scooter,3.6,7.4
+TRIP-2413,Zone C,Zone B,17.9,0.81,1.6,19,Electric Van,19.2,12.2
+TRIP-2414,Zone A,Zone A,4.6,0.88,0.0,15,Bike,3.5,6.2
+TRIP-2415,Zone B,Zone B,2.6,0.88,0.0,15,Bike,10.8,3.0
+TRIP-2416,Zone C,Zone A,24.7,0.93,0.0,17,Electric Van,22.2,12.2
+TRIP-2417,Zone A,Zone B,19.9,0.64,0.0,11,Electric Scooter,9.6,10.0
+TRIP-2418,Zone C,Zone C,4.7,0.95,0.0,11,Electric Scooter,21.5,5.7
+TRIP-2419,Zone B,Zone C,14.2,0.79,12.1,19,Bike,11.2,20.7
+TRIP-2420,Zone D,Zone D,6.8,0.91,0.0,17,Bike,1.8,6.9
+TRIP-2421,Zone C,Zone C,4.3,0.95,7.0,11,Electric Scooter,21.1,13.2
+TRIP-2422,Zone C,Zone A,26.0,0.97,2.5,8,Bike,9.5,5.7
+TRIP-2423,Zone B,Zone A,16.5,0.53,1.9,9,Bike,7.0,25.3
+TRIP-2424,Zone D,Zone D,4.6,0.98,0.0,9,Electric Van,19.4,6.0
+TRIP-2425,Zone B,Zone A,17.4,0.61,0.6,17,Electric Van,11.8,16.8
+TRIP-2426,Zone C,Zone B,18.9,0.72,0.0,13,Van,68.5,12.4
+TRIP-2427,Zone D,Zone C,24.4,0.87,0.0,17,Electric Scooter,5.8,14.7
+TRIP-2428,Zone A,Zone A,5.6,0.97,0.0,18,Van,2.6,4.8
+TRIP-2429,Zone B,Zone A,17.5,0.69,0.0,9,Van,31.7,16.3
+TRIP-2430,Zone C,Zone A,24.4,0.92,0.0,18,Electric Van,37.0,12.5
+TRIP-2431,Zone D,Zone C,20.1,1.0,0.0,18,Electric Scooter,15.7,6.7
+TRIP-2432,Zone B,Zone A,22.5,0.56,0.0,10,Van,41.9,15.0
+TRIP-2433,Zone D,Zone A,33.4,0.66,0.0,9,Electric Scooter,16.5,37.5
+TRIP-2434,Zone A,Zone C,23.4,0.69,4.2,17,Electric Van,14.4,24.8
+TRIP-2435,Zone C,Zone C,3.5,0.88,0.0,22,Van,7.4,5.1
+TRIP-2436,Zone D,Zone B,26.7,0.86,2.7,12,Truck,57.9,12.7
+TRIP-2437,Zone A,Zone D,34.1,0.43,0.0,10,Electric Van,6.9,24.4
+TRIP-2438,Zone B,Zone C,19.5,0.8,2.6,11,Electric Scooter,1.7,7.4
+TRIP-2439,Zone C,Zone A,23.4,0.95,0.0,22,Bike,8.0,5.1
+TRIP-2440,Zone A,Zone A,5.8,1.0,0.0,17,Electric Scooter,6.7,5.6
+TRIP-2441,Zone B,Zone C,15.1,0.76,0.0,16,Bike,6.2,10.6
+TRIP-2442,Zone B,Zone D,26.0,0.88,0.0,8,Bike,5.4,12.8
+TRIP-2443,Zone D,Zone D,3.2,0.97,0.0,20,Bike,1.7,1.9
+TRIP-2444,Zone D,Zone C,21.1,0.91,0.0,13,Truck,61.3,5.0
+TRIP-2445,Zone B,Zone C,18.1,0.78,0.0,22,Electric Scooter,24.3,8.9
+TRIP-2446,Zone D,Zone D,4.7,0.9,5.0,12,Bike,1.5,0.0
+TRIP-2447,Zone A,Zone A,7.0,0.97,0.0,13,Electric Scooter,11.3,7.2
+TRIP-2448,Zone A,Zone B,19.2,0.77,0.0,18,Truck,89.3,19.6
+TRIP-2449,Zone B,Zone B,3.7,0.87,0.0,16,Electric Scooter,5.6,4.9
+TRIP-2450,Zone C,Zone B,17.8,0.77,0.9,7,Truck,50.3,6.9
+TRIP-2451,Zone C,Zone D,23.6,0.91,0.0,21,Electric Van,22.7,4.5
+TRIP-2452,Zone C,Zone D,22.8,1.0,0.0,13,Bike,7.4,0.0
+TRIP-2453,Zone C,Zone A,20.5,1.0,0.0,10,Bike,4.6,3.3
+TRIP-2454,Zone D,Zone D,3.4,0.87,0.0,15,Electric Van,16.3,7.5
+TRIP-2455,Zone A,Zone A,4.4,0.98,0.0,11,Electric Van,16.3,3.5
+TRIP-2456,Zone A,Zone B,19.6,0.59,0.0,13,Van,39.8,10.3
+TRIP-2457,Zone A,Zone C,25.6,0.88,1.2,11,Electric Scooter,1.9,5.6
+TRIP-2458,Zone B,Zone A,22.4,0.6,0.0,21,Truck,23.7,13.6
+TRIP-2459,Zone C,Zone D,20.8,0.98,0.0,17,Bike,9.2,7.7
+TRIP-2460,Zone A,Zone C,24.2,0.79,0.0,10,Truck,99.1,10.4
+TRIP-2461,Zone C,Zone C,6.9,0.85,0.0,20,Electric Scooter,9.3,3.4
+TRIP-2462,Zone D,Zone D,5.3,0.99,4.6,12,Electric Scooter,5.6,6.6
+TRIP-2463,Zone D,Zone B,26.6,0.74,0.0,20,Bike,6.2,10.3
+TRIP-2464,Zone C,Zone D,23.2,0.97,19.7,18,Van,33.0,25.1
+TRIP-2465,Zone A,Zone D,29.2,0.48,4.3,21,Truck,194.2,21.4
+TRIP-2466,Zone A,Zone D,28.8,0.54,0.0,14,Bike,8.0,19.9
+TRIP-2467,Zone A,Zone C,20.7,0.84,6.2,17,Electric Van,7.9,18.6
+TRIP-2468,Zone A,Zone C,26.0,0.73,0.0,8,Electric Scooter,5.2,25.9
+TRIP-2469,Zone D,Zone C,23.7,0.91,0.0,21,Bike,0.4,5.5
+TRIP-2470,Zone B,Zone C,19.3,0.84,6.7,22,Electric Scooter,9.5,14.3
+TRIP-2471,Zone B,Zone D,26.8,0.83,0.0,7,Bike,12.1,9.5
+TRIP-2472,Zone C,Zone A,21.6,0.98,0.4,15,Van,43.6,4.8
+TRIP-2473,Zone B,Zone A,16.9,0.54,3.4,7,Electric Van,44.6,16.0
+TRIP-2474,Zone D,Zone A,28.9,0.66,0.0,21,Bike,6.1,15.4
+TRIP-2475,Zone C,Zone B,17.2,0.78,0.0,16,Electric Scooter,1.8,6.1
+TRIP-2476,Zone A,Zone D,34.0,0.58,0.0,22,Truck,101.6,19.8
+TRIP-2477,Zone B,Zone C,17.7,0.81,0.0,21,Truck,105.3,8.6
+TRIP-2478,Zone A,Zone D,31.6,0.54,1.2,15,Van,7.8,21.4
+TRIP-2479,Zone B,Zone B,3.2,0.92,0.0,14,Electric Scooter,6.5,3.7
+TRIP-2480,Zone A,Zone A,6.9,0.93,0.0,21,Bike,1.6,7.6
+TRIP-2481,Zone C,Zone B,14.3,0.76,0.0,16,Electric Van,17.8,7.4
+TRIP-2482,Zone B,Zone B,3.2,0.86,0.0,10,Van,38.1,2.6
+TRIP-2483,Zone A,Zone B,22.5,0.7,0.7,7,Electric Van,2.3,11.5
+TRIP-2484,Zone B,Zone A,21.6,0.63,0.0,19,Electric Van,18.2,27.9
+TRIP-2485,Zone A,Zone B,16.9,0.66,0.0,20,Van,42.9,11.8
+TRIP-2486,Zone A,Zone B,22.4,0.59,3.9,8,Electric Van,19.0,31.9
+TRIP-2487,Zone B,Zone C,16.8,0.81,0.0,14,Truck,60.8,6.3
+TRIP-2488,Zone D,Zone C,23.4,0.96,0.0,14,Electric Scooter,2.4,6.8
+TRIP-2489,Zone B,Zone A,22.5,0.5,0.0,15,Electric Van,18.2,14.3
+TRIP-2490,Zone C,Zone D,19.0,0.99,0.0,18,Truck,57.2,3.9
+TRIP-2491,Zone B,Zone C,15.8,0.89,1.7,17,Truck,108.1,14.8
+TRIP-2492,Zone C,Zone C,3.6,0.95,0.0,21,Van,24.2,3.1
+TRIP-2493,Zone B,Zone B,5.1,0.88,0.0,15,Electric Scooter,3.4,1.9
+TRIP-2494,Zone A,Zone D,29.8,0.42,0.0,14,Electric Van,15.4,24.3
+TRIP-2495,Zone A,Zone B,17.7,0.64,2.3,16,Truck,13.6,16.0
+TRIP-2496,Zone D,Zone B,25.5,0.99,5.0,7,Truck,14.5,9.7
+TRIP-2497,Zone D,Zone A,30.2,0.61,16.5,10,Truck,40.5,25.5
+TRIP-2498,Zone B,Zone D,27.1,0.94,0.0,12,Electric Van,21.4,3.2
+TRIP-2499,Zone C,Zone C,6.8,0.92,0.0,21,Electric Scooter,2.2,2.9
