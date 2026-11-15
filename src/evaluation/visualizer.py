@@ -62,11 +62,18 @@ def boxplot_by(df: pd.DataFrame, value: str, group: str, title: str, xlabel: str
     return file
 
 
-def per_agent_heatmaps(agent_rows: pd.DataFrame) -> str:
-    """One panel per agent: persona (rows) x architecture (cols), mean latency in seconds."""
+def per_agent_heatmaps(agent_rows: pd.DataFrame, stacked: bool = False) -> str:
+    """One panel per agent: persona (rows) x architecture (cols), mean latency in seconds.
+    Wide (one row of panels) for the website; stacked (two rows, HALF_W) for the A4 report."""
     present = [a for a in AGENTS if a in set(agent_rows["agent"])]
-    fig, axes = plt.subplots(1, len(present), figsize=(FULL_W, 3.2), sharey=True)
-    axes = np.atleast_1d(axes)
+    if stacked:
+        fig, grid = plt.subplots(2, 3, figsize=(HALF_W, 4.6))
+        axes = grid.ravel()
+        for spare in axes[len(present):]:
+            spare.set_visible(False)
+    else:
+        fig, axes = plt.subplots(1, len(present), figsize=(FULL_W, 3.2), sharey=True)
+        axes = np.atleast_1d(axes)
     archs = ["hierarchical", "sequential", "parallel"]
     personas = ["polite", "urgent", "abusive"]
     vmax = agent_rows["latency_s"].max() or 1
@@ -86,9 +93,10 @@ def per_agent_heatmaps(agent_rows: pd.DataFrame) -> str:
             s.set_visible(False)
     fig.suptitle("Inside each agent: mean latency (s) by persona and architecture", x=0.01, ha="left",
                  fontweight="bold", color=INK)
-    fig.savefig(ARTIFACTS_DIR / "heatmap_per_agent.png")
+    file = "heatmap_per_agent_stacked.png" if stacked else "heatmap_per_agent.png"
+    fig.savefig(ARTIFACTS_DIR / file)
     plt.close(fig)
-    return "heatmap_per_agent.png"
+    return file
 
 
 AGENT_METRICS = [("latency_s", "time (s)", "{:.1f}"), ("llm_calls", "LLM calls", "{:.1f}"),
@@ -149,10 +157,11 @@ def outcome_bars(df: pd.DataFrame) -> str:
     return "outcomes_by_architecture.png"
 
 
-def prompt_style_cost(df: pd.DataFrame) -> str:
-    """ReAct vs Direct on the same inputs: time and tokens per run, side by side."""
+def prompt_style_cost(df: pd.DataFrame, stacked: bool = False) -> str:
+    """ReAct vs Direct on the same inputs: time and tokens per run (side by side, or stacked for the report)."""
     styles = [s for s in ["ReAct", "Direct"] if s in set(df["prompt_style"])]
-    fig, axes = plt.subplots(1, 2, figsize=(FULL_W, 2.8), sharey=True)
+    fig, axes = (plt.subplots(2, 1, figsize=(HALF_W, 3.8)) if stacked
+                 else plt.subplots(1, 2, figsize=(FULL_W, 2.8), sharey=True))
     rng = np.random.default_rng(0)
     for ax, (col, label) in zip(axes, [("latency_s", "seconds per run"), ("tokens", "tokens per run")]):
         data = [df.loc[df["prompt_style"] == s, col].dropna().to_numpy() for s in styles]
@@ -168,9 +177,10 @@ def prompt_style_cost(df: pd.DataFrame) -> str:
         _clean(ax)
     fig.suptitle("What each prompt style costs: time and tokens per run", x=0.01, ha="left",
                  fontweight="bold", color=INK)
-    fig.savefig(ARTIFACTS_DIR / "cost_by_prompt_style.png")
+    file = "cost_by_prompt_style_stacked.png" if stacked else "cost_by_prompt_style.png"
+    fig.savefig(ARTIFACTS_DIR / file)
     plt.close(fig)
-    return "cost_by_prompt_style.png"
+    return file
 
 
 def judge_check_bars(check: dict) -> str:

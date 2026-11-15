@@ -207,6 +207,9 @@ def build_report() -> dict:
         {"file": viz.prompt_style_cost(served),
          "title": "Cost of each prompt style", "caption": "ReAct vs Direct on the same inputs: time and tokens per run."},
     ]
+    # Stacked copies of the two full-width charts, so they stay readable on an A4 page in the report.
+    viz.per_agent_heatmaps(agents[agents["persona"] != "injection"], stacked=True)
+    viz.prompt_style_cost(served, stacked=True)
     sens = sensitivity_specificity(df.to_dict("records"))
     summary = {
         "design": "3 architectures x 2 prompt styles (ReAct, Direct) x 4 personas (polite, urgent, abusive, injection) "

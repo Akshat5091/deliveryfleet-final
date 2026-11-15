@@ -121,7 +121,7 @@ def shannon_entropy(values: list[str]) -> float:
     n = sum(counts.values())
     if n <= 1:
         return 0.0
-    return round(-sum((c / n) * math.log2(c / n) for c in counts.values()), 4)
+    return round(abs(sum((c / n) * math.log2(c / n) for c in counts.values())), 4)  # abs: no "-0.0" when H = 0
 
 
 def sensitivity_specificity(rows: list[dict]) -> dict:
