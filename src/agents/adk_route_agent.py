@@ -27,8 +27,8 @@ from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnecti
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import types
 
-from src.agents.llm import limiter
-from src.config import MCP_URL, WORKER_MODEL
+from src.agents.llm import limiter_for
+from src.config import MCP_URL, ROUTE_MODEL
 from src.guardrails.input_guard import regex_screen
 from src.guardrails.tool_validator import ToolOutputError, validate
 from src.observability import run_logger, tracing
@@ -96,7 +96,7 @@ def before_agent(callback_context: CallbackContext) -> types.Content | None:
 
 async def before_model(callback_context: CallbackContext, llm_request: LlmRequest) -> LlmResponse | None:
     # ADK runs callbacks on the server's event loop; the wait must not block other requests.
-    await asyncio.to_thread(limiter.wait)
+    await asyncio.to_thread(limiter_for(ROUTE_MODEL).wait)
     _llm_started[callback_context.invocation_id] = time.perf_counter()
     return None
 
@@ -108,7 +108,7 @@ def after_model(callback_context: CallbackContext, llm_response: LlmResponse) ->
     text = "".join(p.text or "" for p in (llm_response.content.parts or [])) if llm_response.content else ""
     calls = [p.function_call.name for p in (llm_response.content.parts or []) if p.function_call] if llm_response.content else []
     tracing.record_llm_call(
-        WORKER_MODEL, (usage.prompt_token_count or 0) if usage else 0,
+        ROUTE_MODEL, (usage.prompt_token_count or 0) if usage else 0,
         ((usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0)) if usage else 0,
         round((time.perf_counter() - started) * 1000, 1) if started else None,
         status="ERROR" if llm_response.error_code else "OK",
@@ -169,7 +169,7 @@ def build_route_agent() -> LlmAgent:
     )
     return LlmAgent(
         name=AGENT,
-        model=WORKER_MODEL,
+        model=ROUTE_MODEL,
         description="Computes the fastest legal road corridor and a delay forecast with an 80% band "
                     "for one delivery, using MCP routing and ML tools.",
         instruction=INSTRUCTION,

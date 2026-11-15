@@ -1,7 +1,7 @@
 """Gemini access for both frameworks: model factory, rate limiter, retries.
 
-Free-tier Gemini keys allow a limited number of requests per minute, so every
-LLM call in this process waits on one token bucket (LLM_RPM). Transient 429 /
+Free-tier Gemini keys allow a limited number of requests per minute for each
+model, so every LLM call waits on that model's token bucket (LLM_RPM). Transient 429 /
 503 errors are retried with exponential backoff plus jitter (the Lab-04
 run_with_retry pattern).
 """
@@ -18,7 +18,7 @@ from crewai import LLM
 from google import genai
 from google.genai import types
 
-from src.config import LLM_RPM, WORKER_MODEL
+from src.config import LLM_RPM, ROUTE_MODEL, WORKER_MODEL
 from src.observability import tracing
 
 T = TypeVar("T")
@@ -42,9 +42,22 @@ class RateLimiter:
             time.sleep(slot - now)
 
 
-# Two processes call Gemini (the web app and the ADK route service), each with its own limiter,
-# so each gets half of the key's per-minute budget and together they stay under LLM_RPM.
-limiter = RateLimiter(max(LLM_RPM // 2, 1))
+# Gemini counts requests per model, so each model gets its own limiter. ROUTE_MODEL is called
+# from two processes (the input guard in the web app, the ADK route service), so each process
+# gets half of that model's budget and together they stay under LLM_RPM.
+_limiters: dict[str, RateLimiter] = {}
+_limiters_lock = threading.Lock()
+
+
+def limiter_for(model: str) -> RateLimiter:
+    with _limiters_lock:
+        if model not in _limiters:
+            rpm = LLM_RPM // 2 if model == ROUTE_MODEL else LLM_RPM
+            _limiters[model] = RateLimiter(max(rpm, 1))
+        return _limiters[model]
+
+
+limiter = limiter_for(WORKER_MODEL)
 
 
 def is_retryable(exc: BaseException) -> bool:
@@ -120,7 +133,7 @@ async def gemini_generate(prompt: str, agent: str, model: str = WORKER_MODEL, ma
         config.response_schema = response_schema
 
     async def call() -> types.GenerateContentResponse:
-        await asyncio.to_thread(limiter.wait)
+        await asyncio.to_thread(limiter_for(model).wait)
         return await genai_client().aio.models.generate_content(model=model, contents=prompt, config=config)
 
     run = tracing.current()

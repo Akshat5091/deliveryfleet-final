@@ -46,16 +46,19 @@ A2A_PORT = int(os.getenv("A2A_PORT", "8002"))
 MCP_URL = os.getenv("MCP_URL", f"http://{HOST}:{MCP_PORT}/mcp")
 A2A_URL = os.getenv("A2A_URL", f"http://{HOST}:{A2A_PORT}")
 
-# One model for workers, a separate (by default stronger) one for the judge.
+# CrewAI workers use one model; the ADK Route agent and the input-guard check use a lighter one;
+# the judge uses a stronger one. Gemini rate limits are per model, so each model has its own budget.
 WORKER_MODEL = os.getenv("WORKER_MODEL", "gemini-3.5-flash-lite")
+ROUTE_MODEL = os.getenv("ROUTE_MODEL", "gemini-3.1-flash-lite")
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-3.6-flash")
-LLM_RPM = int(os.getenv("LLM_RPM", "28"))  # total for the key, shared by two processes
+LLM_RPM = int(os.getenv("LLM_RPM", "14"))  # requests per minute allowed for each model
 
 # USD per 1M tokens (input, output incl. thinking) for cost estimates: Gemini API
 # paid-tier standard prices from aistudio.google.com/docs/pricing (read Nov 2026;
 # 3.6 Flash at its promotional rate valid until 31 Dec 2026). Override via env.
 PRICE_PER_M = {
     "gemini-3.5-flash-lite": (float(os.getenv("PRICE_LITE_IN", "0.30")), float(os.getenv("PRICE_LITE_OUT", "2.50"))),
+    "gemini-3.1-flash-lite": (float(os.getenv("PRICE_ROUTE_IN", "0.25")), float(os.getenv("PRICE_ROUTE_OUT", "1.50"))),
     "gemini-3.6-flash": (float(os.getenv("PRICE_FLASH_IN", "0.75")), float(os.getenv("PRICE_FLASH_OUT", "3.75"))),
 }
 

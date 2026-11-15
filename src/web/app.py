@@ -20,7 +20,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
-from src.config import A2A_URL, ARTIFACTS_DIR, MCP_URL, MODEL_CARD_PATH, WORKER_MODEL, JUDGE_MODEL, llm_available
+from src.config import A2A_URL, ARTIFACTS_DIR, MCP_URL, MODEL_CARD_PATH, WORKER_MODEL, ROUTE_MODEL, JUDGE_MODEL, llm_available
 from src.evaluation.personas import DEMO_CASES, PERSONAS, message_for, order_hint, orders
 from src.mcp.tools.chroma_rag import corpus_stats
 from src.mcp.tools.driver_db import all_drivers
@@ -214,7 +214,7 @@ async def _probe(url: str) -> bool:
 async def health():
     mcp, a2a = await asyncio.gather(_probe(MCP_URL), _probe(f"{A2A_URL}/.well-known/agent-card.json"))
     return {"web": True, "mcp_server": mcp, "a2a_route_service": a2a, "llm_key": llm_available(),
-            "worker_model": WORKER_MODEL, "judge_model": JUDGE_MODEL, "active_runs": (_prune(), len(_active))[1]}
+            "worker_model": WORKER_MODEL, "route_model": ROUTE_MODEL, "judge_model": JUDGE_MODEL, "active_runs": (_prune(), len(_active))[1]}
 
 
 @app.get("/api/meta")
