@@ -114,7 +114,12 @@ async def recover(run_id: str, request: DeliveryRequest, dispatch: dict, route: 
         guardrail_max_retries=2,
     )
     replan = await run_task(run_id, "exception_agent", agent, task, ExceptionReplan)
-    if replan.action in ("REROUTE", "REROUTE_AND_REASSIGN"):
+    if replan.action == "ESCALATE":
+        # Report the best detour the Route Agent actually found (the reason for escalating), or none.
+        match = [p for p in plans if p["corridor"] == replan.new_corridor] or plans[-1:]
+        replan = replan.model_copy(update={"new_corridor": match[-1]["corridor"] if match else None,
+                                           "new_eta_mins": match[-1]["eta_mins"] if match else None})
+    elif replan.action in ("REROUTE", "REROUTE_AND_REASSIGN"):
         # Code is the source of truth for the ETA: always the Route Agent's number, never the LLM's copy.
         eta = routed_eta(replan, plans)
         if eta is None or eta > request.deadline_mins:

@@ -113,15 +113,14 @@ def main() -> int:
                 fail(rid, f"chose {route['corridor']} (base {route['base_eta_mins']}) over a faster "
                           f"alternative (base {alt})")
         disruption = bb.get("disruption") or {}
-        if disruption.get("closed_corridor") and outcome == "RECOVERED_AFTER_DISRUPTION":
-            if rep["corridor"] == disruption["closed_corridor"]:
-                fail(rid, "recovered run still uses the closed corridor")
+        if disruption.get("closed_corridor") and rep["corridor"] == disruption["closed_corridor"]:
+            fail(rid, f"{outcome} run reports the closed corridor {rep['corridor']}")
         if cell["scenario"] == "corridor_closed" and outcome not in ("BLOCKED",) and not bb.get("exception"):
             fail(rid, "road-closure run has no exception decision")
 
         # 5b. A reroute ETA must be the number the Route Agent returned over A2A, not the LLM's copy
         exc = bb.get("exception") or {}
-        if exc.get("action") in ("REROUTE", "REROUTE_AND_REASSIGN"):
+        if exc.get("action") in ("REROUTE", "REROUTE_AND_REASSIGN", "ESCALATE"):
             routed = {}
             for e in events:
                 if e["kind"] == "tool_call" and e["name"] == "request_reroute_via_a2a" and e["status"] == "OK":
@@ -131,7 +130,13 @@ def main() -> int:
                     except (KeyError, TypeError, json.JSONDecodeError):
                         continue
             got = routed.get(exc.get("new_corridor"))
-            if got is None:
+            if exc["action"] == "ESCALATE":
+                if exc.get("new_eta_mins") is not None and (got is None or not close(exc["new_eta_mins"], got, 1.0)):
+                    fail(rid, f"escalation quotes ETA {exc['new_eta_mins']} the Route Agent never returned")
+                if rep.get("eta_mins") is not None and rep["eta_mins"] <= (rep.get("deadline_mins") or 0) \
+                        and cell["scenario"] == "corridor_closed":
+                    fail(rid, f"escalated but reports an on-time ETA {rep['eta_mins']}")
+            elif got is None:
                 fail(rid, f"{exc['action']} without a Route Agent plan for {exc.get('new_corridor')}")
             elif not close(exc.get("new_eta_mins") or 0, got, 1.0):
                 fail(rid, f"reroute ETA {exc.get('new_eta_mins')} != Route Agent's {got}")

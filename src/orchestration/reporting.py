@@ -34,6 +34,9 @@ def build_report(spec: RunSpec, architecture: str, state: dict, started: float,
     if exc.get("new_driver_id") and exc["new_driver_id"] != dispatch.get("driver_id"):
         from src.mcp.tools.driver_db import get_driver
         driver_name = (get_driver(exc["new_driver_id"]) or {}).get("name")
+    # Never report the corridor (or its ETA) that a disruption closed.
+    closed = (state.get("disruption") or {}).get("closed_corridor")
+    route_open = route if route.get("corridor") != closed else {}
     message = review.get("customer_message") or exc.get("customer_update") or (
         "Sorry, we hit a technical problem while planning your delivery. A dispatcher will call you shortly."
         if error else "Your delivery has been scheduled.")
@@ -42,8 +45,8 @@ def build_report(spec: RunSpec, architecture: str, state: dict, started: float,
         guard_status=(state.get("guard") or {}).get("status", "ERROR"),
         order_id=request.get("order_id") or (spec.order or {}).get("order_id"), outcome=outcome,
         driver_id=driver_id, driver_name=driver_name,
-        corridor=exc.get("new_corridor") or route.get("corridor"),
-        eta_mins=exc.get("new_eta_mins") or route.get("eta_mins"),
+        corridor=exc.get("new_corridor") or route_open.get("corridor"),
+        eta_mins=exc.get("new_eta_mins") or route_open.get("eta_mins"),
         p_on_time=dispatch.get("p_on_time"), deadline_mins=request.get("deadline_mins"),
         exception_action=exc.get("action"), supervisor_verdict=review.get("verdict"),
         customer_message=message, total_latency_s=round(time.perf_counter() - started, 3),
