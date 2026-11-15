@@ -7,3 +7,8 @@ runtime/
 .pytest_cache/
 ~$*
 .DS_Store
+
+# design-tool working files (kept locally, not part of the project)
+.impeccable/
+PRODUCT.md
+HANDOFF.md

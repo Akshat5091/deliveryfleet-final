@@ -43,9 +43,11 @@ ADK route agent (port 8002) and the website (port 7860).
 Other commands:
 
 ```powershell
-uv run pytest                                          # 33 tests, no API key needed
+uv run pytest                                          # 42 tests, no API key needed
 uv run python scripts/run_case.py exception            # one demo case in the terminal
-uv run python -m src.evaluation.benchmark_runner       # the 72-run evaluation (about 2 hours)
+uv run python -m src.evaluation.benchmark_runner       # the 72-run evaluation (about 2 hours on one free key)
+uv run python scripts/audit_benchmark.py               # recheck every benchmark number against the raw log
+uv run python scripts/judge_sanity_check.py            # does the LLM judge mark planted faults down?
 uv run python scripts/generate_history.py              # regenerate the synthetic delay data
 ```
 
@@ -56,7 +58,7 @@ uv run python scripts/generate_history.py              # regenerate the syntheti
 | Book a delivery | The customer app: book, see the rider, track the parcel. No agent internals. |
 | Control room | The inside view: a scenario dropdown, each agent stamped when it finishes, map, consignment slip, live event log, Blackboard, per-agent heat. |
 | Runs | Every run with its own ID; click one to replay its full trace. |
-| Evaluation | The 72-run results: boxplots, heatmaps, judge scores. |
+| Evaluation | The 72-run results as four questions: did it work, where does the time go, can we trust the judge, what does it cost. |
 | Fleet & data | Driver database, delay-model card, orders, the Route agent's A2A Agent Card. |
 | How it works | Architecture diagram and where each course requirement lives. |
 
@@ -90,7 +92,7 @@ src/
   web/             FastAPI app and the website (HTML/CSS/JS, no build step)
   data/            synthetic data and the policy knowledge base (see docs/DATA_CARD.md)
 tests/             unit and API tests
-scripts/           data generator, single-case runner
+scripts/           data generator, single-case runner, benchmark audit, judge check
 artifacts/         evaluation outputs and the delay-model card
 docs/              data card and other documentation
 deploy/            Hugging Face deployment guide
@@ -102,8 +104,8 @@ Every agent and the input guard use `gemini-3.1-flash-lite`, the cheapest Gemini
 API keys ($0.25 in / $1.50 out per 1M tokens). The LLM judge uses a different model,
 `gemini-3.5-flash-lite`, so it never grades its own model's answers. Each role has its own setting
 (`WORKER_MODEL`, `ROUTE_MODEL`, `JUDGE_MODEL`) so it can be changed from `.env`. Costs in the
-app use Google's published paid-tier prices (see `src/config.py`). A normal run makes about 16 LLM
-calls and costs about $0.015; a run with a disruption about 27 calls and $0.03. Thinking tokens are
+app use Google's published paid-tier prices (see `src/config.py`). A booking makes about 14 LLM
+calls (about 75 s) and costs about $0.015; a run with a disruption about 25 calls and $0.03. Thinking tokens are
 included in the cost.
 
 ## Known limitations
@@ -113,4 +115,6 @@ included in the cost.
 - On the free Hugging Face tier the event store resets when the Space restarts.
 - Gemini occasionally returns "high demand" errors; calls are retried with back-off, which can make a
   single run take two to three minutes.
+- The free tier allows 500 calls a day per model (about 35 bookings). When that is spent, runs stop at
+  once with a clear message instead of retrying.
 - The ADK service keeps finished A2A sessions in memory; restart it after very long uptimes.

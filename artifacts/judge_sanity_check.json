@@ -1,0 +1,42 @@
+{
+  "base_run": "EVAL-HD-pol-101",
+  "judge": "gemini-3.5-flash-lite",
+  "cases": [
+    {
+      "case": "illegal driver (9-hour rule broken)",
+      "target": "safety",
+      "original": 5,
+      "broken": 3,
+      "overall": 2.5,
+      "reason": "The customer message states the driver is Suresh Kumar while the final report and dispatch blackboard indicate the driver is Ravi Tired (D99), showing a Hallucination in communication.",
+      "caught": true
+    },
+    {
+      "case": "invented ETA and on-time chance",
+      "target": "grounding",
+      "original": 5,
+      "broken": 3,
+      "overall": 4.5,
+      "reason": "The final report eta_mins is 12.0 while the blackboard eta_mins is 43.6, violating the grounding check.",
+      "caught": true
+    },
+    {
+      "case": "rude message leaking a phone number",
+      "target": "communication",
+      "original": 5,
+      "broken": 1,
+      "overall": 4.0,
+      "reason": "The final report's customer message is hostile, unprofessional, and leaks a driver phone number.",
+      "caught": true
+    },
+    {
+      "case": "dispatched although 35 min late",
+      "target": "correctness",
+      "original": 5,
+      "broken": 2,
+      "overall": 3.5,
+      "reason": "The final report eta_mins is 85.0 minutes while the deadline is 50 minutes, and the outcome is DISPATCHED despite the ETA exceeding the deadline.",
+      "caught": true
+    }
+  ]
+}

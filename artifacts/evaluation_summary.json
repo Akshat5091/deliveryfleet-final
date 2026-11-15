@@ -1,0 +1,290 @@
+{
+  "design": "3 architectures x 2 prompt styles (ReAct, Direct) x 4 personas (polite, urgent, abusive, injection) x 3 orders (ORD-101, ORD-103, ORD-105 with a mid-trip road closure) = 72 runs.",
+  "headline": {
+    "runs": 72,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "judge_mean": 5.0,
+    "p50_latency_s": 209.546,
+    "p95_latency_s": 351.59864999999985,
+    "mean_cost_usd": 0.017523129629629628,
+    "total_cost_usd": 0.946249,
+    "total_tokens": 2135494,
+    "driver_reference_match": 1.0
+  },
+  "confusion": {
+    "tp": 18,
+    "fn": 0,
+    "tn": 54,
+    "fp": 0,
+    "sensitivity": 1.0,
+    "specificity": 1.0
+  },
+  "by_architecture": [
+    {
+      "architecture": "hierarchical",
+      "runs": 18,
+      "p50_latency_s": 218.516,
+      "p95_latency_s": 323.225,
+      "mean_latency_s": 229.831,
+      "mean_tokens": 43356.167,
+      "mean_cost_usd": 0.022,
+      "judge_mean": 5.0,
+      "driver_match": 1.0,
+      "corridor_match": 1.0,
+      "escalated": 6
+    },
+    {
+      "architecture": "sequential",
+      "runs": 18,
+      "p50_latency_s": 229.416,
+      "p95_latency_s": 346.427,
+      "mean_latency_s": 233.412,
+      "mean_tokens": 37062.889,
+      "mean_cost_usd": 0.015,
+      "judge_mean": 5.0,
+      "driver_match": 1.0,
+      "corridor_match": 1.0,
+      "escalated": 6
+    },
+    {
+      "architecture": "parallel",
+      "runs": 18,
+      "p50_latency_s": 172.582,
+      "p95_latency_s": 387.121,
+      "mean_latency_s": 195.857,
+      "mean_tokens": 38219.5,
+      "mean_cost_usd": 0.016,
+      "judge_mean": 5.0,
+      "driver_match": 1.0,
+      "corridor_match": 1.0,
+      "escalated": 6
+    }
+  ],
+  "by_prompt_style": [
+    {
+      "prompt_style": "Direct",
+      "latency_s": 205.02,
+      "tokens": 37294.741,
+      "judge_overall": 5.0
+    },
+    {
+      "prompt_style": "ReAct",
+      "latency_s": 234.38,
+      "tokens": 41797.63,
+      "judge_overall": 5.0
+    }
+  ],
+  "by_persona": [
+    {
+      "persona": "abusive",
+      "runs": 18,
+      "blocked": 0,
+      "mean_latency_s": 194.9586,
+      "mean_cost_usd": 0.0157
+    },
+    {
+      "persona": "injection",
+      "runs": 18,
+      "blocked": 18,
+      "mean_latency_s": 0.0184,
+      "mean_cost_usd": 0.0
+    },
+    {
+      "persona": "polite",
+      "runs": 18,
+      "blocked": 0,
+      "mean_latency_s": 235.6479,
+      "mean_cost_usd": 0.021
+    },
+    {
+      "persona": "urgent",
+      "runs": 18,
+      "blocked": 0,
+      "mean_latency_s": 228.4936,
+      "mean_cost_usd": 0.0159
+    }
+  ],
+  "outcomes": {
+    "DISPATCHED": 36,
+    "ESCALATED": 18,
+    "BLOCKED": 18
+  },
+  "entropy": [
+    {
+      "order_id": "ORD-101",
+      "persona": "abusive",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-101",
+      "persona": "polite",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-101",
+      "persona": "urgent",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-103",
+      "persona": "abusive",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-103",
+      "persona": "polite",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-103",
+      "persona": "urgent",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-105",
+      "persona": "abusive",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-105",
+      "persona": "polite",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    },
+    {
+      "order_id": "ORD-105",
+      "persona": "urgent",
+      "runs": 6,
+      "driver_entropy_bits": 0.0,
+      "distinct_drivers": 1
+    }
+  ],
+  "mean_driver_entropy_bits": 0.0,
+  "per_agent": [
+    {
+      "agent": "business_guardrail",
+      "latency_s": 0.0,
+      "llm_calls": 0.0,
+      "tool_calls": 0.0,
+      "tokens": 0.0,
+      "cost_usd": 0.0
+    },
+    {
+      "agent": "dispatch_agent",
+      "latency_s": 37.7051,
+      "llm_calls": 2.037,
+      "tool_calls": 0.6852,
+      "tokens": 8050.9074,
+      "cost_usd": 0.0034
+    },
+    {
+      "agent": "event_bus",
+      "latency_s": 0.0,
+      "llm_calls": 0.0,
+      "tool_calls": 0.0,
+      "tokens": 0.0,
+      "cost_usd": 0.0
+    },
+    {
+      "agent": "exception_agent",
+      "latency_s": 61.1687,
+      "llm_calls": 2.7667,
+      "tool_calls": 1.4333,
+      "tokens": 9616.6667,
+      "cost_usd": 0.0042
+    },
+    {
+      "agent": "input_guard",
+      "latency_s": 0.0,
+      "llm_calls": 0.0,
+      "tool_calls": 0.0,
+      "tokens": 0.0,
+      "cost_usd": 0.0
+    },
+    {
+      "agent": "input_guard_judge",
+      "latency_s": 0.0,
+      "llm_calls": 1.0,
+      "tool_calls": 0.0,
+      "tokens": 134.0,
+      "cost_usd": 0.0
+    },
+    {
+      "agent": "retrieval_agent",
+      "latency_s": 86.9937,
+      "llm_calls": 4.3889,
+      "tool_calls": 3.0741,
+      "tokens": 8734.537,
+      "cost_usd": 0.0038
+    },
+    {
+      "agent": "route_agent",
+      "latency_s": 48.363,
+      "llm_calls": 4.4074,
+      "tool_calls": 2.9444,
+      "tokens": 11213.1296,
+      "cost_usd": 0.0043
+    },
+    {
+      "agent": "supervisor",
+      "latency_s": 31.138,
+      "llm_calls": 2.0556,
+      "tool_calls": 0.3333,
+      "tokens": 6071.0185,
+      "cost_usd": 0.0037
+    }
+  ],
+  "figures": [
+    {
+      "file": "latency_by_architecture.png",
+      "title": "Latency by architecture",
+      "caption": "Each dot is one run; box = middle 50%, line = median."
+    },
+    {
+      "file": "cost_by_persona.png",
+      "title": "Cost by persona",
+      "caption": "Abusive messages are sanitised, not refused, so they cost about the same."
+    },
+    {
+      "file": "judge_check.png",
+      "title": "Judge check",
+      "caption": "The judge's score on a clean run and on copies with one planted fault each."
+    },
+    {
+      "file": "heatmap_per_agent.png",
+      "title": "Heatmap inside each agent",
+      "caption": "Where time goes inside every agent, split by persona and architecture."
+    },
+    {
+      "file": "agent_metric_heatmap.png",
+      "title": "Work per agent",
+      "caption": "Mean time, LLM calls, tool calls, tokens and cost of each agent per run."
+    },
+    {
+      "file": "outcomes_by_architecture.png",
+      "title": "Outcomes by architecture",
+      "caption": "Each architecture ran the same 24 inputs; counts of each final outcome."
+    },
+    {
+      "file": "cost_by_prompt_style.png",
+      "title": "Cost of each prompt style",
+      "caption": "ReAct vs Direct on the same inputs: time and tokens per run."
+    }
+  ]
+}
