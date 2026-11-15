@@ -76,14 +76,22 @@ def install_llm_hooks() -> None:
     _hooks_installed = True
 
 
+def rate_limited(exc: BaseException) -> bool:
+    text = f"{exc}"
+    return "429" in text or "RESOURCE_EXHAUSTED" in text
+
+
 async def with_retry(fn: Callable[[], Awaitable[T]], attempts: int = 4) -> T:
+    """Retry transient Gemini errors. A 429 means the per-minute quota is spent, so wait out
+    the window (30 s, 60 s, 90 s); a 503 overload clears quickly (2 s, 4 s, 8 s)."""
     for attempt in range(attempts):
         try:
             return await fn()
         except Exception as exc:
             if attempt == attempts - 1 or not is_retryable(exc):
                 raise
-            await asyncio.sleep(2 ** (attempt + 1) + random.uniform(0, 1.5))
+            delay = 30 * (attempt + 1) if rate_limited(exc) else 2 ** (attempt + 1)
+            await asyncio.sleep(delay + random.uniform(0, 1.5))
     raise RuntimeError("unreachable")
 
 
