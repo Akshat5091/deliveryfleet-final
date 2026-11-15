@@ -91,6 +91,8 @@ class ExceptionReplan(BaseModel):
 
 class SupervisorReview(BaseModel):
     verdict: Literal["APPROVED", "ESCALATE_TO_HUMAN", "REJECTED"]
+    rerun: Literal["none", "retrieval_agent", "dispatch_agent", "route_agent"] = Field(
+        default="none", description="Lab-03 manager loop: which worker must run again, or 'none'")
     issues: list[str]
     customer_message: str = Field(description="Professional message to the customer, max 3 sentences")
 
