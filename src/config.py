@@ -2,9 +2,15 @@
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
+
+# CrewAI prints emoji status lines; the Windows console codec cannot encode them.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # .env may live in the project folder or one level up (DeliveryFleet-Final/.env).

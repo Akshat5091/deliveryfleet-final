@@ -9,7 +9,7 @@ from __future__ import annotations
 import re
 import time
 
-from src.schemas import GuardVerdict
+from src.schemas.decisions import GuardVerdict
 
 INJECTION_PATTERNS = [
     r"ignore\s+(all\s+|any\s+)?(previous|prior|above|earlier)\s+(safety\s+)?(instructions|rules|guidelines)",
