@@ -43,7 +43,7 @@ ADK route agent (port 8002) and the website (port 7860).
 Other commands:
 
 ```powershell
-uv run pytest                                          # 49 tests, no API key needed
+uv run pytest                                          # 60 tests, no API key needed
 uv run python scripts/run_case.py exception            # one demo case in the terminal
 uv run python -m src.evaluation.benchmark_runner       # the 72-run evaluation (about 2 hours on one free key)
 uv run python scripts/audit_benchmark.py               # recheck every benchmark number against the raw log
