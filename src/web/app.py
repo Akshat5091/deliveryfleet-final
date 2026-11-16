@@ -62,8 +62,7 @@ async def security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "no-referrer"
-    # HF shows the Space inside an iframe on huggingface.co
-    response.headers["Content-Security-Policy"] = "frame-ancestors 'self' https://huggingface.co https://*.hf.space"
+    response.headers["Content-Security-Policy"] = "frame-ancestors 'self'"
     if request.url.path.startswith(("/static/", "/artifacts/")) or request.url.path == "/":
         # no stale app.js after a redeploy
         response.headers["Cache-Control"] = "no-cache"

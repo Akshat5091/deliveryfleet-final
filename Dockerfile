@@ -3,7 +3,7 @@ FROM python:3.12-slim
 
 COPY --from=ghcr.io/astral-sh/uv:0.13.8 /uv /uvx /bin/
 
-# Hugging Face Spaces runs the container as UID 1000.
+# Runs as a non-root user (UID 1000).
 RUN useradd --create-home --uid 1000 user
 USER user
 

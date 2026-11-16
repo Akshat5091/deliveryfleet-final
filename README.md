@@ -95,7 +95,7 @@ tests/             unit and API tests
 scripts/           data generator, single-case runner, benchmark audit, judge check
 artifacts/         evaluation outputs and the delay-model card
 docs/              data card and other documentation
-deploy/            Hugging Face deployment guide
+deploy/            Azure deployment guide and the seed runs
 ```
 
 ## Models and cost
@@ -112,7 +112,7 @@ included in the cost.
 
 - All data is synthetic (see `docs/DATA_CARD.md`).
 - The road network is zone-level (4 hubs), not a street map.
-- On the free Hugging Face tier the event store resets when the Space restarts.
+- On Azure, runs made on the live site are lost when the container restarts; the saved benchmark and demo runs are reloaded from `deploy/seed_runs.sqlite3`.
 - Gemini occasionally returns "high demand" errors; calls are retried with back-off, which can make a
   single run take two to three minutes.
 - The free tier allows 500 calls a day per model (about 35 bookings). When that is spent, runs stop at

@@ -1,103 +1,87 @@
 # Deploying DeliveryFleet MAS to Azure Container Apps
 
+Live site: https://deliveryfleet-mas.gentledune-e77ea6e0.malaysiawest.azurecontainerapps.io
+
 One Docker container runs everything: the website and API (port 7860, public), the MCP tool
-server (8001) and the ADK Route Agent service (8002), both internal. Azure builds the image in
-the cloud from the `Dockerfile`, so Docker is not needed on your computer.
+server (8001) and the ADK Route Agent service (8002), both internal.
 
-Why Azure: since 2026 Hugging Face needs a paid PRO plan to host Docker Spaces, and free hosts
-with 512 MB of memory are too small (the app uses about 1 GB). Azure for Students needs no credit
-card: it gives $100 of credit for 12 months, and Container Apps also has a monthly free allowance
-(180,000 vCPU-seconds, 360,000 GiB-seconds, 2 million requests). When the credit runs out the
-services stop; nothing is ever charged to you.
+| Piece | Where | Name |
+|---|---|---|
+| Image build | GitHub Actions, private repo | `Akshat5091/deliveryfleet-final`, `.github/workflows/build-image.yml` |
+| Image store | Azure Container Registry, East Asia | `deliveryfleetmasacr.azurecr.io/deliveryfleet` |
+| Running app | Azure Container Apps, Malaysia West | app `deliveryfleet-mas`, environment `deliveryfleet-mas-env` |
+| Resource group | Azure | `deliveryfleet-rg` |
 
-## 1. Get Azure for Students (once)
+Why this shape:
 
-1. Open https://azure.microsoft.com/free/students and choose **Start free**.
-2. Sign in with a Microsoft account and verify with your university email address.
-3. When the Azure portal opens, you have a subscription called "Azure for Students".
+- Hugging Face now needs a paid PRO plan to host Docker Spaces; free hosts with 512 MB of memory
+  are too small (the app uses about 1 GB).
+- Azure for Students needs no card: $100 of credit for 12 months, plus the Container Apps monthly
+  free allowance (180,000 vCPU-seconds, 360,000 GiB-seconds, 2 million requests). When the credit
+  runs out, services stop; nothing is charged.
+- The student subscription only allows five regions (East Asia, India South Central, Malaysia
+  West, Poland Central, Indonesia Central). Container Apps is not offered in India South Central,
+  and the Gemini API does not serve Hong Kong (East Asia), so the app runs in Malaysia West.
+- Azure blocks cloud image builds (ACR Tasks) on student subscriptions, so GitHub Actions builds
+  the image and pushes it to the registry.
 
-## 2. Install the Azure CLI (once)
+## One-time setup (already done)
 
-In your own PowerShell window (it asks for administrator permission):
-
-```powershell
-winget install --exact --id Microsoft.AzureCLI
-```
-
-Close and reopen PowerShell, then check `az version`.
-
-(No install? Use Azure Cloud Shell in the portal instead: upload the ZIP from step 4, unzip it and run
-the same commands from step 5 there.)
-
-## 3. Sign in and prepare (once)
-
-```powershell
-az login
-az extension add --name containerapp --upgrade --allow-preview true
-az provider register --namespace Microsoft.App
-az provider register --namespace Microsoft.OperationalInsights
-```
-
-## 4. Make a clean copy of the project
-
-Only committed files are copied, so `.env` and your keys can never be uploaded. Run from the
-project folder (the one containing `Dockerfile`):
+1. Azure for Students activated with the university email; Azure CLI installed (`winget install
+   --exact --id Microsoft.AzureCLI`) and `az login`.
+2. `az extension add --name containerapp --upgrade --allow-preview true`, then register
+   `Microsoft.App`, `Microsoft.OperationalInsights` and `Microsoft.ContainerRegistry` with
+   `az provider register --namespace <name>`.
+3. Registry: `az acr create -n deliveryfleetmasacr -g deliveryfleet-rg -l eastasia --sku Basic --admin-enabled true`.
+4. GitHub repository secrets `ACR_USERNAME` and `ACR_PASSWORD` set from `az acr credential show`
+   (the GitHub CLI needs the `workflow` scope: `gh auth refresh -h github.com -s workflow`).
+5. Container app created from the image with the Gemini key as a secret:
 
 ```powershell
-$dir = "..\deploy-copy"
-Remove-Item $dir, "$dir.zip" -Recurse -Force -ErrorAction SilentlyContinue
-git archive --format=zip -o "$dir.zip" HEAD
-Expand-Archive "$dir.zip" $dir
-Get-ChildItem $dir -Force -Filter ".env*"   # must print nothing
+az containerapp create --name deliveryfleet-mas --resource-group deliveryfleet-rg `
+  --environment deliveryfleet-mas-env --image deliveryfleetmasacr.azurecr.io/deliveryfleet:latest `
+  --registry-server deliveryfleetmasacr.azurecr.io --registry-username <acr user> --registry-password <acr password> `
+  --ingress external --target-port 7860 --cpu 1.0 --memory 2.0Gi --min-replicas 0 --max-replicas 1 `
+  --secrets gemini-key=<your Gemini key> --env-vars GEMINI_API_KEY=secretref:gemini-key
 ```
 
-## 5. Build and deploy
+## Update the live site
+
+1. Commit and push to `master`. GitHub builds the image in about five minutes
+   (`gh run watch` or the repository's Actions tab).
+2. Point the app at the new image (the tag is the commit id):
 
 ```powershell
-cd ..\deploy-copy
-az containerapp up --name deliveryfleet --resource-group deliveryfleet-rg --location centralindia --source . --ingress external --target-port 7860
+az containerapp update --name deliveryfleet-mas --resource-group deliveryfleet-rg --image deliveryfleetmasacr.azurecr.io/deliveryfleet:<commit id>
 ```
 
-This creates the resource group, a container registry and a Container Apps environment, builds the
-image from the `Dockerfile` in the cloud (about 10 to 15 minutes the first time) and prints the
-public URL (`https://deliveryfleet.<random>.centralindia.azurecontainerapps.io`). If `centralindia`
-is not allowed for your subscription, use `eastus`.
+The secret, memory and scaling settings are kept.
 
-## 6. Add the Gemini key as a secret, give the app enough memory
+## Check it
 
-Replace `PASTE-YOUR-KEY` with your own Gemini key. The key is stored as an encrypted Container Apps
-secret, never in the code or the image.
-
-```powershell
-az containerapp secret set --name deliveryfleet --resource-group deliveryfleet-rg --secrets gemini-key=PASTE-YOUR-KEY
-az containerapp update --name deliveryfleet --resource-group deliveryfleet-rg --set-env-vars GEMINI_API_KEY=secretref:gemini-key --cpu 1.0 --memory 2.0Gi --min-replicas 0 --max-replicas 1
-```
-
-`--min-replicas 0` lets the app sleep when nobody uses it, so it costs almost nothing. The first visit
-after a sleep takes one to two minutes while the container starts.
-
-## 7. Check it
-
-Open `<URL>/api/health`. All of `web`, `mcp_server`, `a2a_route_service` and `llm_key` must be `true`.
-Then open the URL itself: the Runs tab already lists the 72 benchmark runs and the demo cases (they are
-copied in from `deploy/seed_runs.sqlite3` on the first start).
+Open `<URL>/api/health`: `web`, `mcp_server`, `a2a_route_service` and `llm_key` must all be `true`.
+The Runs tab lists the 72 benchmark runs and the demo cases (copied in from
+`deploy/seed_runs.sqlite3` on the first start of each container).
 
 ## On demo day
 
-Keep one copy running so the first click is instant, then let it sleep again afterwards:
+The app sleeps when unused (`--min-replicas 0`), and the first visit after a sleep takes one to
+two minutes. Keep one copy awake before the demo, and let it sleep again afterwards:
 
 ```powershell
-az containerapp update --name deliveryfleet --resource-group deliveryfleet-rg --min-replicas 1
-az containerapp update --name deliveryfleet --resource-group deliveryfleet-rg --min-replicas 0
+az containerapp update --name deliveryfleet-mas --resource-group deliveryfleet-rg --min-replicas 1
+az containerapp update --name deliveryfleet-mas --resource-group deliveryfleet-rg --min-replicas 0
 ```
 
-## Update later
+## Change the Gemini key
 
-Commit the change, then repeat step 4 and run the `az containerapp up` line from step 5 again. The
-secret, memory and scaling settings are kept.
+```powershell
+az containerapp secret set --name deliveryfleet-mas --resource-group deliveryfleet-rg --secrets gemini-key=<new key>
+az containerapp revision restart --name deliveryfleet-mas --resource-group deliveryfleet-rg --revision <name from: az containerapp revision list -n deliveryfleet-mas -g deliveryfleet-rg -o table>
+```
 
 Notes:
 
-- New bookings made on the live site are lost when the container restarts; the saved runs come back.
-- A live event stream is cut after about four minutes by Azure's front door; the page then switches
-  to polling and still shows the finished run.
+- Runs made on the live site are lost when the container restarts; the saved runs come back.
+- A live event stream can be cut by Azure's front door on long runs; the page then switches to
+  polling and still shows the finished run.
