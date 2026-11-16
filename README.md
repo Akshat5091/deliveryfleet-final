@@ -105,7 +105,9 @@ deploy/            Azure deployment guide and the seed runs
 Every agent and the input guard use `gemini-3.1-flash-lite`, the cheapest Gemini model open to new
 API keys ($0.25 in / $1.50 out per 1M tokens). The LLM judge uses a different model,
 `gemini-3.5-flash-lite`, so it never grades its own model's answers. Each role has its own setting
-(`WORKER_MODEL`, `ROUTE_MODEL`, `JUDGE_MODEL`) so it can be changed from `.env`. Costs in the
+(`WORKER_MODEL`, `ROUTE_MODEL`, `JUDGE_MODEL`) so it can be changed from `.env`. When `gemini-3.1-flash-lite` is
+overloaded, too slow or out of quota, calls move to `FALLBACK_MODEL` (`gemini-3.5-flash-lite`, its own free quota)
+for two minutes; every model call has a 45 s limit (20 s for the guard check). Costs in the
 app use Google's published paid-tier prices (see `src/config.py`). A booking makes about 14 LLM
 calls (about 75 s) and costs about $0.015; a run with a disruption about 25 calls and $0.03. Thinking tokens are
 included in the cost.
@@ -115,8 +117,8 @@ included in the cost.
 - All data is synthetic (see `docs/DATA_CARD.md`).
 - The road network is zone-level (4 hubs), not a street map.
 - On Azure, runs made on the live site are lost when the container restarts; the saved benchmark and demo runs are reloaded from `deploy/seed_runs.sqlite3`.
-- Gemini occasionally returns "high demand" errors; calls are retried with back-off, which can make a
-  single run take two to three minutes.
+- Gemini occasionally returns "high demand" errors. Calls then move to the fallback model; when both models
+  are busy they wait and retry, which can make a single run take two to three minutes.
 - The free tier allows 500 calls a day per model (about 35 bookings). When that is spent, runs stop at
   once with a clear message instead of retrying.
 - The ADK service keeps finished A2A sessions in memory; restart it after very long uptimes.
