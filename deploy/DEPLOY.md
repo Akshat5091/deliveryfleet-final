@@ -63,15 +63,24 @@ Open `<URL>/api/health`: `web`, `mcp_server`, `a2a_route_service` and `llm_key` 
 The Runs tab lists the 72 benchmark runs and the demo cases (copied in from
 `deploy/seed_runs.sqlite3` on the first start of each container).
 
-## On demo day
+## Switching the site on and off
 
-The app sleeps when unused (`--min-replicas 0`), and the first visit after a sleep takes one to
-two minutes. Keep one copy awake before the demo, and let it sleep again afterwards:
+The app is kept **stopped** between demos so it uses no credit (the registry, about $5 a month, is the
+only running cost). Stopped, the URL answers 502. Start it about 15 minutes before a demo:
 
 ```powershell
+az rest --method post --url "https://management.azure.com/subscriptions/b1365d60-3811-46e2-b4d9-67b114c8bbe3/resourceGroups/deliveryfleet-rg/providers/Microsoft.App/containerApps/deliveryfleet-mas/start?api-version=2024-03-01"
 az containerapp update --name deliveryfleet-mas --resource-group deliveryfleet-rg --min-replicas 1
-az containerapp update --name deliveryfleet-mas --resource-group deliveryfleet-rg --min-replicas 0
 ```
+
+The second line keeps one copy awake, so the first click is instant. After the demo:
+
+```powershell
+az containerapp update --name deliveryfleet-mas --resource-group deliveryfleet-rg --min-replicas 0
+az rest --method post --url "https://management.azure.com/subscriptions/b1365d60-3811-46e2-b4d9-67b114c8bbe3/resourceGroups/deliveryfleet-rg/providers/Microsoft.App/containerApps/deliveryfleet-mas/stop?api-version=2024-03-01"
+```
+
+(This CLI version has no `az containerapp stop`; the two `az rest` lines call the same Azure action.)
 
 ## Change the Gemini key
 
