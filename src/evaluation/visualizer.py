@@ -21,8 +21,8 @@ INK, MUTED, GRID = "#111827", "#4b5563", "#e5e7eb"
 AGENTS = ["supervisor", "retrieval_agent", "dispatch_agent", "route_agent", "exception_agent"]
 
 plt.rcParams.update({
-    "font.family": "DejaVu Sans", "font.size": 9.5, "axes.edgecolor": "#9ca3af", "axes.labelcolor": INK,
-    "xtick.color": MUTED, "ytick.color": MUTED, "axes.titleweight": "bold", "axes.titlesize": 11,
+    "font.family": "DejaVu Sans", "font.size": 10.5, "axes.edgecolor": "#9ca3af", "axes.labelcolor": INK,
+    "xtick.color": MUTED, "ytick.color": MUTED, "axes.titleweight": "bold", "axes.titlesize": 12,
     "axes.titlecolor": INK, "axes.titlelocation": "left", "figure.dpi": 150, "savefig.dpi": 400,
     "savefig.bbox": "standard", "figure.constrained_layout.use": True,
 })
@@ -81,7 +81,7 @@ def per_agent_heatmaps(agent_rows: pd.DataFrame, stacked: bool = False) -> str:
         ax.imshow(m.to_numpy(dtype=float), cmap="Reds", vmin=0, vmax=vmax, aspect="auto")
         for (i, j), v in np.ndenumerate(m.to_numpy(dtype=float)):
             if not np.isnan(v):
-                ax.text(j, i, f"{v:.1f}", ha="center", va="center", fontsize=8.5,
+                ax.text(j, i, f"{v:.1f}", ha="center", va="center", fontsize=9.5,
                         color="white" if v > 0.6 * vmax else INK)
         ax.set_xticks(range(3), ["hier", "seq", "par"])
         ax.set_yticks(range(3), personas)
@@ -110,7 +110,7 @@ def agent_metric_heatmap(agent_rows: pd.DataFrame) -> str:
     fig, ax = plt.subplots(figsize=(HALF_W, 0.5 * len(present) + 1.3))
     ax.imshow(shade.to_numpy(dtype=float), cmap="Reds", vmin=0, vmax=1.15, aspect="auto")
     for (i, j), v in np.ndenumerate(means.to_numpy(dtype=float)):
-        ax.text(j, i, AGENT_METRICS[j][2].format(v), ha="center", va="center", fontsize=8.5,
+        ax.text(j, i, AGENT_METRICS[j][2].format(v), ha="center", va="center", fontsize=9.5,
                 color="white" if shade.iat[i, j] > 0.7 else INK)
     ax.set_xticks(range(len(AGENT_METRICS)), [label for _, label, _ in AGENT_METRICS])
     ax.set_yticks(range(len(present)), [a.replace("_", " ") for a in present])
@@ -142,12 +142,12 @@ def outcome_bars(df: pd.DataFrame) -> str:
                 linewidth=2, label=OUTCOME_LABELS[o])
         for y, (v, start) in enumerate(zip(vals, left)):
             if v:
-                ax.text(start + v / 2, y, f"{v:.0f}", ha="center", va="center", fontsize=8.5, color="white")
+                ax.text(start + v / 2, y, f"{v:.0f}", ha="center", va="center", fontsize=9.5, color="white")
         left += vals
     ax.invert_yaxis()
     ax.set_xlabel("runs")
     ax.set_title("What happened in each run, by architecture")
-    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=2, fontsize=8.5)
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=2, fontsize=9.5)
     _clean(ax)
     fig.savefig(ARTIFACTS_DIR / "outcomes_by_architecture.png")
     plt.close(fig)
@@ -190,15 +190,15 @@ def judge_check_bars(check: dict) -> str:
     ax.barh(y - 0.19, clean, height=0.36, color="#166534", label="clean run")
     ax.barh(y + 0.19, broken, height=0.36, color="#991b1b", label="same run with the fault planted")
     for yi, (a, b) in enumerate(zip(clean, broken)):
-        ax.text(a + 0.06, yi - 0.19, f"{a}", va="center", fontsize=8.5, color=INK)
-        ax.text(b + 0.06, yi + 0.19, f"{b}", va="center", fontsize=8.5, color=INK)
-    ax.set_yticks(y, [f"{c['case']}\n({c['target']})" for c in cases], fontsize=8.5)
+        ax.text(a + 0.06, yi - 0.19, f"{a}", va="center", fontsize=9.5, color=INK)
+        ax.text(b + 0.06, yi + 0.19, f"{b}", va="center", fontsize=9.5, color=INK)
+    ax.set_yticks(y, [f"{c['case']}\n({c['target']})" for c in cases], fontsize=9.5)
     ax.invert_yaxis()
     ax.set_xlim(0, 5.6)
     ax.set_xticks(range(0, 6))
-    ax.set_xlabel("judge score for the criterion the fault breaks (1 = bad, 5 = excellent)")
+    ax.set_xlabel("judge score on the broken criterion\n(1 = bad, 5 = excellent)")
     ax.set_title("Clean run vs planted fault")
-    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2, fontsize=8.5)
+    ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2, fontsize=9.5)
     _clean(ax)
     fig.savefig(ARTIFACTS_DIR / "judge_check.png")
     plt.close(fig)
@@ -216,12 +216,12 @@ def judge_bars(df: pd.DataFrame) -> str:
         vals = means.loc[arch].to_numpy()
         ax.barh(y + k * h - 0.4 + h / 2, vals, height=h - 0.04, color=ARCH_COLOURS[arch], label=arch)
         for yi, v in zip(y, vals):
-            ax.text(v + 0.04, yi + k * h - 0.4 + h / 2, f"{v:.2f}", va="center", fontsize=8, color=INK)
+            ax.text(v + 0.04, yi + k * h - 0.4 + h / 2, f"{v:.2f}", va="center", fontsize=9.5, color=INK)
     ax.set_yticks(y, crits)
     ax.set_xlim(1, 5.4)
     ax.set_xlabel("LLM-judge score (1 = bad, 5 = excellent)")
     ax.set_title("Judge scores per criterion (Y in R^4) by architecture")
-    ax.legend(frameon=False, loc="lower right", fontsize=8.5)
+    ax.legend(frameon=False, loc="lower right", fontsize=9.5)
     _clean(ax)
     fig.savefig(ARTIFACTS_DIR / "judge_by_criterion.png")
     plt.close(fig)
@@ -234,7 +234,7 @@ ARCH_SHORT = {"hierarchical": "hier.", "sequential": "seq.", "parallel": "par."}
 ORDER_SHORT = {"ORD-101": "ORD-101  normal", "ORD-103": "ORD-103  cross-zone", "ORD-105": "ORD-105  road closed"}
 
 
-PRINT_W = 9.0  # drawn 9 in wide, printed 6.8 in wide in the A4 report and on the slide: text stays near 7 pt
+PRINT_W = 7.6  # drawn 7.6 in wide, printed 6.8 in wide in the report and on the slide: text stays above 8 pt
 
 
 def coverage_grid(df: pd.DataFrame, for_print: bool = False) -> str:
@@ -255,13 +255,13 @@ def coverage_grid(df: pd.DataFrame, for_print: bool = False) -> str:
             run = hit.iloc[0]
             ax.add_patch(plt.Rectangle((c, r), 0.94, 0.9, color=OUTCOME_COLOURS[run.outcome]))
             label = ("0 calls" if for_print else "0 LLM calls") if run.outcome == "BLOCKED" else f"{run.latency_s:.0f} s"
-            ax.text(c + 0.47, r + 0.45, label, ha="center", va="center", fontsize=8.5, color="white")
+            ax.text(c + 0.47, r + 0.45, label, ha="center", va="center", fontsize=9.5, color="white")
     ax.set_xlim(-0.05, len(cols))
     ax.set_ylim(len(rows), -0.05)
     ax.set_yticks([r + 0.45 for r in range(len(rows))], [f"{p}  ·  {s}" for p, s in rows])
     ax.set_xticks([c + 0.47 for c in range(len(cols))], [ARCH_SHORT[a] for _, a in cols])
     for i, order in enumerate(orders):
-        ax.text(i * 3 + 1.44, -0.32, (ORDER_SHORT if for_print else ORDER_TITLES)[order], ha="center", va="bottom", fontsize=10, fontweight="bold",
+        ax.text(i * 3 + 1.44, -0.32, (ORDER_SHORT if for_print else ORDER_TITLES)[order], ha="center", va="bottom", fontsize=11, fontweight="bold",
                 color=INK)
     for side in ("top", "right", "left", "bottom"):
         ax.spines[side].set_visible(False)
@@ -271,7 +271,7 @@ def coverage_grid(df: pd.DataFrame, for_print: bool = False) -> str:
                  "(cell = one run, time to finish)", pad=34)
     used = [o for o in OUTCOME_COLOURS if o in set(df["outcome"])]
     ax.legend(handles=[Patch(color=OUTCOME_COLOURS[o], label=OUTCOME_LABELS[o]) for o in used], frameon=False,
-              loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=len(used), fontsize=9)
+              loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=len(used), fontsize=10)
     name = "coverage_grid_print.png" if for_print else "coverage_grid.png"
     fig.savefig(ARTIFACTS_DIR / name)
     plt.close(fig)
@@ -314,7 +314,7 @@ def run_timeline(events: list[dict], started: float, title: str, for_print: bool
         ax.barh(lane[agent], end - start, left=start, height=0.56, color=colour[agent])
         if end - start > 12:
             ax.text(start + (end - start) / 2, lane[agent], f"{end - start:.0f} s", ha="center", va="center",
-                    fontsize=8.5, color="white")
+                    fontsize=9.5, color="white")
     route = lane["route_agent"]
     for caller, t in a2a:
         tip = route - 0.3 if lane[caller] < route else route + 0.3
@@ -322,7 +322,7 @@ def run_timeline(events: list[dict], started: float, title: str, for_print: bool
                     arrowprops={"arrowstyle": "->", "color": INK, "linewidth": 1.1})
     if a2a:
         caller, t = a2a[0]
-        ax.text(t + 3.5, (lane[caller] + route) / 2, "A2A request", fontsize=8, color=MUTED, va="center")
+        ax.text(t + 3.5, (lane[caller] + route) / 2, "A2A request", fontsize=9.5, color=MUTED, va="center")
     ax.set_yticks(range(len(TIMELINE_LANES)), [label for _, label, _ in TIMELINE_LANES])
     ax.invert_yaxis()
     ax.set_xlim(0, max(e for _, _, e in spans) + 5)
