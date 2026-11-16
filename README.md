@@ -7,6 +7,8 @@ delivery; one supervisor agent and four worker agents decide **which driver**, *
 CSE3101 Agentic AI, Group 8, BML Munjal University.
 Bhumika Yadav (230732), Aadit Bassi (230728), Akshat Nagori (230682), Sahil Mudgil (230743).
 
+Live: https://deliveryfleet-mas.gentledune-e77ea6e0.malaysiawest.azurecontainerapps.io (Azure Container Apps; see `deploy/DEPLOY.md`).
+
 ## What it does, in one run
 
 ```
