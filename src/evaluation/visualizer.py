@@ -322,7 +322,7 @@ def run_timeline(events: list[dict], started: float, title: str, for_print: bool
                     arrowprops={"arrowstyle": "->", "color": INK, "linewidth": 1.1})
     if a2a:
         caller, t = a2a[0]
-        ax.text(t + 1.5, (lane[caller] + route) / 2, "A2A request", fontsize=8, color=MUTED, va="center")
+        ax.text(t + 3.5, (lane[caller] + route) / 2, "A2A request", fontsize=8, color=MUTED, va="center")
     ax.set_yticks(range(len(TIMELINE_LANES)), [label for _, label, _ in TIMELINE_LANES])
     ax.invert_yaxis()
     ax.set_xlim(0, max(e for _, _, e in spans) + 5)
