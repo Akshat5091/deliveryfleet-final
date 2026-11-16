@@ -335,3 +335,21 @@ def test_route_plan_eta_is_recomputed_from_the_tool_numbers():
                        '"delay_mean_mins": 13.6, "delay_p10_mins": 9.0, "delay_p90_mins": 18.0, '
                        '"eta_mins": 12.0, "rationale": "r"}')
     assert plan.eta_mins == 43.6
+
+
+def test_timeline_spans_come_from_agent_events_and_count_only_a2a_requests():
+    from src.evaluation.visualizer import agent_spans
+
+    t0 = 1000.0
+    events = [
+        {"kind": "guardrail", "agent": "input_guard", "ts": t0 + 2.0, "duration_ms": 1500.0, "payload": {}},
+        {"kind": "agent_start", "agent": "dispatch_agent", "ts": t0 + 3.0, "payload": {}},
+        {"kind": "agent_end", "agent": "dispatch_agent", "ts": t0 + 10.0, "payload": {}},
+        {"kind": "a2a_message", "agent": "dispatch_agent", "ts": t0 + 10.0, "payload": {"direction": "request"}},
+        {"kind": "a2a_message", "agent": "dispatch_agent", "ts": t0 + 14.0, "payload": {"direction": "response"}},
+        {"kind": "agent_start", "agent": "exception_agent", "ts": t0 + 15.0, "payload": {}},
+        {"kind": "a2a_message", "agent": "exception_agent", "ts": t0 + 16.0, "payload": {"direction": "request"}},
+    ]
+    spans, a2a = agent_spans(events, t0)
+    assert spans == [("input_guard", 0.5, 2.0), ("dispatch_agent", 3.0, 10.0)]
+    assert a2a == [("dispatch_agent", 10.0), ("exception_agent", 16.0)]

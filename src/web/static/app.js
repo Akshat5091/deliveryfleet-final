@@ -590,14 +590,17 @@ async function openInControl(runId) {
 }
 
 // =================================================================== RUNS
+const SOURCE_TEXT = { booking: "Booking", web: "Control room", benchmark: "Benchmark" };
+const EVENT_TEXT = { normal: "None", corridor_closed: "Road closed", breakdown: "Breakdown", rain_spike: "Rain spike" };
+
 async function loadRuns() {
   const src = $("#runs-source").value;
   const rows = await api(`/api/runs${src ? `?source=${src}` : ""}`);
   const head = `<thead><tr><th>Run</th><th>Source</th><th>Architecture</th><th>Persona</th><th>Style</th><th>Event</th><th>Order</th><th>Outcome</th><th class="num">Time</th><th class="num">Tokens</th><th class="num">Judge</th></tr></thead>`;
   const body = rows.map((r) => {
     const rep = r.report || {};
-    return `<tr data-run="${esc(r.run_id)}" tabindex="0"><td class="mono">${esc(r.run_id)}</td><td>${esc(r.source)}</td><td>${esc(r.architecture)}</td>
-      <td>${esc(r.persona)}</td><td>${esc(r.prompt_style || "–")}</td><td>${esc(r.scenario)}</td><td>${esc(r.order_id || "–")}</td>
+    return `<tr data-run="${esc(r.run_id)}" tabindex="0"><td class="mono">${esc(r.run_id)}</td><td>${esc(SOURCE_TEXT[r.source] || r.source)}</td><td>${esc(r.architecture)}</td>
+      <td>${esc(r.persona)}</td><td>${esc(r.prompt_style || "–")}</td><td>${esc(EVENT_TEXT[r.scenario] || r.scenario)}</td><td>${esc(r.order_id || "–")}</td>
       <td><span class="tag ${OUTCOME_TONE[rep.outcome] || "idle"}">${esc(OUTCOME_TEXT[rep.outcome] || r.status)}</span></td>
       <td class="num">${rep.total_latency_s != null ? fmt(rep.total_latency_s) + " s" : "–"}</td>
       <td class="num">${rep.total_tokens != null ? Number(rep.total_tokens).toLocaleString("en-IN") : "–"}</td>
@@ -668,6 +671,9 @@ function evalSections(ev) {
   const served = (k.runs || 0) - (o.BLOCKED || 0);
 
   const html = [
+    section("Was every case tested?",
+      "Each cell below is one real run, coloured by its outcome. Open any of them in the Runs tab to replay its trace.",
+      fig("coverage_grid.png", true)),
     section("Did the agents do the right thing?",
       "Every architecture got the same 24 inputs. The outcome is decided in code from the Blackboard, so the LLM review cannot mark a late or illegal delivery as done.",
       fig("outcomes_by_architecture.png") + note("Guard and decisions", [
@@ -678,7 +684,8 @@ function evalSections(ev) {
         "Road-closure runs escalate because the Route Agent's detour (53.1 min) misses the 50-minute deadline.")),
     section("How long does a run take, and where does the time go?",
       `Median ${fmt(k.p50_latency_s, 0)} s per run, p95 ${fmt(k.p95_latency_s, 0)} s (95% of runs finish within it). Most of it is Gemini answering one agent after another; the free-tier rate limit adds waiting when several runs share a key.`,
-      fig("latency_by_architecture.png") + fig("agent_metric_heatmap.png") + fig("heatmap_per_agent.png", true)
+      fig("latency_by_architecture.png") + fig("agent_metric_heatmap.png") + fig("run_timeline.png", true)
+        + fig("heatmap_per_agent.png", true)
         + `<div class="ev-table full"><div class="table-wrap">${archTable(ev.by_architecture)}</div></div>`),
     section("Can we trust the quality score?",
       `The judge (a different model from the agents) gave ${fmt(k.judge_mean, 2)} of 5 to the served runs. A judge that always says 5 could just be lenient, so we planted faults in a clean run and judged it again.`,
@@ -719,7 +726,7 @@ function renderData() {
   $("#data").innerHTML = `
     <div class="panel-head"><h2>Fleet and data</h2><p>All data is synthetic, made for this project. Agents reach it only through MCP tools.</p></div>
     <div class="two">
-      <div><h3 class="h3" style="margin-top:0">Fleet database <span class="dim" style="font-weight:400;font-size:.85rem">rank_drivers, get_driver</span></h3><div class="table-wrap">${table(drivers)}</div></div>
+      <div><h3 class="h3" style="margin-top:0">Fleet database <span class="dim" style="font-weight:400;font-size:.85rem">rank_drivers, get_driver</span></h3><div class="table-wrap fleet">${table(drivers)}</div></div>
       <div><h3 class="h3" style="margin-top:0">Delay model <span class="dim" style="font-weight:400;font-size:.85rem">forecast_delay</span></h3>
         ${mc ? `<div class="kpis"><div><b>${fmt(mc.holdout.r2, 3)}</b><span>holdout R²</span></div><div><b>${fmt(mc.holdout.mae, 2)}</b><span>mean error, min</span></div>
           <div><b>${fmt(mc.holdout.p10_p90_coverage * 100, 1)}%</b><span>trips inside P10–P90 band</span></div><div><b>${mc.rows}</b><span>training rows</span></div></div>

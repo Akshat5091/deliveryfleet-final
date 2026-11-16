@@ -226,3 +226,103 @@ def judge_bars(df: pd.DataFrame) -> str:
     fig.savefig(ARTIFACTS_DIR / "judge_by_criterion.png")
     plt.close(fig)
     return "judge_by_criterion.png"
+
+
+ORDER_TITLES = {"ORD-101": "ORD-101  normal", "ORD-103": "ORD-103  heavy, cross-zone",
+                "ORD-105": "ORD-105  road closed mid-trip"}
+ARCH_SHORT = {"hierarchical": "hier.", "sequential": "seq.", "parallel": "par."}
+
+
+def coverage_grid(df: pd.DataFrame) -> str:
+    """Every benchmark run as one cell: rows are persona x prompt style, columns are order x architecture."""
+    from matplotlib.patches import Patch
+
+    personas = [p for p in ["polite", "urgent", "abusive", "injection"] if p in set(df["persona"])]
+    rows = [(p, s) for p in personas for s in ("ReAct", "Direct")]
+    orders = [o for o in ORDER_TITLES if o in set(df["order_id"])]
+    cols = [(o, a) for o in orders for a in ARCH_COLOURS]
+    fig, ax = plt.subplots(figsize=(FULL_W, 5.4))
+    for r, (persona, style) in enumerate(rows):
+        for c, (order, arch) in enumerate(cols):
+            hit = df[(df.persona == persona) & (df.prompt_style == style) & (df.order_id == order)
+                     & (df.architecture == arch)]
+            if hit.empty:
+                continue
+            run = hit.iloc[0]
+            ax.add_patch(plt.Rectangle((c, r), 0.94, 0.9, color=OUTCOME_COLOURS[run.outcome]))
+            label = "0 LLM calls" if run.outcome == "BLOCKED" else f"{run.latency_s:.0f} s"
+            ax.text(c + 0.47, r + 0.45, label, ha="center", va="center", fontsize=8.5, color="white")
+    ax.set_xlim(-0.05, len(cols))
+    ax.set_ylim(len(rows), -0.05)
+    ax.set_yticks([r + 0.45 for r in range(len(rows))], [f"{p}  ·  {s}" for p, s in rows])
+    ax.set_xticks([c + 0.47 for c in range(len(cols))], [ARCH_SHORT[a] for _, a in cols])
+    for i, order in enumerate(orders):
+        ax.text(i * 3 + 1.44, -0.32, ORDER_TITLES[order], ha="center", va="bottom", fontsize=10, fontweight="bold",
+                color=INK)
+    for side in ("top", "right", "left", "bottom"):
+        ax.spines[side].set_visible(False)
+    ax.tick_params(length=0)
+    ax.set_title(f"All {len(df)} runs: every persona, prompt style, order and architecture "
+                 "(cell = one run, time to finish)", pad=34)
+    used = [o for o in OUTCOME_COLOURS if o in set(df["outcome"])]
+    ax.legend(handles=[Patch(color=OUTCOME_COLOURS[o], label=OUTCOME_LABELS[o]) for o in used], frameon=False,
+              loc="upper center", bbox_to_anchor=(0.5, -0.08), ncol=len(used), fontsize=9)
+    fig.savefig(ARTIFACTS_DIR / "coverage_grid.png")
+    plt.close(fig)
+    return "coverage_grid.png"
+
+
+TIMELINE_LANES = [("input_guard", "Input guard (code + Gemini)", "#6b7280"),
+                  ("supervisor", "Supervisor (CrewAI)", "#991b1b"),
+                  ("retrieval_agent", "Retrieval Agent (CrewAI)", "#2a78d6"),
+                  ("dispatch_agent", "Dispatch Agent (CrewAI)", "#7c3aed"),
+                  ("route_agent", "Route Agent (ADK, over A2A)", "#1baf7a"),
+                  ("exception_agent", "Exception Agent (CrewAI)", "#d97706")]
+
+
+def agent_spans(events: list[dict], started: float) -> tuple[list[tuple[str, float, float]], list[tuple[str, float]]]:
+    """(agent, start s, end s) for each agent turn, and (caller, time s) for each A2A request, from a run's events."""
+    spans: list[tuple[str, float, float]] = []
+    open_at: dict[str, float] = {}
+    a2a: list[tuple[str, float]] = []
+    for e in events:
+        t = e["ts"] - started
+        if e["kind"] == "guardrail" and e["agent"] == "input_guard" and e.get("duration_ms"):
+            spans.append((e["agent"], t - e["duration_ms"] / 1000, t))
+        elif e["kind"] == "agent_start":
+            open_at[e["agent"]] = t
+        elif e["kind"] == "agent_end" and e["agent"] in open_at:
+            spans.append((e["agent"], open_at.pop(e["agent"]), t))
+        elif e["kind"] == "a2a_message" and (e.get("payload") or {}).get("direction") == "request":
+            a2a.append((e["agent"], t))
+    return spans, a2a
+
+
+def run_timeline(events: list[dict], started: float, title: str) -> str:
+    """Who worked when in one run: one lane per agent, arrows for A2A requests to the Route Agent."""
+    spans, a2a = agent_spans(events, started)
+    lane = {a: i for i, (a, _, _) in enumerate(TIMELINE_LANES)}
+    colour = {a: c for a, _, c in TIMELINE_LANES}
+    fig, ax = plt.subplots(figsize=(FULL_W, 3.9))
+    for agent, start, end in spans:
+        ax.barh(lane[agent], end - start, left=start, height=0.56, color=colour[agent])
+        if end - start > 12:
+            ax.text(start + (end - start) / 2, lane[agent], f"{end - start:.0f} s", ha="center", va="center",
+                    fontsize=8.5, color="white")
+    route = lane["route_agent"]
+    for caller, t in a2a:
+        tip = route - 0.3 if lane[caller] < route else route + 0.3
+        ax.annotate("", xy=(t, tip), xytext=(t, lane[caller]),
+                    arrowprops={"arrowstyle": "->", "color": INK, "linewidth": 1.1})
+    if a2a:
+        caller, t = a2a[0]
+        ax.text(t + 1.5, (lane[caller] + route) / 2, "A2A request", fontsize=8, color=MUTED, va="center")
+    ax.set_yticks(range(len(TIMELINE_LANES)), [label for _, label, _ in TIMELINE_LANES])
+    ax.invert_yaxis()
+    ax.set_xlim(0, max(e for _, _, e in spans) + 5)
+    ax.set_xlabel("seconds since the request arrived")
+    ax.set_title(title)
+    _clean(ax)
+    fig.savefig(ARTIFACTS_DIR / "run_timeline.png")
+    plt.close(fig)
+    return "run_timeline.png"

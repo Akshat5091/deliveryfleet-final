@@ -285,6 +285,16 @@
       "file": "cost_by_prompt_style.png",
       "title": "Cost of each prompt style",
       "caption": "ReAct vs Direct on the same inputs: time and tokens per run."
+    },
+    {
+      "file": "coverage_grid.png",
+      "title": "Test coverage",
+      "caption": "Every persona, prompt style, order and architecture was run; one cell per run."
+    },
+    {
+      "file": "run_timeline.png",
+      "title": "One run, step by step",
+      "caption": "When each agent worked in one hierarchical road-closure run; arrows are A2A requests to the Route Agent."
     }
   ]
 }

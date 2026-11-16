@@ -165,6 +165,19 @@ def judge_figures(served: pd.DataFrame) -> list[dict]:
     return figures
 
 
+TIMELINE_RUN = "EVAL-HR-pol-105"  # hierarchical, road closed: every agent and three A2A requests appear
+
+
+def timeline_figure() -> list[dict]:
+    run = run_logger.get_run(TIMELINE_RUN)
+    if not run:
+        return []
+    title = f"One run, step by step: {TIMELINE_RUN} (hierarchical, ReAct, polite customer, road closed mid-trip)"
+    return [{"file": viz.run_timeline(run_logger.events_after(TIMELINE_RUN), run["started"], title),
+             "title": "One run, step by step",
+             "caption": "When each agent worked in one hierarchical road-closure run; arrows are A2A requests to the Route Agent."}]
+
+
 def build_report() -> dict:
     df, agents = collect()
     if df.empty:
@@ -206,6 +219,9 @@ def build_report() -> dict:
          "title": "Outcomes by architecture", "caption": "Each architecture ran the same 24 inputs; counts of each final outcome."},
         {"file": viz.prompt_style_cost(served),
          "title": "Cost of each prompt style", "caption": "ReAct vs Direct on the same inputs: time and tokens per run."},
+        {"file": viz.coverage_grid(df),
+         "title": "Test coverage", "caption": "Every persona, prompt style, order and architecture was run; one cell per run."},
+        *timeline_figure(),
     ]
     # narrower versions of the wide charts for the A4 report
     viz.per_agent_heatmaps(agents[agents["persona"] != "injection"], stacked=True)
