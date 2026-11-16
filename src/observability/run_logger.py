@@ -9,10 +9,12 @@ Tables
 from __future__ import annotations
 
 import json
+import shutil
 import sqlite3
 import threading
 import time
 from contextlib import closing
+from pathlib import Path
 from typing import Any
 
 from src.config import STORE_DB
@@ -147,6 +149,15 @@ def run_status(run_id: str) -> str | None:
     with closing(_connect()) as con:
         row = con.execute("SELECT status FROM runs WHERE run_id = ?", (run_id,)).fetchone()
         return row["status"] if row else None
+
+
+def seed_if_empty(seed: Path) -> bool:
+    """A fresh server has no run store; start it from the saved runs so they can be replayed."""
+    if STORE_DB.exists() or not seed.exists():
+        return False
+    STORE_DB.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(seed, STORE_DB)
+    return True
 
 
 def fail_stale_runs() -> int:

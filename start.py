@@ -18,7 +18,8 @@ import time
 
 import httpx
 
-from src.config import A2A_URL, HOST, MCP_PORT, WEB_PORT
+from src.config import A2A_URL, HOST, MCP_PORT, SEED_RUNS_DB, WEB_PORT
+from src.observability import run_logger
 
 SERVICES = [
     ("mcp", [sys.executable, "-m", "src.mcp.server"]),
@@ -47,6 +48,9 @@ def _stop(signum, frame) -> None:
 
 def main() -> None:
     signal.signal(signal.SIGTERM, _stop)
+    # before any service starts: the route service may create the store as soon as it logs
+    if run_logger.seed_if_empty(SEED_RUNS_DB):
+        print("[start] run store seeded with the saved benchmark and demo runs", flush=True)
     env = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
     procs = [subprocess.Popen(cmd, env=env) for _, cmd in SERVICES]
     exit_code = 1

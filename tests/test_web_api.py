@@ -70,3 +70,22 @@ def test_case_event_override_only_when_explicit(client):
 
 def test_unknown_case_is_404(client):
     assert client.post("/api/runs", json={"case_id": "nope"}).status_code == 404
+
+
+def test_a_fresh_server_starts_from_the_saved_runs_and_never_overwrites_a_store(tmp_path):
+    import sqlite3
+    from contextlib import closing
+
+    from src.observability import run_logger
+
+    seed = tmp_path / "seed.sqlite3"
+    with closing(sqlite3.connect(seed)) as con:
+        con.executescript(run_logger.SCHEMA)
+        con.execute("INSERT INTO runs (run_id, status) VALUES ('EVAL-SEED', 'DISPATCHED')")
+        con.commit()
+    assert run_logger.seed_if_empty(seed) is True
+    assert run_logger.run_status("EVAL-SEED") == "DISPATCHED"
+
+    run_logger.start_run("RUN-LOCAL", architecture="hierarchical")
+    assert run_logger.seed_if_empty(seed) is False
+    assert run_logger.run_status("RUN-LOCAL") == "RUNNING"

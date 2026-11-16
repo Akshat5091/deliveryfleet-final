@@ -38,6 +38,8 @@ MODEL_PATH = RUNTIME_DIR / "delay_model.joblib"
 MODEL_CARD_PATH = ARTIFACTS_DIR / "delay_model_card.json"
 CHROMA_DIR = RUNTIME_DIR / "chroma"
 STORE_DB = RUNTIME_DIR / "fleet.sqlite3"
+# The 72 benchmark runs and the live demo cases, copied into an empty store on a fresh server.
+SEED_RUNS_DB = PROJECT_ROOT / "deploy" / "seed_runs.sqlite3"
 
 HOST = "127.0.0.1"
 WEB_PORT = int(os.getenv("PORT", "7860"))
