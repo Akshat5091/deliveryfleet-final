@@ -53,6 +53,9 @@ WORKER_MODEL = os.getenv("WORKER_MODEL", "gemini-3.1-flash-lite")
 ROUTE_MODEL = os.getenv("ROUTE_MODEL", "gemini-3.1-flash-lite")
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", "gemini-3.5-flash-lite")
 LLM_RPM = int(os.getenv("LLM_RPM", "14"))  # requests per minute allowed for each model
+# used for a while when the worker model is overloaded, slow or out of quota (its own free quota)
+FALLBACK_MODEL = os.getenv("FALLBACK_MODEL", "gemini-3.5-flash-lite")
+CALL_TIMEOUT_S = float(os.getenv("LLM_CALL_TIMEOUT_S", "45"))  # one model call; normal calls take 1-20 s
 
 # USD per 1M tokens (input, output incl. thinking) for cost estimates: Gemini API
 # paid-tier standard prices from aistudio.google.com/docs/pricing (read Nov 2026;

@@ -15,7 +15,7 @@ from crewai.mcp.filters import create_static_tool_filter
 from pydantic import BaseModel
 
 from src.agents.llm import install_llm_hooks, with_retry
-from src.config import MCP_URL
+from src.config import MCP_URL, WORKER_MODEL
 from src.observability import callbacks, tracing
 
 M = TypeVar("M", bound=BaseModel)
@@ -45,7 +45,7 @@ async def run_task(run_id: str, agent_name: str, agent: Agent, task: Task, outpu
     setup()
     with tracing.agent_span(run_id, agent_name, "CrewAI", role=agent.role):
         crew = Crew(agents=[agent], tasks=[task], process=Process.sequential, verbose=False)
-        result = await with_retry(lambda: crew.kickoff_async())
+        result = await with_retry(lambda: crew.kickoff_async(), model=WORKER_MODEL)
         if result.pydantic is None:
             raise AgentOutputError(f"{agent_name} returned no structured output: {str(result.raw)[:300]}")
         return output_model.model_validate(result.pydantic.model_dump())

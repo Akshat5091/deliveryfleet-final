@@ -87,7 +87,8 @@ async def _llm_judge(text: str) -> str:
     from src.agents.llm import gemini_generate
     from src.config import ROUTE_MODEL
 
+    # a one-word answer: 20 s is plenty, and a slower reply moves the check to the fallback model
     reply = await gemini_generate(JUDGE_PROMPT + text, agent="input_guard_judge", model=ROUTE_MODEL,
-                                  max_tokens=20, thinking="minimal")
+                                  max_tokens=20, thinking="minimal", timeout_s=20)
     # Fail closed: anything other than a clear SAFE (empty, cut off, filtered) counts as UNSAFE.
     return "SAFE" if reply.strip().upper().rstrip(".") == "SAFE" else "UNSAFE"

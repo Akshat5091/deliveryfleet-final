@@ -353,3 +353,154 @@ def test_timeline_spans_come_from_agent_events_and_count_only_a2a_requests():
     spans, a2a = agent_spans(events, t0)
     assert spans == [("input_guard", 0.5, 2.0), ("dispatch_agent", 3.0, 10.0)]
     assert a2a == [("dispatch_agent", 10.0), ("exception_agent", 16.0)]
+
+
+# ---------------------------------------------------------------- busy-model fallback
+PRIMARY = "gemini-3.1-flash-lite"
+
+
+@pytest.fixture()
+def fresh_switch(monkeypatch):
+    from src.agents import llm
+
+    now = [1000.0]
+    monkeypatch.setattr(llm, "_now", lambda: now[0])
+    monkeypatch.setattr(llm, "_busy_until", {})
+    return llm, now
+
+
+def test_a_busy_model_sends_calls_to_the_fallback_for_a_while(fresh_switch):
+    llm, now = fresh_switch
+    assert llm.active_model(PRIMARY) == PRIMARY
+    llm.note_failure(PRIMARY, Exception("503 UNAVAILABLE: This model is currently experiencing high demand"))
+    assert llm.active_model(PRIMARY) == llm.FALLBACK_MODEL
+    now[0] += llm.BUSY_FOR_S + 1
+    assert llm.active_model(PRIMARY) == PRIMARY
+
+
+def test_a_bad_request_does_not_switch_models(fresh_switch):
+    llm, _ = fresh_switch
+    llm.note_failure(PRIMARY, Exception("400 INVALID_ARGUMENT: bad schema"))
+    assert llm.active_model(PRIMARY) == PRIMARY
+
+
+def _fake_client(calls, primary_behaviour):
+    import asyncio
+    from types import SimpleNamespace
+
+    class Models:
+        async def generate_content(self, model, contents, config):
+            calls.append(model)
+            if model == PRIMARY:
+                if primary_behaviour == "busy":
+                    raise RuntimeError("503 UNAVAILABLE: This model is currently experiencing high demand")
+                await asyncio.sleep(5)
+            usage = SimpleNamespace(prompt_token_count=3, candidates_token_count=1, thoughts_token_count=0)
+            return SimpleNamespace(text="SAFE", usage_metadata=usage)
+    return SimpleNamespace(aio=SimpleNamespace(models=Models()))
+
+
+@pytest.mark.parametrize("behaviour", ["busy", "hangs"])
+def test_a_direct_gemini_call_moves_to_the_fallback_when_the_model_is_busy_or_hangs(fresh_switch, monkeypatch, behaviour):
+    import asyncio
+
+    llm, _ = fresh_switch
+    calls: list[str] = []
+    monkeypatch.setattr(llm, "genai_client", lambda: _fake_client(calls, behaviour))
+    monkeypatch.setattr(llm, "CALL_TIMEOUT_S", 0.3)
+    started = asyncio.get_event_loop_policy().new_event_loop()
+    try:
+        text = started.run_until_complete(llm.gemini_generate("hello", agent="test", model=PRIMARY))
+    finally:
+        started.close()
+    assert text == "SAFE"
+    assert calls == [PRIMARY, llm.FALLBACK_MODEL]
+
+
+def test_crewai_calls_use_the_fallback_while_the_model_is_busy(fresh_switch):
+    from types import SimpleNamespace
+
+    llm, _ = fresh_switch
+    context = SimpleNamespace(llm=SimpleNamespace(model=PRIMARY))
+    llm.choose_crew_model(context)
+    assert context.llm.model == PRIMARY
+    llm.note_failure(PRIMARY, Exception("504 DEADLINE_EXCEEDED"))
+    llm.choose_crew_model(context)
+    assert context.llm.model == llm.FALLBACK_MODEL
+
+
+def test_crewai_llm_has_a_time_limit_per_call():
+    from src.agents import llm
+
+    assert llm.crew_llm().client_params["http_options"].timeout == int(llm.CALL_TIMEOUT_S * 1000)
+
+
+def test_an_a2a_retry_after_a_busy_model_asks_the_route_agent_for_the_fallback(fresh_switch, monkeypatch):
+    import asyncio
+    import json
+
+    from src.agents import a2a_client
+
+    llm, _ = fresh_switch
+    plan = {"corridor": "Zone A -> Zone B", "distance_km": 14.5, "base_eta_mins": 29.0, "delay_mean_mins": 12.0,
+            "delay_p10_mins": 8.0, "delay_p90_mins": 16.0, "eta_mins": 41.0, "rationale": "fastest"}
+    sent: list[dict] = []
+    replies = iter([("", "503 UNAVAILABLE: This model is currently experiencing high demand"), (json.dumps(plan), None)])
+
+    async def fake_send(request):
+        sent.append(dict(request.metadata))
+        return next(replies)
+
+    async def no_wait(_):
+        return None
+
+    monkeypatch.setattr(a2a_client, "_send_once", fake_send)
+    monkeypatch.setattr(a2a_client.asyncio, "sleep", no_wait)
+    loop = asyncio.new_event_loop()
+    try:
+        result = loop.run_until_complete(a2a_client.request_route({"pickup": "Zone A - Warehouse 1"}, "RUN-T", "ReAct", "dispatch_agent"))
+    finally:
+        loop.close()
+    assert result.corridor == "Zone A -> Zone B"
+    assert "model" not in sent[0]
+    assert sent[1]["model"] == llm.FALLBACK_MODEL
+
+
+def test_the_route_agent_uses_the_model_named_in_the_a2a_request(fresh_switch):
+    import asyncio
+    from types import SimpleNamespace
+
+    from src.agents import adk_route_agent
+
+    llm, _ = fresh_switch
+    state: dict = {}
+    run_config = SimpleNamespace(custom_metadata={"a2a_metadata": {"run_id": "RUN-T", "model": llm.FALLBACK_MODEL}})
+    ctx = SimpleNamespace(_invocation_context=SimpleNamespace(run_config=run_config), user_content=None, state=state,
+                          invocation_id="inv-1")
+    assert adk_route_agent.before_agent(ctx) is None
+    request = SimpleNamespace(model=PRIMARY)
+    loop = asyncio.new_event_loop()
+    try:
+        loop.run_until_complete(adk_route_agent.before_model(ctx, request))
+    finally:
+        loop.close()
+    assert request.model == llm.FALLBACK_MODEL
+
+
+def test_when_both_models_are_busy_calls_go_to_the_one_that_frees_up_first(fresh_switch):
+    llm, now = fresh_switch
+    llm.note_failure(PRIMARY, Exception("503 UNAVAILABLE"))
+    now[0] += 30
+    llm.note_failure(llm.FALLBACK_MODEL, Exception("503 UNAVAILABLE"))
+    assert llm.active_model(PRIMARY) == PRIMARY  # marked busy 30 s earlier, so it frees up first
+    now[0] += llm.BUSY_FOR_S - 29
+    assert not llm.is_busy(PRIMARY) and llm.is_busy(llm.FALLBACK_MODEL)
+    assert llm.active_model(PRIMARY) == PRIMARY
+
+
+def test_the_route_agent_has_a_time_limit_per_model_call():
+    from src.agents import adk_route_agent
+    from src.agents.llm import CALL_TIMEOUT_S
+
+    config = adk_route_agent.build_route_agent().generate_content_config
+    assert config.http_options.timeout == int(CALL_TIMEOUT_S * 1000)

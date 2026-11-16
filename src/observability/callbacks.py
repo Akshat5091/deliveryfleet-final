@@ -26,6 +26,7 @@ from crewai.events import (
 from crewai.hooks import register_after_tool_call_hook, register_before_tool_call_hook
 from crewai.hooks.tool_hooks import ToolCallHookContext
 
+from src.config import WORKER_MODEL
 from src.guardrails.tool_validator import ToolOutputError, validate
 from src.observability import run_logger, tracing
 
@@ -76,6 +77,9 @@ class FleetEventListener(BaseEventListener):
             with self._lock:
                 self._started.pop(event.call_id, None)
             tracing.record_llm_call(event.model or "", 0, 0, None, status="ERROR", preview=event.error)
+            from src.agents.llm import note_failure  # a busy model sends CrewAI's own retry to the fallback
+
+            note_failure(event.model or WORKER_MODEL, event.error or "")
 
         @bus.on(ToolUsageFinishedEvent)
         def _tool_done(source, event: ToolUsageFinishedEvent) -> None:

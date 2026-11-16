@@ -18,8 +18,8 @@ from a2a.client import ClientConfig, ClientFactory
 from a2a.helpers.proto_helpers import get_message_text, get_stream_response_text, new_text_message
 from a2a.types import Role, SendMessageRequest, TaskState
 
-from src.agents.llm import daily_quota_spent, is_retryable, rate_limited
-from src.config import A2A_URL
+from src.agents.llm import active_model, daily_quota_spent, is_busy, is_retryable, note_failure, rate_limited
+from src.config import A2A_URL, ROUTE_MODEL
 from src.observability import run_logger
 from src.schemas.decisions import RoutePlan
 
@@ -32,7 +32,7 @@ _FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 
 
 FINAL_TAG = "/*FINAL_ANSWER*/"
-ATTEMPTS = 3
+ATTEMPTS = 4  # with the busy-model switch: main model, fallback, then one wait-and-retry
 RATE_LIMIT_WAIT_S = 20  # then 40 s
 
 
@@ -78,11 +78,14 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
     payload = {**task, "run_id": run_id, "prompt_style": prompt_style}
     last_error: Exception | None = None
     for attempt in range(1, ATTEMPTS + 1):
+        # while the route model is busy, ask the Route Agent to answer with the fallback model
+        model = active_model(ROUTE_MODEL)
+        attempt_meta = {**meta, "model": model} if model != ROUTE_MODEL else meta
         message = new_text_message(json.dumps(payload), role=Role.ROLE_USER,
                                    context_id=f"{run_id}-{uuid.uuid4().hex[:6]}")
-        message.metadata.update(meta)
+        message.metadata.update(attempt_meta)
         request = SendMessageRequest(message=message)
-        request.metadata.update(meta)
+        request.metadata.update(attempt_meta)
         run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send",
                              payload={"direction": "request", "from": sender, "to": "route_agent", "attempt": attempt,
                                       "url": A2A_URL, "message_id": message.message_id, "body": payload})
@@ -99,6 +102,10 @@ async def request_route(task: dict, run_id: str, prompt_style: str, sender: str)
             run_logger.log_event(run_id, "a2a_message", sender, "A2A", name="message/send", duration_ms=ms,
                                  status="ERROR", payload={"direction": "response", "from": "route_agent", "to": sender,
                                                           "attempt": attempt, "error": str(exc), "raw": final[-800:]})
+            note_failure(model, exc)
+            nxt = active_model(ROUTE_MODEL)
+            if nxt != model and not is_busy(nxt):
+                continue  # this model is busy or out of quota: retry at once on the other one
             if daily_quota_spent(exc):
                 break  # daily quota: retrying won't help
             if attempt < ATTEMPTS and rate_limited(exc):

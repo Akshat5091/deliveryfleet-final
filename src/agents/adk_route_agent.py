@@ -27,8 +27,8 @@ from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPConnecti
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import types
 
-from src.agents.llm import limiter_for
-from src.config import MCP_URL, ROUTE_MODEL
+from src.agents.llm import active_model, limiter_for
+from src.config import CALL_TIMEOUT_S, FALLBACK_MODEL, MCP_URL, ROUTE_MODEL
 from src.guardrails.input_guard import regex_screen
 from src.guardrails.tool_validator import ToolOutputError, validate
 from src.observability import run_logger, tracing
@@ -83,6 +83,9 @@ def before_agent(callback_context: CallbackContext) -> types.Content | None:
     style = metadata.get("prompt_style") or task.get("prompt_style") or "ReAct"
     callback_context.state["run_id"] = run_id
     callback_context.state["style_hint"] = STYLE_HINTS.get(style, STYLE_HINTS["ReAct"])
+    # the caller asks for the fallback while the route model is busy; only the two known models are accepted
+    if metadata.get("model") in (ROUTE_MODEL, FALLBACK_MODEL):
+        callback_context.state["model"] = metadata["model"]
     callback_context.state["turn_started"] = time.time()
     run_logger.log_event(run_id, "agent_start", AGENT, FRAMEWORK, payload={"via": "A2A", "prompt_style": style})
 
@@ -95,8 +98,11 @@ def before_agent(callback_context: CallbackContext) -> types.Content | None:
 
 
 async def before_model(callback_context: CallbackContext, llm_request: LlmRequest) -> LlmResponse | None:
+    model = callback_context.state.get("model") or active_model(ROUTE_MODEL)
+    llm_request.model = model
+    callback_context.state["model_used"] = model
     # ADK runs callbacks on the server's event loop; the wait must not block other requests.
-    await asyncio.to_thread(limiter_for(ROUTE_MODEL).wait)
+    await asyncio.to_thread(limiter_for(model).wait)
     _llm_started[callback_context.invocation_id] = time.perf_counter()
     return None
 
@@ -108,7 +114,7 @@ def after_model(callback_context: CallbackContext, llm_response: LlmResponse) ->
     text = "".join(p.text or "" for p in (llm_response.content.parts or [])) if llm_response.content else ""
     calls = [p.function_call.name for p in (llm_response.content.parts or []) if p.function_call] if llm_response.content else []
     tracing.record_llm_call(
-        ROUTE_MODEL, (usage.prompt_token_count or 0) if usage else 0,
+        callback_context.state.get("model_used", ROUTE_MODEL), (usage.prompt_token_count or 0) if usage else 0,
         ((usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0)) if usage else 0,
         round((time.perf_counter() - started) * 1000, 1) if started else None,
         status="ERROR" if llm_response.error_code else "OK",
@@ -181,6 +187,8 @@ def build_route_agent() -> LlmAgent:
             thinking_config=types.ThinkingConfig(thinking_level="low"),
             safety_settings=[types.SafetySetting(category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
                                                  threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE)],
+            # a hung call fails here; the A2A caller then retries on the fallback model
+            http_options=types.HttpOptions(timeout=int(CALL_TIMEOUT_S * 1000)),  # ms
         ),
         before_agent_callback=before_agent,
         before_model_callback=before_model,
