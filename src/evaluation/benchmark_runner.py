@@ -173,6 +173,7 @@ def timeline_figure() -> list[dict]:
     if not run:
         return []
     title = f"One run, step by step: {TIMELINE_RUN} (hierarchical, ReAct, polite customer, road closed mid-trip)"
+    viz.run_timeline(run_logger.events_after(TIMELINE_RUN), run["started"], f"One run, step by step: {TIMELINE_RUN}", True)
     return [{"file": viz.run_timeline(run_logger.events_after(TIMELINE_RUN), run["started"], title),
              "title": "One run, step by step",
              "caption": "When each agent worked in one hierarchical road-closure run; arrows are A2A requests to the Route Agent."}]
@@ -226,6 +227,7 @@ def build_report() -> dict:
     # narrower versions of the wide charts for the A4 report
     viz.per_agent_heatmaps(agents[agents["persona"] != "injection"], stacked=True)
     viz.prompt_style_cost(served, stacked=True)
+    viz.coverage_grid(df, for_print=True)
     sens = sensitivity_specificity(df.to_dict("records"))
     summary = {
         "design": "3 architectures x 2 prompt styles (ReAct, Direct) x 4 personas (polite, urgent, abusive, injection) "
