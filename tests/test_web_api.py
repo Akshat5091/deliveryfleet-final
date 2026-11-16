@@ -16,6 +16,22 @@ def client(monkeypatch):
         yield c
 
 
+def test_startup_closes_stale_runs_in_the_test_store_and_never_the_live_one():
+    import sqlite3
+    from contextlib import closing
+
+    from src.config import STORE_DB
+    from src.observability import run_logger
+
+    run_logger.start_run("RUN-STALE-TEST", architecture="hierarchical")
+    with TestClient(web.app):
+        pass
+    assert run_logger.run_status("RUN-STALE-TEST") == "FAILED"
+    if STORE_DB.exists():
+        with closing(sqlite3.connect(STORE_DB)) as live:
+            assert live.execute("SELECT 1 FROM runs WHERE run_id = 'RUN-STALE-TEST'").fetchone() is None
+
+
 def test_meta_lists_locations_cases_and_drivers(client):
     meta = client.get("/api/meta").json()
     assert "Zone A - Warehouse 1" in meta["locations"]

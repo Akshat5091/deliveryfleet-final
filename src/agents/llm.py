@@ -101,8 +101,9 @@ def is_retryable(exc: BaseException) -> bool:
 
 def crew_llm(model: str = WORKER_MODEL, temperature: float = 0.2) -> LLM:
     """CrewAI routes 'gemini/...' to its native Gemini provider; rate limiting is
-    applied by the before_llm_call hook registered in install_llm_hooks()."""
-    return LLM(model=f"gemini/{model}", temperature=temperature, max_tokens=4096,
+    applied by the before_llm_call hook registered in install_llm_hooks().
+    The Gemini provider sends only max_output_tokens to the API; max_tokens alone is not a cap."""
+    return LLM(model=f"gemini/{model}", temperature=temperature, max_tokens=4096, max_output_tokens=4096,
                thinking_config=types.ThinkingConfig(thinking_level="low"))
 
 

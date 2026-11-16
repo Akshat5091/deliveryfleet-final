@@ -243,6 +243,16 @@ def _fake_time():
     return now, slept, (lambda: now[0]), sleep
 
 
+def test_crew_llm_sends_an_output_token_cap_to_gemini(monkeypatch):
+    # A breakdown run once produced 63,031 output tokens in one call: the cap was set
+    # but never reached the request Gemini receives.
+    monkeypatch.setenv("GEMINI_API_KEY", "test")
+    from src.agents.llm import crew_llm
+
+    config = crew_llm()._prepare_generation_config()
+    assert config.max_output_tokens == 4096
+
+
 def test_rate_limiter_lets_a_burst_within_budget_through_without_waiting():
     from src.agents.llm import RateLimiter
 
