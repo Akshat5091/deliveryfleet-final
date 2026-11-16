@@ -43,40 +43,36 @@ Create a token at https://huggingface.co/settings/tokens with **Write**
 permission, then run:
 
 ```powershell
-hf auth login --add-to-git-credential
+hf auth login
 ```
 
-Paste the token when asked. `--add-to-git-credential` lets `git push` reuse it.
+Paste the token when asked.
 
-## 5. Push the project to the Space
+## 5. Upload the project to the Space
 
-A Space needs a `README.md` with a small YAML header at the **root of the
-Space repo**. This project keeps that file in `deploy/huggingface/README.md`
-so your normal repo stays clean. The simplest way: make a throw-away branch
-that adds this one file at the root, and push only that branch to the Space.
-Your `main` branch is never changed.
+Hugging Face rejects PNG images sent with a plain `git push`, and the
+evaluation charts are PNGs, so the project is uploaded with the `hf` tool.
+First make a clean copy that contains only committed files: `.env` and your
+keys are never committed, so they can never be uploaded. The Space also needs
+the `README.md` from `deploy/huggingface/` at its root (it holds the Space
+settings), so that file is copied over the project README in the copy only.
 
 Run these from the project folder (the one containing `Dockerfile`).
 Replace `<your-username>`.
 
 ```powershell
-git remote add space https://huggingface.co/spaces/<your-username>/deliveryfleet-mas
-git checkout -b space-deploy
-Copy-Item deploy/huggingface/README.md README.md
-git add -A
-git commit -m "Deploy to Hugging Face Space"
-git push --force space space-deploy:main
-git checkout main
+$dir = "..\space-upload-$(Get-Date -Format yyyyMMdd-HHmm)"
+git archive --format=zip -o "$dir.zip" HEAD
+Expand-Archive "$dir.zip" $dir
+Copy-Item deploy\huggingface\README.md "$dir\README.md"
+hf upload <your-username>/deliveryfleet-mas $dir . --repo-type space --commit-message "Deploy"
 ```
 
 Notes:
 
-- `--force` is needed only the first time, because the new Space already has
-  its own starter commit that your history does not contain.
-- `git add -A` respects `.gitignore`, so `.env` and `runtime/` are not pushed.
-  Check with `git status` before committing that no `.env` file is listed.
-- Any file you changed but have not committed on `main` is carried onto
-  `space-deploy`. Commit or stash first if you do not want that.
+- Commit your changes first: the copy is made from the last commit.
+- Check the copy before uploading: `Get-ChildItem $dir -Force` must not list a
+  `.env` file.
 
 ## 6. Watch it build
 
@@ -86,12 +82,8 @@ and route services answer, so allow a minute after "Running" on a cold start.
 
 ## 7. Update later
 
-```powershell
-git checkout space-deploy
-git merge main
-git push space space-deploy:main
-git checkout main
-```
+Commit the change, then run the same five commands from step 5. Each upload
+creates a new commit on the Space and Hugging Face rebuilds the image.
 
 Free Spaces go to sleep after inactivity and wake on the next visit. Data in
 `runtime/` (the SQLite log, for example) is lost on restart; the model and
